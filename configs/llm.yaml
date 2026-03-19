@@ -1,0 +1,17 @@
+# ============================================
+# LLM Configuration
+# ============================================
+
+anthropic:
+  default:
+    model: "claude-sonnet-4-20250514"
+    max_tokens: 8192
+
+  calls:
+    taxonomy_extractor_pdf:
+      model: "claude-sonnet-4-20250514"
+      max_tokens: 8192
+
+    taxonomy_extractor_text:
+      model: "claude-sonnet-4-20250514"
+      max_tokens: 8192

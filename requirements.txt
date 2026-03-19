@@ -1,0 +1,33 @@
+# ============================================
+# TBM Classification Engine - Requirements
+# ============================================
+
+# --- Data Processing ---
+polars==1.30.0            # Fast DataFrame engine (replaces pandas)
+xlsxwriter==3.2.2         # Excel output support
+connectorx==0.4.2         # Fast CSV/DB reading for Polars
+
+# --- AI / LLM Agent Framework ---
+langchain==0.3.25         # Core LangChain framework
+langchain-anthropic==0.3.18  # Claude API integration
+langgraph==0.4.1          # Stateful agent orchestration graphs
+pydantic==2.11.1          # Structured output validation
+
+# --- Anthropic SDK ---
+anthropic==0.60.0         # Direct Claude API access (compatible with langchain-anthropic)
+
+# --- Configuration & Environment ---
+python-dotenv==1.1.0      # .env file loading
+pyyaml==6.0.2             # YAML config parsing
+
+# --- Logging & Monitoring ---
+loguru==0.7.3             # Better logging
+
+# --- Testing ---
+pytest==8.3.5
+pytest-cov==6.1.1
+
+# --- Dev / Notebook ---
+ipykernel==6.29.5         # Jupyter kernel
+rich==14.0.0              # Pretty console output
+pypdf==5.1.0              # PDF parsing support

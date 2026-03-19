@@ -1,0 +1,160 @@
+metadata:
+  tbm_version: 5.0.1 (July 2025)
+  source_document: 'TBM Taxonomy: Version 5.0.1 (July 2025)'
+cost_pools:
+- name: Staffing
+  description: Includes salaries, benefits, and other costs associated with internal personnel (e.g. employee,
+    temporary employee, intern), Time & Material contractor, and staff augmentation resources delivering
+    or supporting technology services. Excludes consultant and managed service resources.
+  opex_sub_pools:
+  - name: Internal Labor
+    description: Costs for internal labor (e.g. employees, temporary employees, interns). Includes salaries,
+      benefits, occupancy, travel, training, new hire investigation, office furniture, supplies, janitorial
+      services, and any other internal labor related expenses.
+  - name: Staff Augmentation
+    description: Costs for staff augmentation and Time & Material contractor resources. Includes fees,
+      travel, training, and any other staff augmentation related expenses. Excludes occupancy, office
+      furniture, supplies, and janitorial services.
+  - name: Other Operating
+    description: Other labor headcount expenses that cannot qualify for another Cost Sub Pool or insufficient
+      details are available to determine.
+  capex_sub_pools:
+  - name: Internal Labor Capital
+    description: Capitalized internal labor costs related to technology services and project delivery.
+  - name: Staff Augmentation Capital
+    description: Capitalized costs for external labor services unrelated to headcount, supporting specific
+      projects or initiatives.
+- name: Outside Services
+  description: Expenses for external personnel providing technology services that do not contribute to
+    organizational headcount. Includes consulting and managed services engaged for specific projects,
+    operations, or support functions, excluding staff augmentation and Time & Material contractors.
+  opex_sub_pools:
+  - name: Consulting
+    description: Costs for external consulting services, including project-based engagements and advisory
+      support.
+  - name: Managed Services
+    description: Managed service provider costs for specific operations or project-related activities.
+  - name: Other Operating
+    description: Other labor expenses that cannot qualify for another Cost Sub Pool or insufficient details
+      are available to determine.
+  capex_sub_pools:
+  - name: Capital
+    description: Capitalized costs for external labor services unrelated to headcount, supporting specific
+      projects or initiatives.
+- name: Cloud Services
+  description: A category for all public, private, and hybrid cloud services, including IaaS and PaaS,
+    supporting enterprise technology infrastructure and applications. Excludes SaaS, which is categorized
+    in the "Software & SaaS" Cost Pool.
+  opex_sub_pools:
+  - name: Cloud Service Provider
+    description: External public cloud expenses, including IaaS and PaaS. Excludes SaaS, which is categorized
+      under the "Software & SaaS" Cost Pool.
+  - name: Other Operating
+    description: Other cloud services expenses that cannot qualify for another Cost Sub Pool or insufficient
+      details are available to determine.
+  capex_sub_pools:
+  - name: Capital
+    description: Capitalized cloud services expenses.
+- name: Hardware
+  description: Includes all physical technology assets such as servers, PCs, storage arrays, network appliances,
+    mobile devices, IP phones, and printers. Excludes property, office space, raised floor facilities,
+    and infrastructure components like racks.
+  opex_sub_pools:
+  - name: Lease
+    description: Leasing costs for hardware, including payment structures for equipment acquired through
+      leasing agreements.
+  - name: Maintenance & Support
+    description: Costs associated with maintaining and supporting hardware, including repairs and warranty
+      services.
+  - name: Depreciation & Amortization
+    description: Depreciation and amortization of capitalized hardware investments.
+  - name: Managed Services
+    description: Managed service provider costs related to hardware operations and maintenance.
+  - name: Other Operating
+    description: Other hardware expenses that cannot qualify for another Cost Sub Pool or insufficient
+      details are available to determine.
+  capex_sub_pools:
+  - name: Capital
+    description: Capitalized hardware expenses.
+- name: Software & SaaS
+  description: Includes the licensing, maintenance, support, and SaaS costs for all software, including
+    operating systems, middleware, databases, and applications.
+  opex_sub_pools:
+  - name: Licensing
+    description: Costs for software licenses and renewals. Excludes SaaS, maintenance, and support services.
+  - name: Maintenance & Support
+    description: Expenses for maintaining and supporting software, including updates and patches for existing
+      licenses.
+  - name: Depreciation & Amortization
+    description: Depreciation and amortization of capitalized software costs over their accounting life.
+  - name: SaaS
+    description: Expenses for software provided as a service (SaaS), including cloud-hosted solutions.
+  - name: Other Operating
+    description: Other software and SaaS expenses that cannot qualify for another Cost Sub Pool or insufficient
+      details are available to determine.
+  capex_sub_pools:
+  - name: Capital
+    description: Capitalized software & SaaS expenses.
+- name: Data Center Facilities
+  description: Includes the floor space, power, cooling, and other utilities costs, environmental controls
+    (e.g., fire suppression), power distribution, and other related costs for managing data center facilities.
+    Excludes personnel and hardware components like servers and storage.
+  opex_sub_pools:
+  - name: Lease
+    description: Leasing costs for data center facilities, including rental and associated operational
+      expenses.
+  - name: Maintenance & Support
+    description: Costs associated with maintaining and supporting data center facilities, including repairs
+      and upgrades.
+  - name: Depreciation & Amortization
+    description: Depreciation and amortization of capitalized data center facilities investments.
+  - name: Managed Services
+    description: Costs associated with an external service provider who takes responsibility for managing
+      and maintaining an organization's data center facilities.
+  - name: Other Operating
+    description: Other data center facilities expenses that cannot qualify for another Cost Sub Pool or
+      insufficient details are available to determine.
+  capex_sub_pools:
+  - name: Capital
+    description: Capitalized data center facilities expenses.
+- name: Telecom
+  description: Includes all telecommunications charges, such as leased lines, domestic and international
+    voice (including mobile), MPLS, ISP, and other network connectivity charges. Excludes mobile devices,
+    IP phones, and related hardware expenses supported via the Hardware pool.
+  opex_sub_pools:
+  - name: Lease
+    description: Leasing costs for telecom infrastructure, including circuits and related equipment.
+  - name: Maintenance & Support
+    description: Expenses for maintaining and supporting telecom infrastructure, including repairs and
+      upgrades.
+  - name: Depreciation & Amortization
+    description: Depreciation and amortization of capitalized telecom assets over their accounting life.
+  - name: Managed Services
+    description: Managed service provider costs for telecom-related services.
+  - name: Other Operating
+    description: Other telecom expenses that cannot qualify for another Cost Sub Pool or insufficient
+      details are available to determine.
+  capex_sub_pools:
+  - name: Capital
+    description: Capitalized telecom expenses (including capitalized telecom equipment and telecom infrastructure
+      investments).
+- name: Misc Costs
+  description: Miscellaneous or non-standard expenses that do not fit within other defined cost pools,
+    covering irregular or undefined expenditures.
+  opex_sub_pools:
+  - name: Managed Services
+    description: Managed service provider costs unrelated to any other Cost Pool.
+  - name: Other Operating
+    description: Miscellaneous or non-standard expenses that cannot qualify for another Cost Sub Pool
+      or insufficient details are available to determine.
+  capex_sub_pools:
+  - name: Capital
+    description: Capitalized costs unrelated to any other Cost Pool.
+- name: Cross Charges
+  description: Costs incurred from other internal groups (eg HR, finance, facilities, and other Technology
+    groups).
+  opex_sub_pools:
+  - name: By Internal Department
+    description: Costs incurred from other internal groups (e.g. HR, finance, facilities, and other Technology
+      groups).
+  capex_sub_pools: []

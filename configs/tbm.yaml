@@ -1,0 +1,145 @@
+# ============================================
+# TBM Classification Engine - Configuration
+# ============================================
+
+pipeline:
+  batch_size: 50
+  max_retries: 3
+  confidence_threshold: 0.7    # Flag for human review below this
+
+taxonomy_extractor:
+  pdf: "tbm_v5.pdf"
+  pages: "7-11"
+  output: "data/output/tbm_taxonomy.yaml"
+
+tower_extractor:
+  pdf: "tbm_v5.pdf"
+  pages: "12-20"
+  output: "data/output/tbm_towers.yaml"
+
+tower_classifier:
+  subprograms: "data/processed/subprogram.csv"
+  towers: "data/output/tbm_towers.yaml"
+  output: "data/output/tower_classifications.yaml"
+  csv: "data/output/tower_classifications.csv"
+  model: "claude-sonnet-4-20250514"
+
+# -------------------------------------------------
+# Deterministic Mapping: Subobject Code → Cost Pool
+# Expand this as you profile the data
+# -------------------------------------------------
+cost_pool_mappings:
+  # Software
+  "Software Licenses": "Software"
+  "Software Maintenance": "Software"
+  "Software Subscriptions": "Software"
+  "Cloud Computing Services": "Software"
+  "SaaS Subscriptions": "Software"
+
+  # Hardware
+  "Data Processing Equipment": "Hardware"
+  "Computer Equipment": "Hardware"
+  "Network Equipment": "Hardware"
+  "Servers": "Hardware"
+  "Storage Devices": "Hardware"
+
+  # Internal Labor
+  "IT Salaries": "Internal Labor"
+  "IT Wages": "Internal Labor"
+
+  # External Labor
+  "IT Consulting": "External Labor"
+  "IT Contractual Services": "External Labor"
+  "Systems Integration Services": "External Labor"
+
+  # Telecom
+  "Telecommunications": "Telecom"
+  "Telephone Services": "Telecom"
+  "Data Circuits": "Telecom"
+  "Internet Services": "Telecom"
+
+  # Facilities & Overhead
+  "Data Center Lease": "Facilities"
+  "Data Center Utilities": "Facilities"
+
+# -------------------------------------------------
+# IT Tower Taxonomy (TBM Standard)
+# Used by LLM agents for classification
+# -------------------------------------------------
+it_towers:
+  - "End User / Client"
+  - "Application"
+  - "Compute"
+  - "Storage"
+  - "Network"
+  - "Security"
+  - "Data / Database"
+  - "IT Management"
+  - "Communication / Collaboration"
+  - "Platform"
+
+# -------------------------------------------------
+# Known IT Agencies (Fast-Track → is_it_related=True)
+# -------------------------------------------------
+known_it_agencies:
+  - agency_code: "F50"
+    name: "Department of Information Technology (DoIT)"
+  - agency_code: "F10"
+    name: "Major Information Technology Development Fund"
+
+# -------------------------------------------------
+# Keyword Sieve for Shadow IT Detection
+# Regex patterns applied to non-IT agency rows
+# -------------------------------------------------
+shadow_it_keywords:
+  high_confidence:
+    - "\\bcyber\\w*\\b"
+    - "\\bsoftware\\b"
+    - "\\bcloud\\b"
+    - "\\bSaaS\\b"
+    - "\\bdatabase\\b"
+    - "\\bdata center\\b"
+    - "\\bIT\\b"
+    - "\\binformation technology\\b"
+
+  medium_confidence:
+    - "\\bserver\\b"
+    - "\\bnetwork\\b"
+    - "\\bsystem\\b"
+    - "\\bapplication\\b"
+    - "\\bdigital\\b"
+    - "\\bautomation\\b"
+    - "\\belectronic\\b"
+    - "\\btechnology\\b"
+    - "\\bERP\\b"
+    - "\\bRPA\\b"
+    - "\\bAI\\b"
+    - "\\bmachine learning\\b"
+
+  low_confidence:
+    - "\\bplatform\\b"
+    - "\\bmoderniz\\w*\\b"
+    - "\\bupgrade\\b"
+    - "\\bintegrat\\w*\\b"
+    - "\\bportal\\b"
+    - "\\bhelp desk\\b"
+
+# -------------------------------------------------
+# Agent Routing Rules
+# -------------------------------------------------
+agent_routing:
+  functional_analyst:
+    description: "Known IT, unknown tower"
+    trigger: "is_it_related == True AND tbm_it_tower == null"
+
+  contextual_gatekeeper:
+    description: "Generic accounting code, needs program context"
+    trigger: "cost_pool in ['Internal Labor', 'External Labor', 'Other'] AND is_it_related == null"
+
+  hierarchical_context:
+    description: "Parent description conflicts with subprogram"
+    trigger: "description_mismatch_flag == True"
+
+  shadow_it_skeptic:
+    description: "Non-IT agency with tech keyword hit"
+    trigger: "agency not in known_it_agencies AND keyword_hit == True"
