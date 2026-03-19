@@ -29,7 +29,8 @@ data/output/*
 
 # Jupyter
 .ipynb_checkpoints/
-*.ipynb
+# Include notebooks in repo, exclude only checkpoints
+!*.ipynb
 
 # Logs
 logs/*.log
