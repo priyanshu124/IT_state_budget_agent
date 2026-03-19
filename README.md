@@ -153,7 +153,7 @@ Source artifacts:
 Key added fields:
 
 1. `cost_pool`
-2. `opex_cost_post`
+2. `cost_sub_post`
 
 Join key used:
 
@@ -175,10 +175,8 @@ Key classification fields produced by agent:
 
 Additional context fields emitted in classification output:
 
-1. `subprogram_code`
-2. `subprogram_name`
-3. `agency_name`
-4. `it_designation`
+5. `is_it`
+6. `it_designation` # F50, MITDP, ITIF
 
 Join key used:
 
@@ -197,7 +195,9 @@ Most important added analytical fields in final enriched output:
 2. `sub_tower`
 3. `confidence`
 4. `cost_pool`
-5. `opex_cost_post`
+5. `cost_sub_post`
+6. `is_it`
+7. `it_designation` # F50, MITDP, ITIF
 
 ## 7) Logging and Token Usage
 
@@ -245,9 +245,7 @@ If `.\.venv\Scripts\activate` fails, run commands with explicit interpreter path
 3. Use `notebooks/explore.ipynb` for final data joins and ad hoc QA.
 4. Check `logs/` after every run for token usage and failure context.
 
-## 10) Suggested Next Improvements
+## 10) Next Steps
 
-1. Add a single orchestrator command that runs pipeline + all agents in sequence.
-2. Add tests for notebook join logic by moving joins into reusable Python functions.
-3. Normalize all CLI modules to fully config-driven defaults and consistent command names.
-4. Add schema checks for final enriched output (columns, null rates, key uniqueness).
+1. Currently: only tose whcih we know are IT programs like F50, MITDP, ITIF have been enriched.
+Pending: enriching programs that are IT inside different agencies
