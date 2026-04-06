@@ -18,7 +18,7 @@ tower_extractor:
   output: "data/output/tbm_towers.yaml"
 
 tower_classifier:
-  subprograms: "data/processed/subprogram.csv"
+  subprograms: "data/processed/subprograms.csv"
   towers: "data/output/tbm_towers.yaml"
   output: "data/output/tower_classifications.yaml"
   csv: "data/output/tower_classifications.csv"

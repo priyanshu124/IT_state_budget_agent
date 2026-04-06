@@ -39,11 +39,11 @@ logs/*.log
 .DS_Store
 Thumbs.db
 
-# Large generated artifacts (exclude from git)
-data/enriched/*
-!data/enriched/.gitkeep
-dbt-sql/*.duckdb
-dbt-sql/logs/*
-dbt-sql/target/*
-mbtsa_work.duckdb
-dashboard/.evidence/template/static/data/mbtsa/**/*.parquet
+/data/
+# Large binaries and generated artifacts
+*.duckdb
+*.parquet
+data/enriched/*.csv
+dashboard/build/_app/immutable/**/*.js
+dashboard/build/_app/immutable/workers/*.js
+dbt-sql/dbt_packages/**

@@ -1,0 +1,352 @@
+VALID TBM Resource Towers and Sub-Towers (use ONLY these exact names):
+[Infrastructure]
+  Data Center
+    - Enterprise Data Center
+    - Other Facilities
+  Storage
+    - Online Storage
+    - Offline Storage
+    - Mainframe Online Storage
+    - Mainframe Offline Storage
+    - AI Storage
+  Compute
+    - Servers
+    - Converged Infrastructure
+    - High Performance Compute
+    - Mainframe
+    - AI Compute
+    - Quantum
+    - Serverless
+    - Auto-Scalers
+  Network
+    - LAN
+    - WAN
+    - Voice & Collaboration
+    - AI Network
+    - Network Management
+[Application]
+  Application
+    - Development
+    - Support & Operations
+    - Licensing
+    - Middleware
+    - Mainframe Middleware
+    - Container Orchestration
+    - Blockchain & Tokenization
+    - AI Models
+  Data
+    - Data Operations
+    - Data Management
+    - Mainframe Database
+    - Database
+[Operations]
+  Delivery
+    - Service Management
+    - Client Management
+    - Operations Center
+    - Tech Portfolio & Project Management
+    - Central Print
+  Tech Management
+    - Tech Management & Strategy
+    - Tech Finance
+    - Enterprise Architecture
+    - Tech Vendor Management
+    - Tech Human Capital Management
+  Security
+    - Digital Security
+    - Identity & Access Governance
+  Risk & Compliance
+    - Regulatory & Audit
+    - Risk Management
+    - Disaster Recovery
+[Field & Office]
+  Smart Devices
+    - Intelligent Devices
+    - Industrial & Control Systems
+  End User
+    - Workspace
+    - Mobile Devices
+    - Network Printers
+    - Conferencing & AV
+    - Help Desk
+    - Deskside Support
+
+---
+
+Classify each subprogram below.
+
+MITDP/ITIF format (3 fields): code|subprogram_name|agency_name -> classify directly
+F50/DoIT format (5 fields): code|subprogram_name|agency_name|program_name|description -> classify directly
+SHADOW_IT format (6 fields): code|subprogram_name|agency_name|program_name|description|shadow_it_reason -> validate first, then classify or reject
+
+Output format (always 4 fields):
+  Confirmed IT: code|tower|sub_tower|confidence
+  Not IT:       code|NOT_IT||
+
+C00_A00_09_B009|Judicial Information Systems|Judiciary|Judicial Information Systems|The Judicial Information Systems Department of the Administrative Office of the Courts is responsible for the administration and operation of the Judi|{"signal": "keyword+spend_ratio", "it_ratio": 0.5393249262757901, "it_spend": 281077437.0, "total_spend": 521165300.0, "keyword_match": "information systems", "it_codes_used": ["0304", "0858", "1115", "1006", "0809", "0930", "0301", "0898", "0854", "0397", "1106", "0306", "1031", "1131", "0882", "0302"]}
+C00_A00_09_D009|Land Record Operations|Judiciary|Judicial Information Systems|The Judicial Information Systems Department of the Administrative Office of the Courts is responsible for the administration and operation of the Judi|{"signal": "keyword+spend_ratio", "it_ratio": 0.2258507343506596, "it_spend": 12292300.0, "total_spend": 54426655.0, "keyword_match": "information systems", "it_codes_used": ["1031", "0898", "1006", "1131", "0858", "0809", "0854"]}
+C00_A00_12_T001|Case Management Modernization|Judiciary
+C00_A00_12_T014|Courthouse eReadiness|Judiciary
+C00_A00_12_T016|Cyber Security|Judiciary
+C00_A00_12_T018|Attorney Information Systems (AIS)|Judiciary
+C00_A00_12_T019|Case Service V2|Judiciary
+C00_A00_12_T020|VOIP|Judiciary
+C00_A00_12_T021|Infrastructure Initiative|Judiciary
+C00_A00_12_T022|Data Warehousing and Analytics|Judiciary
+C00_A00_12_T023|Case Notification|Judiciary
+C00_A00_12_T024|Mobile Courthouse|Judiciary
+C00_A00_12_T025|Cashiering Upgrade|Judiciary
+C00_A00_12_T070|Attorney Information System (AIS) Enhancements|Judiciary
+C00_A00_12_T071|Digital Evidence|Judiciary
+C00_A00_12_T072|Enterprise Content|Judiciary
+C00_A00_12_T073|eBar|Judiciary
+C00_A00_12_T074|Guardianship System|Judiciary
+C00_A00_12_T075|VOIP – Enterprise Deployment Phase II|Judiciary
+C00_A00_12_T076|Network Redesign|Judiciary
+C00_A00_12_T077|Enterprise Financial /HR System|Judiciary
+C00_A00_12_T078|Information Security|Judiciary
+C00_A00_12_T080|Statewide Maryland Automated Record Tracking (SMART) System Replacement|Judiciary
+C00_A00_12_T081|Case Management Optimization|Judiciary
+C00_A00_12_T082|Infrastructure Modernization|Judiciary
+C98_F00_02_1000|Major Information Technology Development Projects|Workers' Compensation Commission
+D23_A01_01_1120|Operations|Maryland Cannabis Administration|General Administration|General Administration contains the offices critical to providing a safe and equitable cannabis program in the State. Key functions include the issuan|{"signal": "keyword+spend_ratio", "it_ratio": 0.18311900742141304, "it_spend": 3600663.0, "total_spend": 19662967.0, "keyword_match": "development", "it_codes_used": ["1115", "0808", "1133", "0301", "0306", "0863", "0864", "1015", "0397", "0809", "1033", "0303", "0862", "1113"]}
+D38_I01_03_1500|Major Information Technology Election Management System|State Board of Elections
+D38_I01_03_1600|2022 Pollbook Project|State Board of Elections
+D38_I01_03_1700|MDCRIS|State Board of Elections
+D38_I01_03_1800|Voting System Solution|State Board of Elections
+D38_I01_03_1900|VREAM|State Board of Elections
+D50_H01_03_3400|Army Telecommunications|Military Department|Army Operations and Maintenance|This program operates and maintains 31 readiness centers in 16 counties and Baltimore City.  These readiness centers are used by the Maryland Army Nat|{"signal": "keyword+spend_ratio", "it_ratio": 0.9070568748689204, "it_spend": 1310455.0, "total_spend": 1444733.0, "keyword_match": "telecommunications", "it_codes_used": ["0306", "0302", "0304"]}
+D78_Y01_02_Y201|Major Information Technology Development Projects|Maryland Health Benefit Exchange|Information Technology Operations|This program includes all expenses to operate, maintain, develop, enhance and support the "Maryland Health Connection" Websites, "EnrollMHC" Mobile A|{"signal": "keyword+spend_ratio", "it_ratio": 0.1615804072712309, "it_spend": 58355381.0, "total_spend": 361153818.0, "keyword_match": "information technology", "it_codes_used": ["0864", "1133", "1033", "1199", "0863", "1099", "1131", "0303", "0809", "1115"]}
+D80_Z01_02_1300|Enterprise Case Management System|Maryland Insurance Administration
+E00_A04_02_0431|Integrated Tax System|Comptroller of Maryland
+E00_A10_02_1011|Comptroller Information Technology Services|Comptroller of Maryland|Comptroller Information Technology Services|The Comptroller IT Services - Information Technology Division is responsible for the overall management and direction of the information technology ef|{"signal": "keyword+spend_ratio", "it_ratio": 0.4690369973483147, "it_spend": 124751409.0, "total_spend": 265973494.0, "keyword_match": "information technology", "it_codes_used": ["0808", "0306", "1036", "0862", "1033", "0930", "0882", "0302", "1132", "0863", "0864", "0932", "1136", "0397", "0301", "0854", "0850", "1032", "0869", "0849", "0858", "0933", "1015", "0809", "1099"]}
+E00_A10_03_1031|Integrated Tax System- ITS – Compass|Comptroller of Maryland
+E20_B01_02_1800|Major Information Technology Development Projects|State Treasurer's Office
+E50_C00_04_4100|Information Technology|State Department of Assessments and Taxation|Office of Information Technology|The Office of Information Technology is responsible for the overall management and direction of the Department's information technology efforts. The p|{"signal": "keyword+spend_ratio", "it_ratio": 0.3918064490910931, "it_spend": 10725345.0, "total_spend": 27374090.0, "keyword_match": "information technology", "it_codes_used": ["0861", "0890", "1102", "0808", "0399", "0862", "0306", "0397", "0802", "0809", "0933", "1136", "1115", "0302", "1036", "0863", "1199", "1015", "0301", "0864", "0858", "0882", "1033", "0930"]}
+E50_C00_09_9200|Information Technology Special Project|State Department of Assessments and Taxation
+F50_A01_01_C801|Case Management Replacement|Department of Information Technology
+F50_A01_01_C811|Case Management and Document Management|Department of Information Technology
+F50_A01_01_D151|Enterprise Grants Management Solution|Department of Information Technology
+F50_A01_01_D383|Agency Election Management System Modernization|Department of Information Technology
+F50_A01_01_D384|2022 Pollbook Project|Department of Information Technology
+F50_A01_01_D385|2026 New Voting System|Department of Information Technology
+F50_A01_01_D386|Campaign Reporting Information System (CRIS)|Department of Information Technology
+F50_A01_01_D387|Statewide Pollbook Modernization (SPM)|Department of Information Technology
+F50_A01_01_D388|Voter Registration Election Administration Management System|Department of Information Technology
+F50_A01_01_D531|MIEMSS Communications System Upgrade|Department of Information Technology
+F50_A01_01_E003|Integrated Tax System (ITS)|Department of Information Technology
+F50_A01_01_E004|CPB Payroll System Modernization (PSM)|Department of Information Technology
+F50_A01_01_E005|Financial Management Information System (FMIS)|Department of Information Technology
+F50_A01_01_E201|Financial Systems Modernization|Department of Information Technology
+F50_A01_01_E502|Strategic Enterprise Application Network (SEAN)|Department of Information Technology
+F50_A01_01_E503|Maryland Assessment Administration and Valuation System (MAAVS) Modernization|Department of Information Technology
+F50_A01_01_F009|Enterprise Solutions Planning Initiative|Department of Information Technology
+F50_A01_01_F010|Statewide Voice Over IP|Department of Information Technology
+F50_A01_01_F013|eMaryland Marketplace|Department of Information Technology
+F50_A01_01_F014|ONE Portal|Department of Information Technology
+F50_A01_01_F015|Migration of the Cloud Data Center|Department of Information Technology
+F50_A01_01_F017|Network Maryland 100G Backbone Upgrade|Department of Information Technology
+F50_A01_01_F018|Enterprise Geographic Information System|Department of Information Technology
+F50_A01_01_F020|Remote Workforce Enablement|Department of Information Technology
+F50_A01_01_F101|DBM Financial Management Information System (FMIS)|Department of Information Technology
+F50_A01_01_F102|Capital Budgeting Information System|Department of Information Technology
+F50_A01_01_F103|Fleet Management System Replacement|Department of Information Technology
+F50_A01_01_F500|Major Information Technology Projects|Department of Information Technology
+F50_A01_01_F503|Maryland Enterprise Web Strategy.|Department of Information Technology
+F50_A01_01_F504|Statewide Permitting Platform|Department of Information Technology
+F50_A01_01_F505|Discovery|Department of Information Technology
+F50_A01_01_F506|Oversight Operations|Department of Information Technology
+F50_A01_01_F507|Oversight Staffing|Department of Information Technology
+F50_A01_01_F508|Intervention|Department of Information Technology
+F50_A01_01_F509|Expedited Projects|Department of Information Technology
+F50_A01_01_H001|Maryland Marketplace (eMMA) eProcurement Solution|Department of Information Technology
+F50_A01_01_H002|DGS Operations Center|Department of Information Technology
+F50_A01_01_H003|AS400 Replacement|Department of Information Technology
+F50_A01_01_K002|DNR Modernization and OneStop Integration Project|Department of Information Technology
+F50_A01_01_K003|DNR Park Replacement|Department of Information Technology
+F50_A01_01_L001|MDA Digitization and Modernization Project|Department of Information Technology
+F50_A01_01_L002|MDA Digitization and Modernization Project|Department of Information Technology
+F50_A01_01_M001|MDH Voice and Data Modernization (VOIP)|Department of Information Technology
+F50_A01_01_M002|MDH Covidlink|Department of Information Technology
+F50_A01_01_M003|Enterprise Licensing and Regulatory Management Solution (LRMS)|Department of Information Technology
+F50_A01_01_M010|Long Term Supports and Services|Department of Information Technology
+F50_A01_01_M011|Computerized Hospital Record and Information System|Department of Information Technology
+F50_A01_01_M012|Medicaid Management Information System II|Department of Information Technology
+F50_A01_01_M013|Integrated Electronic Vital Records Registration System|Department of Information Technology
+F50_A01_01_M014|Migrate MDH HQ Data Center to the Cloud|Department of Information Technology
+F50_A01_01_M015|Bed Registry and Referral System|Department of Information Technology
+F50_A01_01_M016|OPER System Integration and Modernization|Department of Information Technology
+F50_A01_01_M017|(MDH) Maryland AIDS Drug Assistance Program (MADAP) Program Case Management System|Department of Information Technology
+F50_A01_01_M018|Non-Medicaid Case Management (CRM) Modernization|Department of Information Technology
+F50_A01_01_M019|PHS Data Modernization Program|Department of Information Technology
+F50_A01_01_M020|MMT - Decision Support and Enterprise Data Warehouse|Department of Information Technology
+F50_A01_01_M021|MMT - EDI Gateway|Department of Information Technology
+F50_A01_01_M022|MMT - Hospice And Maryland Daycare Enrollment|Department of Information Technology
+F50_A01_01_M023|MMT - Non Emergency Medical Transportation (NEMT)|Department of Information Technology
+F50_A01_01_M024|MMT - Provider Management Module|Department of Information Technology
+F50_A01_01_M025|MMT - Surveillance Utilization Review Subsystem|Department of Information Technology
+F50_A01_01_M026|Pharmacy Point-of-Sale Electronic Claims Management System|Department of Information Technology
+F50_A01_01_M027|Statewide Electronic Health Records (EHR) system|Department of Information Technology
+F50_A01_01_M028|MMT - Business Process Reengineering and Consolidated CRM|Department of Information Technology
+F50_A01_01_M029|MMT - CMS Interoperability Rule|Department of Information Technology
+F50_A01_01_N007|Automated Financial Systems|Department of Information Technology
+F50_A01_01_N008|Shared Human Services Platform|Department of Information Technology
+F50_A01_01_P001|Electronic Licensing Modernization (ELMo)|Department of Information Technology
+F50_A01_01_P002|LABOR Omni-channel Contact Center System (LOCCS)|Department of Information Technology
+F50_A01_01_Q005|Computerized Criminal History (CCH) Replacement (Phase II)|Department of Information Technology
+F50_A01_01_Q007|Electronic Medical Records System Project|Department of Information Technology
+F50_A01_01_Q008|Maryland Automated Fingerprint Identification System|Department of Information Technology
+F50_A01_01_R001|Maryland Direct Certification System|Department of Information Technology
+F50_A01_01_R002|MSDE Replacement Educator Information System (REIS)|Department of Information Technology
+F50_A01_01_R003|MSDE IAC Business Management System (IBMS)|Department of Information Technology
+F50_A01_01_R621|New Unified Financial Aid System for Higher Education ( or MDCAPS 2.0)|Department of Information Technology
+F50_A01_01_U001|Environmental Permit Tracking System Modernization|Department of Information Technology
+F50_A01_01_U002|Lead Rental Certification and Accreditation Project|Department of Information Technology
+F50_A01_01_U003|MDE Portal Project|Department of Information Technology
+F50_A01_01_U004|MDE - MITDP Determination For Wells and Septic Portal|Department of Information Technology
+F50_A01_01_V005|DJS - ASSIST|Department of Information Technology
+F50_A01_01_W004|Automated Licensing and Registration Tracking System|Department of Information Technology
+F50_B04_01_A401|Attorney General|Department of Information Technology|State Chief of Information Technology|This office plans the effective and coordinated use of information technology. It provides information technology policy direction for the Executive B
+F50_B04_01_B401|Administration|Department of Information Technology|State Chief of Information Technology|This office plans the effective and coordinated use of information technology. It provides information technology policy direction for the Executive B
+F50_B04_01_C401|Communication|Department of Information Technology|State Chief of Information Technology|This office plans the effective and coordinated use of information technology. It provides information technology policy direction for the Executive B
+F50_B04_01_D401|Cybersecurity Assessments|Department of Information Technology|State Chief of Information Technology|This office plans the effective and coordinated use of information technology. It provides information technology policy direction for the Executive B
+F50_B04_01_E401|Enterprise Program Management|Department of Information Technology|State Chief of Information Technology|This office plans the effective and coordinated use of information technology. It provides information technology policy direction for the Executive B
+F50_B04_01_F401|MD Digital Service (MDDS)|Department of Information Technology|State Chief of Information Technology|This office plans the effective and coordinated use of information technology. It provides information technology policy direction for the Executive B
+F50_B04_01_G401|AI INNOVATION|Department of Information Technology|State Chief of Information Technology|This office plans the effective and coordinated use of information technology. It provides information technology policy direction for the Executive B
+F50_B04_02_A402|GOVERNANCE, RISK and COMPLIANCE|Department of Information Technology|Security|The Security program provides for a preventive approach to protecting State of Maryland public and confidential information and avoiding cybersecurity
+F50_B04_02_B402|OFFICE OF SECURITY MGMT|Department of Information Technology|Security|The Security program provides for a preventive approach to protecting State of Maryland public and confidential information and avoiding cybersecurity
+F50_B04_02_C402|CYBER RESILIENCE|Department of Information Technology|Security|The Security program provides for a preventive approach to protecting State of Maryland public and confidential information and avoiding cybersecurity
+F50_B04_02_D402|CYBER INITIATIVES|Department of Information Technology|Security|The Security program provides for a preventive approach to protecting State of Maryland public and confidential information and avoiding cybersecurity
+F50_B04_02_E402|STATE CYBERSECURITY|Department of Information Technology|Security|The Security program provides for a preventive approach to protecting State of Maryland public and confidential information and avoiding cybersecurity
+F50_B04_02_F402|LOCAL CYBERSECURITY|Department of Information Technology|Security|The Security program provides for a preventive approach to protecting State of Maryland public and confidential information and avoiding cybersecurity
+F50_B04_02_G402|STATE PRIVACY PROGRAM|Department of Information Technology|Security|The Security program provides for a preventive approach to protecting State of Maryland public and confidential information and avoiding cybersecurity
+F50_B04_03_A403|Financial Management Information Systems|Department of Information Technology|Application Systems Management|The Application Systems Management Division supports more than 48,000 customers of the statewide finance, procurement, and human resource applications
+F50_B04_03_B403|Database Administration|Department of Information Technology|Application Systems Management|The Application Systems Management Division supports more than 48,000 customers of the statewide finance, procurement, and human resource applications
+F50_B04_03_C403|Enterprise Data Strategy|Department of Information Technology|Application Systems Management|The Application Systems Management Division supports more than 48,000 customers of the statewide finance, procurement, and human resource applications
+F50_B04_03_E403|ITSM|Department of Information Technology|Application Systems Management|The Application Systems Management Division supports more than 48,000 customers of the statewide finance, procurement, and human resource applications
+F50_B04_03_G403|Platforms|Department of Information Technology|Application Systems Management|The Application Systems Management Division supports more than 48,000 customers of the statewide finance, procurement, and human resource applications
+F50_B04_04_A404|Hosting|Department of Information Technology|Infrastructure|The Infrastructure Division is responsible for the State telecommunications high-speed network, a shared resource providing affordable and cost effect
+F50_B04_04_C404|Network|Department of Information Technology|Infrastructure|The Infrastructure Division is responsible for the State telecommunications high-speed network, a shared resource providing affordable and cost effect
+F50_B04_04_D404|Servers/Storage|Department of Information Technology|Infrastructure|The Infrastructure Division is responsible for the State telecommunications high-speed network, a shared resource providing affordable and cost effect
+F50_B04_04_E404|Voice|Department of Information Technology|Infrastructure|The Infrastructure Division is responsible for the State telecommunications high-speed network, a shared resource providing affordable and cost effect
+F50_B04_05_A405|Contract|Department of Information Technology|Chief of Staff|This program develops, implements, and maintains a statewide oversight program for telecommunications contracts and Major Information Technology Proje
+F50_B04_05_B405|Contract Administration|Department of Information Technology|Chief of Staff|This program develops, implements, and maintains a statewide oversight program for telecommunications contracts and Major Information Technology Proje
+F50_B04_05_C405|Finance|Department of Information Technology|Chief of Staff|This program develops, implements, and maintains a statewide oversight program for telecommunications contracts and Major Information Technology Proje
+F50_B04_05_D405|Technology Business Management Office|Department of Information Technology|Chief of Staff|This program develops, implements, and maintains a statewide oversight program for telecommunications contracts and Major Information Technology Proje
+F50_B04_05_E405|CENTRAL PROJECT MGMT OFFICE|Department of Information Technology|Chief of Staff|This program develops, implements, and maintains a statewide oversight program for telecommunications contracts and Major Information Technology Proje
+F50_B04_06_P008|CUBS REPLACEMENT|Department of Information Technology
+F50_B04_08_A408|Director's Office|Department of Information Technology|Maryland (MD) Benefits|MD Benefits (formerly MD THINK) is a cloud-based Enterprise Services Platform that provides infrastructure, data, and application services to multiple
+F50_B04_08_B408|Shared Platform I|Department of Information Technology|Maryland (MD) Benefits|MD Benefits (formerly MD THINK) is a cloud-based Enterprise Services Platform that provides infrastructure, data, and application services to multiple
+F50_B04_09_B409|TAM|Department of Information Technology|Telecommunications Access of Maryland|The Division, in consultation with the Governor's Advisory Board for Telecommunication Relay, administered the Telecommunications Access of Maryland (
+F50_B04_10_B410|Capital Appropriation|Department of Information Technology|Capital Appropriation|The Capital Appropriation program provides operating budget funds for capital projects in the Department of Information Technology.
+G20_J01_02_4001|G20J0102: Major Information Technology Development Projects|Maryland State Retirement and Pension Systems
+H00_A01_02_1230|Information Technology Funding Support|Department of General Services|Administration|The Office of Administration provides personnel, fiscal and technology support services to the Department's other programs.|{"signal": "keyword+spend_ratio", "it_ratio": 0.12611116374722034, "it_spend": 113140.0, "total_spend": 897145.0, "keyword_match": "information technology", "it_codes_used": ["1034", "0306", "0858", "0882", "0304", "1015", "1115"]}
+H00_H01_01_8830|Federal Surplus Donation Program|Department of General Services|Business Enterprise Administration|The Business Enterprise Administration provides centralized support services for the Department, including information technology, courier and mail, c|{"signal": "keyword+spend_ratio", "it_ratio": 0.227986193861199, "it_spend": 22194.0, "total_spend": 97348.0, "keyword_match": "information technology", "it_codes_used": ["0862", "0808", "0306"]}
+J00_A01_01_2071|Office of Transportation Technology Services|Department of Transportation|Executive Direction|The Secretary's Office establishes overall policy direction, management, and support services for the Department.|{"signal": "keyword+spend_ratio", "it_ratio": 0.47760359453326356, "it_spend": 105289246.0, "total_spend": 220453211.0, "keyword_match": "technology services", "it_codes_used": ["0848", "0304", "1099", "1102", "0898", "1131", "0854", "0302", "0808", "0864", "0809", "1136", "1115", "1199", "0849", "0306", "0861", "0858", "0882"]}
+J00_A01_07_2070|Office of Transportation Technology Services|Department of Transportation|Office of Transportation Technology Services|This program provides the centralized computing and network infrastructure services for the Maryland Department of Transportation. This Office is resp|{"signal": "keyword+spend_ratio", "it_ratio": 0.4937986861298478, "it_spend": 118358255.0, "total_spend": 239689287.0, "keyword_match": "network infrastructure", "it_codes_used": ["1036", "0302", "1031", "1136", "0304", "1199", "0858", "0898", "1102", "0808", "0854", "1099", "0864", "0848", "0809", "0849", "0882", "1131", "0861", "0306"]}
+J00_A01_08_8015|Major Information Technology Development Projects|Department of Transportation
+J00_B01_08_2001|Major Information Technology Development Projects - Coordinated Highways Action Response Team|Department of Transportation
+J00_B01_08_2039|Major Information Technology Development Projects - Consumable Inventory System|Department of Transportation
+J00_B01_08_2043|Major Information Technology Development Projects - 700 MHz Radio Deployment|Department of Transportation
+J00_E00_01_1010|Administration|Department of Transportation|Motor Vehicle Operations|This program is responsible for supplying motor vehicle services to the citizens of Maryland. These services include licensing all non-commercial and|{"signal": "keyword+spend_ratio", "it_ratio": 0.10766779634437323, "it_spend": 53198205.0, "total_spend": 494095791.0, "keyword_match": "licensing", "it_codes_used": ["1019", "0322", "0854", "0925", "1119", "1015", "1136", "0898", "1115", "0861", "1016", "0809", "0302", "1113", "0808", "1013", "1133", "0304", "0301", "1102"]}
+J00_E00_01_1070|Office of Information Technology|Department of Transportation|Motor Vehicle Operations|This program is responsible for supplying motor vehicle services to the citizens of Maryland. These services include licensing all non-commercial and|{"signal": "keyword+spend_ratio", "it_ratio": 0.5408983610068381, "it_spend": 81918458.0, "total_spend": 151448893.0, "keyword_match": "information technology", "it_codes_used": ["1015", "0304", "0864", "0857", "0854", "0848", "0898", "0925", "1115", "0306", "0861", "0302"]}
+J00_E00_08_0688|Major Information Technology Development - Capital (Customer Connect)|Department of Transportation
+J00_H01_08_1333|BUS UNIFIED SYSTEMS ARCHITECTURE (USA)|Department of Transportation
+J00_H01_08_1429|ITP TREASURY FARE COLLECTION ENHANCEMENTS FUND|Department of Transportation
+J00_H01_08_1972|Occupational Health Management System|Department of Transportation
+J00_I00_02_2021|Airport Operations - BWI Operations|Department of Transportation|Airport Operations|This program provides for the operation, maintenance, protection, and development of Baltimore/Washington International Thurgood Marshall Airport as a|{"signal": "keyword+spend_ratio", "it_ratio": 0.14998420573557456, "it_spend": 271338290.0, "total_spend": 1809112424.0, "keyword_match": "development", "it_codes_used": ["0303", "0301", "0858", "1103", "1015", "0864", "1008", "1133", "1002", "0932", "0854", "1108", "1135", "1013", "1119", "1115", "0930", "0808", "1113", "0861", "0302", "0898", "1099", "0809", "1199", "1114", "1102", "0304", "1033", "0862", "1003", "1014", "0306"]}
+K00_A01_07_A143|Park Reservation System|Department of Natural Resources
+K00_A06_01_F050|General Direction|Department of Natural Resources|Licensing and Registration Service|The Licensing and Registration Service is responsible for the collection of special funds from the sale of recreational hunting and fishing licenses,|{"signal": "keyword+spend_ratio", "it_ratio": 0.2655510922358004, "it_spend": 3291138.0, "total_spend": 12393615.0, "keyword_match": "licensing", "it_codes_used": ["1036", "0304", "0809", "0864", "1002", "1033", "0397", "0930", "1015", "0861", "0302", "0858", "0306", "0854"]}
+K00_A06_01_F079|Budget, Fiscal,   Statistical Se|Department of Natural Resources|Licensing and Registration Service|The Licensing and Registration Service is responsible for the collection of special funds from the sale of recreational hunting and fishing licenses,|{"signal": "keyword+spend_ratio", "it_ratio": 0.26997632778684233, "it_spend": 861745.0, "total_spend": 3191928.0, "keyword_match": "licensing", "it_codes_used": ["0301", "0397", "1036", "1015", "0808"]}
+L00_A11_02_1240|Information Technology|Department of Agriculture|Administrative Services|This program provides centralized human resources, administrative, fiscal, and emergency management services to the entire department.|{"signal": "keyword+spend_ratio", "it_ratio": 0.7098097873028844, "it_spend": 517731.0, "total_spend": 729394.0, "keyword_match": "information technology", "it_codes_used": ["0301", "0861", "0302", "1016", "1033", "0862", "0864", "0809"]}
+L00_A11_03_1320|Automotive Services|Department of Agriculture|Central Services|Central Services coordinates the following activities for the agency: building maintenance, motor pool, fleet operations, procurement, inventory, tele|{"signal": "keyword+spend_ratio", "it_ratio": 0.97005444646098, "it_spend": 1069.0, "total_spend": 1102.0, "keyword_match": "telecommunications", "it_codes_used": ["0306"]}
+L00_A14_04_4420|Certification|Department of Agriculture|Pesticide Regulation|This program is responsible for regulating the use, sale, storage and disposal of pesticides, and for licensing businesses and public agencies and cer|{"signal": "keyword+spend_ratio", "it_ratio": 0.15294252869084796, "it_spend": 78508.0, "total_spend": 513317.0, "keyword_match": "licensing", "it_codes_used": ["0854", "0306", "0933", "0302", "0808", "1015", "1033", "0301", "0864"]}
+L00_A14_04_4440|Special Projects|Department of Agriculture|Pesticide Regulation|This program is responsible for regulating the use, sale, storage and disposal of pesticides, and for licensing businesses and public agencies and cer|{"signal": "keyword+spend_ratio", "it_ratio": 0.11827680465459947, "it_spend": 94284.0, "total_spend": 797147.0, "keyword_match": "licensing", "it_codes_used": ["0854", "0301", "0809", "0306", "0864", "0302", "1115"]}
+M00_A01_01_A103|Health Workforce Development|Maryland Department of Health|Executive Direction|The Secretary of the Maryland Department of Health establishes policy regarding health services. Personnel in this program assist the Secretary in the|{"signal": "keyword+spend_ratio", "it_ratio": 0.12460125798348984, "it_spend": 36014.0, "total_spend": 289034.0, "keyword_match": "development", "it_codes_used": ["0864", "0303", "0306", "0863", "1015", "1033", "1115"]}
+M00_A01_02_A281|Network Incident - MDH Ongoing Costs Information Technology SY|Maryland Department of Health|Operations|Operations provides administrative infrastructure and support to the Department. Operations includes the following offices: Budget Management, Fiscal|{"signal": "keyword+spend_ratio", "it_ratio": 0.15808847328775186, "it_spend": 4727933.0, "total_spend": 29906880.0, "keyword_match": "information technology", "it_codes_used": ["0306", "0864", "1133", "0877", "0863", "0397", "1033", "0304", "0301"]}
+M00_A01_02_A282|Network Incident - Public Health Information Technology System|Maryland Department of Health|Operations|Operations provides administrative infrastructure and support to the Department. Operations includes the following offices: Budget Management, Fiscal|{"signal": "keyword+spend_ratio", "it_ratio": 0.2171005561171247, "it_spend": 7162341.0, "total_spend": 32990892.0, "keyword_match": "information technology", "it_codes_used": ["1033", "0863", "0864", "0809", "1031", "1131"]}
+M00_A01_08_A809|Maryland AIDS Drug Assistance Program (MADAP) Program Case Management System|Maryland Department of Health
+M00_A01_08_A811|COVID-Link Supporting Technology for Contact Tracing|Maryland Department of Health
+M00_A01_08_A812|Website Modernization|Maryland Department of Health
+M00_A01_08_A813|Bed Registry and Referral System|Maryland Department of Health
+M00_A01_08_A816|MDH Integrated Electronic Vital Records Registration System|Maryland Department of Health
+M00_A01_08_A817|MDH Integrated Electronic Vital Records Registration System|Maryland Department of Health
+M00_A01_08_A818|COVID Data Modernization|Maryland Department of Health
+M00_B01_03_S110|Information Technology Services|Maryland Department of Health|Office of Health Care Quality|The Office of Health Care Quality (OHCQ) is the agency within the Department that is charged with monitoring the quality of care in Maryland's 15,390|{"signal": "keyword+spend_ratio", "it_ratio": 0.14215922504144846, "it_spend": 754295.0, "total_spend": 5305987.0, "keyword_match": "information technology", "it_codes_used": ["0809", "1033", "1015", "0306", "0397", "0863", "0303", "0841", "1115", "1133", "0864"]}
+M00_F03_01_N306|NEHA RFFM Track 1 Development Base|Maryland Department of Health|Infectious Disease and Environmental Health Services|The Prevention and Health Promotion Administration (PHPA) protects, promotes, and improves the health and well-being of all Marylanders through partne|{"signal": "keyword+spend_ratio", "it_ratio": 0.14528335617662833, "it_spend": 4876.0, "total_spend": 33562.0, "keyword_match": "development", "it_codes_used": ["1033", "0306"]}
+M00_I03_01_HB10|Information Technology|Maryland Department of Health|Services and Institutional Operations|Western Maryland Hospital Center (WMHC), a specialty hospital and comprehensive care facility operated by the State of Maryland, provides a wide range|{"signal": "keyword+spend_ratio", "it_ratio": 0.25913687243398226, "it_spend": 956419.0, "total_spend": 3690787.0, "keyword_match": "information technology", "it_codes_used": ["0397", "0863", "1114", "1102", "0809", "1015", "1002", "1033", "0864", "1133", "1115", "1119"]}
+M00_I04_01_HD10|Information Technology|Maryland Department of Health|Services and Institutional Operations|Deer's Head Hospital Center (DHHC) provides: chronic hospital care and treatment to patients requiring acute rehabilitation, as well as complex medica|{"signal": "keyword+spend_ratio", "it_ratio": 0.2706837689038386, "it_spend": 779615.0, "total_spend": 2880169.0, "keyword_match": "information technology", "it_codes_used": ["1131", "1114", "1033", "1133", "0304", "1015", "1031", "1102", "0809", "0863", "0864"]}
+M00_L05_01_MD10|Information Technology|Maryland Department of Health|Regional Institute for Children and Adolescents-Baltimore|RICA-Baltimore is a mental health residential treatment facility of the Maryland Department of Health located in Baltimore City. This facility serves|{"signal": "keyword+spend_ratio", "it_ratio": 0.2221476335666274, "it_spend": 153879.0, "total_spend": 692688.0, "keyword_match": "information technology", "it_codes_used": ["1002", "0841", "0304", "0863", "1031", "0864", "1015", "0397", "1102"]}
+M00_L08_01_MG04|Telecommunications|Maryland Department of Health|Springfield Hospital Center|Springfield Hospital Center is a state operated psychiatric facility in Carroll County that provides acute, sub-acute, and long term inpatient service|{"signal": "keyword+spend_ratio", "it_ratio": 0.5121907251105267, "it_spend": 1960452.0, "total_spend": 3827582.0, "keyword_match": "telecommunications", "it_codes_used": ["1099", "0864", "1015", "0306", "0863", "1002", "0397", "0303", "1119", "1199", "0808", "1133", "0301", "1019", "0809"]}
+M00_L09_01_MH07|Information Technology Services|Maryland Department of Health|Spring Grove Hospital Center|Spring Grove Hospital Center (SGHC) is a Behavioral Health Administration inpatient psychiatric facility located in Catonsville, Maryland. The facilit|{"signal": "keyword+spend_ratio", "it_ratio": 0.30960507245468294, "it_spend": 1975533.0, "total_spend": 6380816.0, "keyword_match": "information technology", "it_codes_used": ["1015", "1107", "1102", "1033", "1133", "0809", "1002", "0863", "0864", "1031", "0397"]}
+M00_L10_01_MJ07|Information Systems|Maryland Department of Health|Clifton T. Perkins Hospital Center|Clifton T. Perkins Hospital Center (CTPHC) is a state psychiatric hospital. CTPHC receives patients requiring psychiatric evaluation who have been acc|{"signal": "keyword+spend_ratio", "it_ratio": 0.13721441782808091, "it_spend": 667899.0, "total_spend": 4867557.0, "keyword_match": "information systems", "it_codes_used": ["1115", "0303", "0397", "1119", "1102", "1031", "0864", "1108", "0863", "1002", "1019", "1015", "1133", "0809", "1033"]}
+M00_Q01_02_T205|Medicaid Information Systems|Maryland Department of Health|Office of Enterprise Technology - Medicaid|This program develops and maintains a federally certified Medicaid Management Information System (MMIS) to promptly and efficiently pay claims submitt|{"signal": "keyword+spend_ratio", "it_ratio": 0.6334858977139172, "it_spend": 55988425.0, "total_spend": 88381486.0, "keyword_match": "enterprise technology", "it_codes_used": ["0809", "0864", "0841", "0863", "0882", "1033", "1099", "0397", "0304", "0303"]}
+M00_Q01_02_T220|Maryland Kidney Disease Program|Maryland Department of Health|Office of Enterprise Technology - Medicaid|This program develops and maintains a federally certified Medicaid Management Information System (MMIS) to promptly and efficiently pay claims submitt|{"signal": "keyword+spend_ratio", "it_ratio": 0.5649204780303712, "it_spend": 6287.0, "total_spend": 11129.0, "keyword_match": "enterprise technology", "it_codes_used": ["0301", "0882"]}
+M00_Q01_08_T807|Long Term Services and Supports (LTSS) Tracking and In-Home Supports Assurance System (ISAS)-50% FFP|Maryland Department of Health
+M00_Q01_08_T808|In-Home Support Assurances System (ISAS) - 75% Federal Financial Participation (FFP)|Maryland Department of Health
+M00_Q01_08_T809|LTSS Training Activities|Maryland Department of Health
+M00_Q01_08_T810|Modular MMIS Replacement (MMR) Project 90% FFP|Maryland Department of Health
+M00_Q01_08_T811|Modular MMIS Replacement (MMR) Project 75% FFP|Maryland Department of Health
+M00_Q01_08_T812|Modular MMIS Replacement (MMR) Project 50% FFP|Maryland Department of Health
+M00_Q01_08_T818|Business Process Reengineering and Consolidated CRM (BPR) 90/10|Maryland Department of Health
+M00_Q01_08_T819|Business Process Reengineering and Consolidated CRM (BPR) 75/25|Maryland Department of Health
+M00_Q01_08_T821|CMS Interoperability 90/10|Maryland Department of Health
+M00_Q01_08_T822|CMS Interoperability 75/25|Maryland Department of Health
+M00_Q01_08_T827|EandE - Hospice, MDC, 257 Automation  90/10|Maryland Department of Health
+M00_Q01_08_T830|Enterprise Data Platform (DSDW)  90/10|Maryland Department of Health
+M00_Q01_08_T833|PHARMACY-DDI 90/10|Maryland Department of Health
+M00_Q01_08_T836|MES - Core Claims  90/10|Maryland Department of Health
+M00_Q01_08_T839|Dental Administrative Services Organization (DASO)  90/10|Maryland Department of Health
+M00_Q01_08_T842|Electronic Data Interchange (EDI) Gateway 90/10|Maryland Department of Health
+M00_Q01_08_T845|Non-Emergency Medical Transportation (NEMT) 90/10|Maryland Department of Health
+M00_Q01_08_T848|Provider Management Module (PMM) 90/10|Maryland Department of Health
+M00_Q01_08_T851|Utilization Control Agent (UCA) 90/10|Maryland Department of Health
+M00_Q01_08_T852|Utilization Control Agent (UCA) 75/25|Maryland Department of Health
+M00_Q01_08_T854|Program Integrity Solution (SURS) 90/10|Maryland Department of Health
+M00_Q01_08_T863|Behavioral Health Administrative Services Organization (BHASO 2.0) 90/10|Maryland Department of Health
+M00_Q01_08_T864|Behavioral Health Administrative Services Organization (BHASO 2.0) 75/25|Maryland Department of Health
+M00_Q01_08_T869|EVV EVS IVR 90/10, REIMBURSABLE|Maryland Department of Health
+M00_Q01_08_T870|LTSS 90/10, REIMBURSABLE|Maryland Department of Health
+M00_R01_01_U102|The Center for Analysis and Information|Maryland Department of Health|Maryland Health Care Commission|The Maryland Health Care Commission (MHCC) operates to develop and carry out new health policies, including: 1) developing a database on all non-hospi|{"signal": "keyword+spend_ratio", "it_ratio": 0.6386047454324906, "it_spend": 19412111.0, "total_spend": 30397693.0, "keyword_match": "database", "it_codes_used": ["0884", "0841", "0397", "0306"]}
+N00_F00_02_6B09|Enterprise Content Management|Department of Human Services
+N00_F00_02_6B13|Automated Financial System|Department of Human Services
+N00_F00_02_6B17|Shared Platform|Department of Human Services
+N00_F00_02_6B18|Eligibility and Exchange|Department of Human Services
+N00_F00_02_6B19|CCWIS|Department of Human Services
+N00_F00_02_6B20|Child Support Enforcement System (CSES)/Client Information System (CIS) Operations|Department of Human Services
+N00_F00_02_6B21|Voice Over Internet Protocol (VOIP)|Department of Human Services
+N00_F00_02_6B22|COVID-19 Federal Funds|Department of Human Services
+N00_F00_04_6D00|General Administration|Department of Human Services|General Administration|This program is responsible for overall management of information systems in DHS offices statewide including computer and telephone applications, syst|{"signal": "keyword+spend_ratio", "it_ratio": 0.4414368545002532, "it_spend": 31332754.0, "total_spend": 70979017.0, "keyword_match": "information systems", "it_codes_used": ["0301", "0306", "0397", "1131", "0302"]}
+N00_F00_04_6D40|Data Center Services|Department of Human Services|General Administration|This program is responsible for overall management of information systems in DHS offices statewide including computer and telephone applications, syst|{"signal": "keyword+spend_ratio", "it_ratio": 0.34562550576509155, "it_spend": 9592829.0, "total_spend": 27754980.0, "keyword_match": "information systems", "it_codes_used": ["0869", "0882"]}
+N00_F00_04_6D61|Shared Platform|Department of Human Services|General Administration|This program is responsible for overall management of information systems in DHS offices statewide including computer and telephone applications, syst|{"signal": "keyword+spend_ratio", "it_ratio": 0.3087737548254984, "it_spend": 47625192.0, "total_spend": 154239767.0, "keyword_match": "information systems", "it_codes_used": ["1115", "0304", "0301", "0858", "1131", "0306", "0397", "0302", "0869"]}
+N00_F00_04_6D77|Office Systems|Department of Human Services|General Administration|This program is responsible for overall management of information systems in DHS offices statewide including computer and telephone applications, syst|{"signal": "keyword+spend_ratio", "it_ratio": 0.6124363904577823, "it_spend": 80730548.0, "total_spend": 131818666.0, "keyword_match": "information systems", "it_codes_used": ["0809", "0397", "0304", "1031", "0302", "0306", "0858", "1113", "0854", "0882", "1131", "0301"]}
+N00_F00_05_6E00|General Administration|Department of Human Services|Maryland (MD) Benefits|The MD THINK shared platform operator designation was transferred to the Department of Information Technology (F50.B04.08) in FY 2026 and renamed "MD|{"signal": "keyword+spend_ratio", "it_ratio": 0.38836554543095797, "it_spend": 2534098.0, "total_spend": 6525033.0, "keyword_match": "information technology", "it_codes_used": ["0858"]}
+N00_F00_05_6E01|Shared Platform|Department of Human Services|Maryland (MD) Benefits|The MD THINK shared platform operator designation was transferred to the Department of Information Technology (F50.B04.08) in FY 2026 and renamed "MD|{"signal": "keyword+spend_ratio", "it_ratio": 0.38391710229408, "it_spend": 80790546.0, "total_spend": 210437476.0, "keyword_match": "information technology", "it_codes_used": ["0304", "0302", "1131", "0306", "0869", "0397", "0858"]}
+N00_G00_03_7C82|Center for Excellence for Foster Family Development|Department of Human Services|Child Welfare Services|Local departments of social services provide services to prevent or remedy neglect, abuse, or exploitation of children; preserve or rehabilitate famil|{"signal": "keyword+spend_ratio", "it_ratio": 0.22822494891789333, "it_spend": 87569.0, "total_spend": 383696.0, "keyword_match": "development", "it_codes_used": ["0304", "0301", "1015"]}
+P00_F01_01_FA11|General Administration|Maryland Department of Labor|Occupational and Professional Licensing|The Division of Occupational and Professional Licensing administers regulatory programs that govern the practice of 25 occupations and professions in|{"signal": "keyword+spend_ratio", "it_ratio": 0.5105016337926728, "it_spend": 1769172.0, "total_spend": 3465556.0, "keyword_match": "licensing", "it_codes_used": ["1133", "0301", "0302", "0303", "0863"]}
+P00_G01_07_GG50|LMI, Labor Market Information|Maryland Department of Labor|Workforce Development|The Workforce Development offices support the mission of the Division of Workforce Development and Adult Learning (DWDAL) by ensuring businesses have|{"signal": "keyword+spend_ratio", "it_ratio": 0.15376870238520662, "it_spend": 186318.0, "total_spend": 1211677.0, "keyword_match": "development", "it_codes_used": ["0302", "0303", "0858"]}
+P00_H01_02_HB10|Major Information Technology Development Projects|Maryland Department of Labor
+Q00_A01_02_1210|Administration|Department of Public Safety and Correctional Services|Information Technology and Communications Division|The Information Technology and Communications Division (ITCD) provides automated management information services to the Department and other criminal|{"signal": "keyword+spend_ratio", "it_ratio": 0.3704736608666749, "it_spend": 22479011.0, "total_spend": 60676408.0, "keyword_match": "information technology", "it_codes_used": ["1099", "1095", "1015", "1033", "0301", "1199", "0304", "1031", "0809", "0302", "1019", "1102", "0397", "1036", "0808", "1041", "0306"]}
+Q00_A01_02_1220|Criminal Justice Information Systems|Department of Public Safety and Correctional Services|Information Technology and Communications Division|The Information Technology and Communications Division (ITCD) provides automated management information services to the Department and other criminal|{"signal": "keyword+spend_ratio", "it_ratio": 0.36640256721752623, "it_spend": 129930099.0, "total_spend": 354610231.0, "keyword_match": "criminal justice information", "it_codes_used": ["1099", "1034", "1136", "0860", "1015", "1033", "1032", "1019", "1041", "0302", "1107", "0849", "1134", "1036", "0858", "1102", "0306", "1133", "1013", "0397", "1131", "1031", "0864", "1119", "1199", "0863", "0304", "0301", "0854", "0862", "0930", "1002", "0809"]}
+Q00_A01_07_1720|Learning Mgmt System Replacement|Department of Public Safety and Correctional Services
+Q00_A01_07_1731|NICS ACT RECORD IMP PROG 2015-NS-BX-K019|Department of Public Safety and Correctional Services
+Q00_A01_07_1780|Maryland Correctional Enterprises (MCE) Enterprise Resource Planning|Department of Public Safety and Correctional Services
+Q00_A01_07_1781|Maryland Correctional Enterprises (MCE) Enterprise Resource Planning|Department of Public Safety and Correctional Services
+Q00_A01_07_1790|DPSCS - MAFIS|Department of Public Safety and Correctional Services
+Q00_A01_07_1791|MAFIS 2017-RU-BX-K021|Department of Public Safety and Correctional Services
+R00_A01_06_F4XX|Office of Information Technology|State Department of Education|Office of Finance and Operations|This office provides overarching administrative and core services support to the entire Department, such as human resources, procurement and contract|{"signal": "keyword+spend_ratio", "it_ratio": 0.18746974077664752, "it_spend": 17361996.0, "total_spend": 92612258.0, "keyword_match": "information technology", "it_codes_used": ["0882", "1134", "1133", "0808", "0306", "1032", "1035", "1033", "0857", "1099", "0397", "1015", "0850", "0858", "1115", "1013", "0302", "0863", "0864", "0861", "1136", "1132", "0304", "0809", "1019", "1036", "1002", "0854", "0842", "0862", "0301", "1199"]}
+R00_A01_06_F6XX|Office of Pupil Transformation and Emergency Management|State Department of Education|Office of Finance and Operations|This office provides overarching administrative and core services support to the entire Department, such as human resources, procurement and contract|{"signal": "keyword+spend_ratio", "it_ratio": 0.1711380345811337, "it_spend": 410797.0, "total_spend": 2400384.0, "keyword_match": "information technology", "it_codes_used": ["0304", "0854", "0301", "1033", "0808", "0397"]}
+R00_A01_06_F7XX|Office of Facilities and Operation Services|State Department of Education|Office of Finance and Operations|This office provides overarching administrative and core services support to the entire Department, such as human resources, procurement and contract|{"signal": "keyword+spend_ratio", "it_ratio": 0.1559574392081785, "it_spend": 646156.0, "total_spend": 4143156.0, "keyword_match": "information technology", "it_codes_used": ["1033", "0854", "0808", "0397", "0304", "1015", "0301", "0862"]}
+R00_A01_07_G0XX|Major Information Technology Projects|State Department of Education
+R00_A01_10_J1XX|Office of the Director of Child Care Services|State Department of Education|Division of Early Childhood Development|This office provides leadership for early care and education programs statewide. Its major responsibilities include: 1) measuring accountability of im|{"signal": "keyword+spend_ratio", "it_ratio": 0.26398797827921416, "it_spend": 4405377.0, "total_spend": 16687794.0, "keyword_match": "development", "it_codes_used": ["0301", "0858", "0862", "0864", "0854", "0898", "1033", "1034"]}
+R15_P00_03_C400|Development|Maryland Public Broadcasting Commission|Broadcasting|This program captures Maryland Public Television efforts in securing private/public funding and in establishing alliances with outside organizations f|{"signal": "keyword+spend_ratio", "it_ratio": 0.11117463921804631, "it_spend": 5792718.0, "total_spend": 52104671.0, "keyword_match": "development", "it_codes_used": ["0306", "1033", "1115", "1015", "0397", "1119", "1199", "0302", "0808", "0301", "1036", "0303", "0861", "0854"]}
+R99_E01_00_1800|Information Technology - Frederick Campus|Maryland School for the Deaf|Services and Institutional Operations|The Maryland School for the Deaf is accredited by the Middle States Association of Colleges and Schools and the Conference of Educational Administrato|{"signal": "keyword+spend_ratio", "it_ratio": 0.2658810521449028, "it_spend": 2291670.0, "total_spend": 8619155.0, "keyword_match": "information technology", "it_codes_used": ["0854", "0397", "1036", "0301", "0864", "0809", "0306", "0882", "1033", "0302", "0898"]}
+R99_E01_00_2800|Information Technology - Columbia Campus|Maryland School for the Deaf|Services and Institutional Operations|The Maryland School for the Deaf is accredited by the Middle States Association of Colleges and Schools and the Conference of Educational Administrato|{"signal": "keyword+spend_ratio", "it_ratio": 0.31285405406649397, "it_spend": 543766.0, "total_spend": 1738082.0, "keyword_match": "information technology", "it_codes_used": ["0898", "0882", "0397", "0306", "0301", "0808", "0302", "1033", "1007"]}
+S00_A24_01_2120|Office of Programs and Policy|Department of Housing and Community Development|Neighborhood Revitalization|The Division of Neighborhood Revitalization provides local communities, nonprofit and community development organizations, and small businesses with a|{"signal": "keyword+spend_ratio", "it_ratio": 0.12966177422542616, "it_spend": 1792309.0, "total_spend": 13822956.0, "keyword_match": "development", "it_codes_used": ["1115", "0808", "0397", "0861", "0302", "0301", "0898", "0862"]}
+S00_A26_01_7110|Information Systems|Department of Housing and Community Development|Information Technology|This program is responsible for providing technology products and services to DHCD staff. The program has three key organizational units: the Informat|{"signal": "keyword+spend_ratio", "it_ratio": 0.29982669804992873, "it_spend": 11428407.0, "total_spend": 38116709.0, "keyword_match": "information technology", "it_codes_used": ["0898", "0862", "1041", "0882", "0302", "0930", "1115", "1015", "0397", "0301", "1033", "0861", "0854"]}
+T00_A00_08_1820|Office of Information Technology Management|Department of Commerce|Division of Administration and Technology|The Division of Administration and Technology provides administrative and support services for the Department, including budget and finance, contracts|{"signal": "keyword+spend_ratio", "it_ratio": 0.15413747325181093, "it_spend": 3364026.0, "total_spend": 21824842.0, "keyword_match": "information technology", "it_codes_used": ["1015", "0301", "0306", "1199", "1033", "1115", "0857", "0809", "1102", "0858", "0304", "0302", "1099", "1002", "0882", "0397", "0925"]}
+T00_C00_04_3460|EDOP - Operating|Department of Commerce|Office of Finance Programs|The Office of Finance Programs (OFP) includes the Maryland Economic Development Assistance Authority and Fund (MEDAAF), Maryland Industrial Developmen|{"signal": "keyword+spend_ratio", "it_ratio": 0.5353159851301115, "it_spend": 2880.0, "total_spend": 5380.0, "keyword_match": "development", "it_codes_used": ["0858", "0808", "0933"]}
+T00_F00_11_6012|Maryland Not-For-Profit Development Fund|Department of Commerce|Maryland Nonprofit Development Fund|This program fosters, supports, and assists the economic growth and revitalization of qualifying not-for-profit entities in the State by providing tra|{"signal": "keyword+spend_ratio", "it_ratio": 0.1792615053459559, "it_spend": 337451.0, "total_spend": 1882451.0, "keyword_match": "development", "it_codes_used": ["0808"]}
+U00_A10_02_3206|Lead Rental Certification and Accreditation|Department of the Environment
+V00_D02_01_1280|Information Technology|Department of Juvenile Services|Departmental Support|This division provides on-going financial advice and strategic recommendations, research, evaluation, policy and program development, training, qualit|{"signal": "keyword+spend_ratio", "it_ratio": 0.35411585918246014, "it_spend": 48020760.0, "total_spend": 135607482.0, "keyword_match": "information technology", "it_codes_used": ["0842", "1115", "1099", "1002", "0397", "0301", "1033", "1032", "0808", "0809", "1102", "1019", "0924", "0303", "1119", "0861", "0882", "1199", "0302", "0898", "1113", "0858", "1031", "0306", "0863", "0864", "1136", "1133", "1015", "0933", "0854", "1036"]}
+W00_A01_04_4129|Information Technology|Department of State Police|Support Services Bureau|The Support Services Bureau Headquarters Staff provides direction for three distinct administrative support commands: the Personnel Command includes t|{"signal": "keyword+spend_ratio", "it_ratio": 0.35275696459306166, "it_spend": 57887432.0, "total_spend": 164100040.0, "keyword_match": "information technology", "it_codes_used": ["0858", "0306", "0854", "0303", "0877", "1099", "0397", "0932", "0809", "1002", "0301", "0302", "0882", "1036", "1010", "0898", "0849", "0808", "0864", "1033"]}

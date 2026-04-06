@@ -114,6 +114,7 @@ IT_TOWERS: list[str] = CONFIG.get("it_towers", [])
 KNOWN_IT_AGENCIES: list[dict] = CONFIG.get("known_it_agencies", [])
 SHADOW_IT_KEYWORDS: dict[str, list[str]] = CONFIG.get("shadow_it_keywords", {})
 AGENT_ROUTING: dict[str, dict] = CONFIG.get("agent_routing", {})
+IT_PROGRAMS_CONFIG: dict[str, Any] = CONFIG.get("it_programs", {})
 
 DATA_RAW = DATA_DIR / "raw"
 DATA_PROCESSED = DATA_DIR / "processed"

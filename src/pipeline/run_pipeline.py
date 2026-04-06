@@ -8,7 +8,7 @@ from pathlib import Path
 
 from loguru import logger
 
-from src.pipeline.data_depdup import latest_subprogram_subobject
+from src.pipeline.data_dedup import dedup_cost_pools, dedup_subprograms
 from src.pipeline.data_loader import load_budget_data
 from src.pipeline.data_profiler import profile_dataset
 from src.utils.config import DATA_PROCESSED, DATA_RAW
@@ -31,7 +31,8 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path | None = None) -
     stem = source_path.stem
     cleaned_path = out_dir / f"{stem}_cleaned.parquet"
     profile_path = out_dir / f"{stem}_profile.json"
-    dim_path = out_dir / f"{stem}_dim.parquet"
+    subprogram_path = out_dir / "subprogram.csv"
+    subobject_path = out_dir / "subobject_codes.csv"
 
     logger.info(f"Pipeline start: {source_path}")
 
@@ -41,25 +42,31 @@ def run_pipeline(input_path: str | Path, output_dir: str | Path | None = None) -
     logger.info(f"Saved cleaned data: {cleaned_path}")
 
     # 2) Profiler
-    profile_dataset(cleaned_df)
+    profile = profile_dataset(cleaned_df)
+    with profile_path.open("w", encoding="utf-8") as f:
+        json.dump(profile, f, indent=2, default=str)
     logger.info(f"Saved profile: {profile_path}")
 
-    # 3) Dedup for dim data
-    dim_df = latest_subprogram_subobject(cleaned_df)
-    dim_df.write_parquet(dim_path)
-    logger.info(f"Saved dim data: {dim_path}")
+    # 3) Dedup outputs
+    subprogram_df = dedup_subprograms(cleaned_df)
+    subobject_df = dedup_cost_pools(cleaned_df)
+    subprogram_df.write_csv(subprogram_path)
+    subobject_df.write_csv(subobject_path)
+    logger.info(f"Saved subprogram data: {subprogram_path}")
+    logger.info(f"Saved subobject data: {subobject_path}")
 
     logger.info(
-        "Pipeline complete | cleaned_rows={} dim_rows={} dim_cols={}",
+        "Pipeline complete | cleaned_rows={} subprogram_rows={} subobject_rows={}",
         cleaned_df.height,
-        dim_df.height,
-        dim_df.width,
+        subprogram_df.height,
+        subobject_df.height,
     )
 
     return {
         "cleaned": cleaned_path,
         "profile": profile_path,
-        "dim": dim_path,
+        "subprogram": subprogram_path,
+        "subobject": subobject_path,
     }
 
 

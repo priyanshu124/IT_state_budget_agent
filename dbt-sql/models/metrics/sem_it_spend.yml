@@ -1,0 +1,93 @@
+version: 2
+
+semantic_models:
+  - name: it_spend
+    description: "IT and total budget spend — primary fact table for TBM analysis"
+    defaults:
+      agg_time_dimension: ds
+    model: ref('fct_it_spend')
+
+    entities:
+      - name: spend_item
+        type: primary
+        expr: spend_id
+      - name: agency
+        type: foreign
+        expr: agency_code
+      - name: program
+        type: foreign
+        expr: line_item_key
+
+    measures:
+      - name: total_amount
+        description: "Total budget amount (IT + non-IT)"
+        agg: sum
+        expr: amount
+
+      - name: it_amount
+        description: "IT-classified budget amount only (after NOT_IT normalization)"
+        agg: sum
+        expr: "case when is_it then amount else 0 end"
+
+      - name: non_it_amount
+        description: "Non-IT budget amount (after NOT_IT normalization)"
+        agg: sum
+        expr: "case when not is_it then amount else 0 end"
+
+      - name: line_item_count
+        description: "Count of budget line items"
+        agg: count
+        expr: spend_id
+
+    dimensions:
+      # === TIME (required by MetricFlow for measure aggregation) ===
+      - name: ds
+        type: time
+        type_params:
+          time_granularity: year
+        expr: "cast(fiscal_year || '-07-01' as date)"
+
+      # === FISCAL YEAR (categorical — for easy grouping) ===
+      - name: fiscal_year
+        type: categorical
+        expr: fiscal_year
+
+      # === ORGANIZATIONAL ===
+      - name: agency_code
+        type: categorical
+      - name: agency_name
+        type: categorical
+      - name: program_name
+        type: categorical
+      - name: subprogram_name
+        type: categorical
+
+      # === BUDGET CATEGORY ===
+      - name: category_code
+        type: categorical
+      - name: category_name
+        type: categorical
+
+      # === TBM CLASSIFICATION ===
+      - name: is_it
+        type: categorical
+      - name: it_designation
+        type: categorical
+      - name: it_tower
+        type: categorical
+      - name: it_sub_tower
+        type: categorical
+      - name: cost_pool
+        type: categorical
+      - name: cost_sub_pool
+        type: categorical
+
+      # === ACCOUNTING ===
+      - name: object_name
+        type: categorical
+      - name: subobject_name
+        type: categorical
+      - name: fund_type
+        type: categorical
+      - name: budget_type
+        type: categorical

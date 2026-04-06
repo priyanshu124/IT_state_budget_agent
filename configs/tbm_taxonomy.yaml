@@ -1,160 +1,264 @@
 metadata:
   tbm_version: 5.0.1 (July 2025)
   source_document: 'TBM Taxonomy: Version 5.0.1 (July 2025)'
-cost_pools:
-- name: Staffing
-  description: Includes salaries, benefits, and other costs associated with internal personnel (e.g. employee,
-    temporary employee, intern), Time & Material contractor, and staff augmentation resources delivering
-    or supporting technology services. Excludes consultant and managed service resources.
-  opex_sub_pools:
-  - name: Internal Labor
-    description: Costs for internal labor (e.g. employees, temporary employees, interns). Includes salaries,
-      benefits, occupancy, travel, training, new hire investigation, office furniture, supplies, janitorial
-      services, and any other internal labor related expenses.
-  - name: Staff Augmentation
-    description: Costs for staff augmentation and Time & Material contractor resources. Includes fees,
-      travel, training, and any other staff augmentation related expenses. Excludes occupancy, office
-      furniture, supplies, and janitorial services.
-  - name: Other Operating
-    description: Other labor headcount expenses that cannot qualify for another Cost Sub Pool or insufficient
-      details are available to determine.
-  capex_sub_pools:
-  - name: Internal Labor Capital
-    description: Capitalized internal labor costs related to technology services and project delivery.
-  - name: Staff Augmentation Capital
-    description: Capitalized costs for external labor services unrelated to headcount, supporting specific
-      projects or initiatives.
-- name: Outside Services
-  description: Expenses for external personnel providing technology services that do not contribute to
-    organizational headcount. Includes consulting and managed services engaged for specific projects,
-    operations, or support functions, excluding staff augmentation and Time & Material contractors.
-  opex_sub_pools:
-  - name: Consulting
-    description: Costs for external consulting services, including project-based engagements and advisory
-      support.
-  - name: Managed Services
-    description: Managed service provider costs for specific operations or project-related activities.
-  - name: Other Operating
-    description: Other labor expenses that cannot qualify for another Cost Sub Pool or insufficient details
-      are available to determine.
-  capex_sub_pools:
-  - name: Capital
-    description: Capitalized costs for external labor services unrelated to headcount, supporting specific
-      projects or initiatives.
-- name: Cloud Services
-  description: A category for all public, private, and hybrid cloud services, including IaaS and PaaS,
-    supporting enterprise technology infrastructure and applications. Excludes SaaS, which is categorized
-    in the "Software & SaaS" Cost Pool.
-  opex_sub_pools:
-  - name: Cloud Service Provider
-    description: External public cloud expenses, including IaaS and PaaS. Excludes SaaS, which is categorized
-      under the "Software & SaaS" Cost Pool.
-  - name: Other Operating
-    description: Other cloud services expenses that cannot qualify for another Cost Sub Pool or insufficient
-      details are available to determine.
-  capex_sub_pools:
-  - name: Capital
-    description: Capitalized cloud services expenses.
-- name: Hardware
-  description: Includes all physical technology assets such as servers, PCs, storage arrays, network appliances,
-    mobile devices, IP phones, and printers. Excludes property, office space, raised floor facilities,
-    and infrastructure components like racks.
-  opex_sub_pools:
-  - name: Lease
-    description: Leasing costs for hardware, including payment structures for equipment acquired through
-      leasing agreements.
-  - name: Maintenance & Support
-    description: Costs associated with maintaining and supporting hardware, including repairs and warranty
-      services.
-  - name: Depreciation & Amortization
-    description: Depreciation and amortization of capitalized hardware investments.
-  - name: Managed Services
-    description: Managed service provider costs related to hardware operations and maintenance.
-  - name: Other Operating
-    description: Other hardware expenses that cannot qualify for another Cost Sub Pool or insufficient
-      details are available to determine.
-  capex_sub_pools:
-  - name: Capital
-    description: Capitalized hardware expenses.
-- name: Software & SaaS
-  description: Includes the licensing, maintenance, support, and SaaS costs for all software, including
-    operating systems, middleware, databases, and applications.
-  opex_sub_pools:
+towers:
+- name: Data Center
+  domain: Infrastructure
+  description: Purpose-built facilities to securely house computer equipment. Data Centers provide racks/cabinets,
+    clean & redundant power, data connectivity, environmental controls including temperature, humidity
+    and fire suppression, physical security, and the people to run and operate the facility and its infrastructure.
+  sub_towers:
+  - name: Enterprise Data Center
+    description: Purpose-built facilities providing centralized housing, physical security, and environmental
+      controls for a variety of infrastructure components, including compute, storage, network, and converged
+      systems, essential for enterprise-level operations.
+  - name: Other Facilities
+    description: Supporting facilities (eg computer rooms, telco closets) within corporate or remote locations
+      to house essential technology equipment securely.
+- name: Storage
+  domain: Infrastructure
+  description: Centralized and scalable data storage used to support enterprise applications, databases,
+    backups, and unstructured content. Includes high-availability and archival storage solutions deployed
+    across on-premise, cloud, and mainframe environments. Excludes internal device storage integrated
+    into servers, end user devices, and multifunction appliances.
+  sub_towers:
+  - name: Online Storage
+    description: Active storage resources like Storage Area Network (SAN) and Network Attached Storage
+      (NAS), supporting centralized, high-availability data access across distributed environments, with
+      configurations for on-premises or cloud storage.
+  - name: Offline Storage
+    description: Storage solutions for archiving, backup, and disaster recovery, used to protect data
+      and ensure compliance in distributed storage environments, with limited access to enable secure
+      long-term retention.
+  - name: Mainframe Online Storage
+    description: Online storage arrays dedicated to mainframe environments, providing necessary equipment
+      and support for continuous mainframe operations.
+  - name: Mainframe Offline Storage
+    description: Storage resources dedicated to mainframe environments, supporting archiving, backup,
+      disaster recovery, and compliance needs.
+  - name: AI Storage
+    description: High-performance storage resources designed to meet the speed and volume demands of AI
+      workloads, supporting rapid data access and retrieval for machine learning and deep learning processes.
+- name: Compute
+  domain: Infrastructure
+  description: Devices providing the processing capacity required to execute application logic, manage
+    workflows, and support user transactions. Includes general-purpose and specialized compute resources
+    across physical, virtual, and cloud environments in addition to all associated hardware, labor, and
+    external services directly supporting compute infrastructure.
+  sub_towers:
+  - name: Servers
+    description: Dedicated physical and virtual servers supporting essential applications and data processing
+      needs across the organization. Includes related hardware, software, labor, and support resources.
+      Excludes integrated multifunctional appliances like Converged Infrastructure.
+  - name: Converged Infrastructure
+    description: Integrated appliances combining compute, storage, and network functionalities within
+      a single solution, designed for streamlined deployment in data centers or similar infrastructure
+      locations.
+  - name: High Performance Compute
+    description: Advanced computing resources for scientific, engineering, and complex data simulations,
+      optimized for parallel processing and intensive workloads outside AI-specific applications.
+  - name: Mainframe
+    description: Legacy mainframe systems running enterprise-grade applications and operations.
+  - name: AI Compute
+    description: Specialized compute resources with high-performance capabilities, including GPU-based
+      servers, optimized explicitly for AI and machine learning workloads.
+  - name: Quantum
+    description: Dedicated compute resources engineered for quantum-native workloads such as quantum optimization,
+      molecular modeling, or cryptographic simulation. Excludes classical or AI-oriented compute resources.
+  - name: Serverless
+    description: Abstracted compute services where infrastructure management is fully handled by the platform
+      provider, and resources scale automatically based on demand. Designed for event-driven and stateless
+      application workloads. Excludes traditional server-based or containerized compute.
+  - name: Auto-Scalers
+    description: Compute orchestration capabilities that dynamically scale virtual machines, containers,
+      or services based on predefined performance thresholds. Includes infrastructure automation tools
+      focused on right-sizing and elasticity of compute environments. Excludes standalone virtual servers
+      or fully abstracted serverless platforms.
+- name: Network
+  domain: Infrastructure
+  description: Infrastructure required to enable secure, high-speed data and voice connectivity across
+    enterprise environments. Supports communication within and between data centers, office buildings,
+    remote locations, and cloud platforms. Includes local and wide area networks, voice infrastructure,
+    and specialized networking to support high-performance or workload-specific needs.
+  sub_towers:
+  - name: LAN
+    description: Local Area Network infrastructure enabling high-speed, secure connectivity within office
+      environments or data centers, facilitating reliable intra-office communication and device connections.
+  - name: WAN
+    description: Wide Area Network infrastructure supporting secure, high-speed connections across dispersed
+      locations and data centers, specifically designed for long-distance inter-office communication and
+      global data transport.
+  - name: Voice & Collaboration
+    description: Voice resources which enable or distribute voice services through on premise equipment
+      including PBX, VoIP, voicemail, and handsets (excludes telecom and communication services).
+  - name: AI Network
+    description: Network infrastructure optimized for AI data transmission, enabling low-latency connections
+      and high data throughput for AI-related tasks.
+  - name: Network Management
+    description: Resources and tools dedicated to the administration and oversight of network infrastructure,
+      including IP addressing, DNS, DHCP, monitoring, telemetry, logging, and configuration management.
+      Supports network visibility, health, and control across hybrid environments.
+- name: Application
+  domain: Application
+  description: Encompasses the full lifecycle and operational support of software applications and the
+    platforms that enable their execution, integration, and interoperability. Includes planning, development,
+    licensing, and sustainment of business and technical applications, as well as internally built and
+    externally acquired software, middleware, orchestration tools, and runtime environments that support
+    scalable and connected software delivery.
+  sub_towers:
+  - name: Development
+    description: Resources involved with the lifecycle of application development, including planning,
+      design, coding, testing, and deployment packaging.
+  - name: Support & Operations
+    description: Resources for ongoing operations, maintenance, issue resolution, training, and minor
+      updates of existing applications, ensuring consistent performance and reliability.
   - name: Licensing
-    description: Costs for software licenses and renewals. Excludes SaaS, maintenance, and support services.
-  - name: Maintenance & Support
-    description: Expenses for maintaining and supporting software, including updates and patches for existing
-      licenses.
-  - name: Depreciation & Amortization
-    description: Depreciation and amortization of capitalized software costs over their accounting life.
-  - name: SaaS
-    description: Expenses for software provided as a service (SaaS), including cloud-hosted solutions.
-  - name: Other Operating
-    description: Other software and SaaS expenses that cannot qualify for another Cost Sub Pool or insufficient
-      details are available to determine.
-  capex_sub_pools:
-  - name: Capital
-    description: Capitalized software & SaaS expenses.
-- name: Data Center Facilities
-  description: Includes the floor space, power, cooling, and other utilities costs, environmental controls
-    (e.g., fire suppression), power distribution, and other related costs for managing data center facilities.
-    Excludes personnel and hardware components like servers and storage.
-  opex_sub_pools:
-  - name: Lease
-    description: Leasing costs for data center facilities, including rental and associated operational
-      expenses.
-  - name: Maintenance & Support
-    description: Costs associated with maintaining and supporting data center facilities, including repairs
-      and upgrades.
-  - name: Depreciation & Amortization
-    description: Depreciation and amortization of capitalized data center facilities investments.
-  - name: Managed Services
-    description: Costs associated with an external service provider who takes responsibility for managing
-      and maintaining an organization's data center facilities.
-  - name: Other Operating
-    description: Other data center facilities expenses that cannot qualify for another Cost Sub Pool or
-      insufficient details are available to determine.
-  capex_sub_pools:
-  - name: Capital
-    description: Capitalized data center facilities expenses.
-- name: Telecom
-  description: Includes all telecommunications charges, such as leased lines, domestic and international
-    voice (including mobile), MPLS, ISP, and other network connectivity charges. Excludes mobile devices,
-    IP phones, and related hardware expenses supported via the Hardware pool.
-  opex_sub_pools:
-  - name: Lease
-    description: Leasing costs for telecom infrastructure, including circuits and related equipment.
-  - name: Maintenance & Support
-    description: Expenses for maintaining and supporting telecom infrastructure, including repairs and
-      upgrades.
-  - name: Depreciation & Amortization
-    description: Depreciation and amortization of capitalized telecom assets over their accounting life.
-  - name: Managed Services
-    description: Managed service provider costs for telecom-related services.
-  - name: Other Operating
-    description: Other telecom expenses that cannot qualify for another Cost Sub Pool or insufficient
-      details are available to determine.
-  capex_sub_pools:
-  - name: Capital
-    description: Capitalized telecom expenses (including capitalized telecom equipment and telecom infrastructure
-      investments).
-- name: Misc Costs
-  description: Miscellaneous or non-standard expenses that do not fit within other defined cost pools,
-    covering irregular or undefined expenditures.
-  opex_sub_pools:
-  - name: Managed Services
-    description: Managed service provider costs unrelated to any other Cost Pool.
-  - name: Other Operating
-    description: Miscellaneous or non-standard expenses that cannot qualify for another Cost Sub Pool
-      or insufficient details are available to determine.
-  capex_sub_pools:
-  - name: Capital
-    description: Capitalized costs unrelated to any other Cost Pool.
-- name: Cross Charges
-  description: Costs incurred from other internal groups (eg HR, finance, facilities, and other Technology
-    groups).
-  opex_sub_pools:
-  - name: By Internal Department
-    description: Costs incurred from other internal groups (e.g. HR, finance, facilities, and other Technology
-      groups).
-  capex_sub_pools: []
+    description: Software licensing and renewal expenses, including standard vendor entitlements such
+      as patching rights, and version upgrades defined in the license terms.
+  - name: Middleware
+    description: Middleware resources supporting cross-platform application integration, communication,
+      and information sharing.
+  - name: Mainframe Middleware
+    description: Middleware resources supporting application and system integration within mainframe environments,
+      enabling data sharing and communication.
+  - name: Container Orchestration
+    description: Resources supporting container lifecycle management, including deployment, scaling, and
+      monitoring for flexible application environments.
+  - name: Blockchain & Tokenization
+    description: Platforms for developing and managing blockchain applications, including tokenization
+      solutions for secure and decentralized data and asset management.
+  - name: AI Models
+    description: Platforms and tools specifically designed for AI development and deployment, including
+      machine learning frameworks and model orchestration.
+- name: Data
+  domain: Application
+  description: Resources used to structure, manage, govern, and operationalize data assets. Includes databases,
+    metadata, governance frameworks, and data operations that ensure data integrity, interoperability,
+    and alignment to business and compliance requirements.
+  sub_towers:
+  - name: Data Operations
+    description: Systems, tools, and resources that support enterprise data operations, including data
+      quality, synchronization, interoperability, schema design, and file management. Also includes the
+      acquisition and management of data subscriptions and the processing of high-volume or fast-moving
+      data, particularly unstructured or semi-structured, used in operational workflows.
+  - name: Data Management
+    description: Resources involved in managing data and content across the enterprise, including Data
+      Governance, Master Data Management, and Metadata Management. Includes establishing data/content
+      management policies, standards, processes, and procedures and maintaining the enterprise information
+      asset inventory and data set catalogue.
+  - name: Mainframe Database
+    description: Database resources dedicated to mainframe environments, supporting physical storage,
+      management, and database administration.
+  - name: Database
+    description: Core database resources managing structured data storage and retrieval for applications,
+      supporting data integrity, access, and administrative management for operational purposes.
+- name: Delivery
+  domain: Operations
+  description: Resources for the monitoring, coordination, governance, and continuous improvement of Technology
+    operations. Includes service management, portfolio oversight, operational command centers, and supporting
+    capabilities that ensure reliable and aligned delivery of Technology services.
+  sub_towers:
+  - name: Service Management
+    description: Resources involved with the incident, problem, and change management activities as part
+      of the Tech Service Management process (excludes the Tier 1 help desk). Also includes resources
+      involved with designing, monitoring, reporting, and improving services, and the associated development/maintenance
+      of service catalogs, service measures, and service agreements.
+  - name: Client Management
+    description: Resources focused on managing relationships with business partners, ensuring alignment
+      with business requirements.
+  - name: Operations Center
+    description: Centralized operations for monitoring and intervention across global infrastructure,
+      supporting stability and reliability.
+  - name: Tech Portfolio & Project Management
+    description: Resources supporting strategic portfolio management and investment in business and technical
+      initiatives, covering project and product oversight, funding, and prioritization. Includes Solution
+      Owners, Project/Program/Portfolio Managers, PMO, AMO, and related resources.
+  - name: Central Print
+    description: Centralized print resources supporting customer billing, documentation, and internal
+      printing needs.
+- name: Tech Management
+  domain: Operations
+  description: Strategic, financial, organizational, and administrative resources that govern and support
+    the Technology organization. Includes enterprise architecture, financial planning, talent management,
+    vendor oversight, and executive leadership embedded in and supporting the Technology organization.
+  sub_towers:
+  - name: Tech Management & Strategy
+    description: Resources supporting strategic planning, governance, and administration of the Technology
+      organization. Includes CIO, CTO, Chief of Staff, senior Technology leaders, and administrative support.
+  - name: Tech Finance
+    description: Financial management and TBM resources overseeing budgeting, spending, showback/chargeback,
+      and solution costing.
+  - name: Enterprise Architecture
+    description: Architectural resources which standardize, integrate, and enhance efficiency across technology
+      solutions, supporting enterprise-wide strategies.
+  - name: Tech Vendor Management
+    description: Vendor management resources focusing on contracts, performance, and delivery with external
+      providers.
+  - name: Tech Human Capital Management
+    description: Resources embedded within the Technology organization and involved in the acquisition,
+      development, performance management, compensation, and separation of Technology personnel. Included
+      are initial and periodic personnel background investigations and drug testing, as well as training
+      on organizational policies and procedures.
+- name: Security
+  domain: Operations
+  description: Resources that safeguard technology systems, data, and operations. Includes cybersecurity
+    and disaster recovery planning to ensure protection, resilience, and continuity of Technology operations.
+    Excludes risk management and compliance.
+  sub_towers:
+  - name: Digital Security
+    description: Security resources dedicated to proactively protecting enterprise systems and data integrity
+      through policy development, protective measures, real-time threat monitoring, and incident response.
+  - name: Identity & Access Governance
+    description: Resources managing digital identities, authentication, authorization, and governance
+      of access rights (e.g., IAM solutions, privileged access management).
+- name: Risk & Compliance
+  domain: Operations
+  description: Resources supporting the identification, management, and fulfillment of Technology risk,
+    regulatory, data privacy, and compliance obligations. Includes capabilities for risk assessment, audit
+    readiness, legal compliance, and adherence to internal and external control frameworks.
+  sub_towers:
+  - name: Regulatory & Audit
+    description: Systems and resources supporting compliance reporting, auditing, legal hold, data privacy,
+      and regulatory submission requirements.
+  - name: Risk Management
+    description: Resources supporting identification, assessing, and mitigating technology, operational,
+      and enterprise risks.
+  - name: Disaster Recovery
+    description: Resources dedicated to disaster recovery planning, policy setting, and testing to ensure
+      organizational resilience and continuity.
+- name: Smart Devices
+  domain: Field & Office
+  description: Resources supporting operational technology through sensor-based input, localized processing,
+    and device-to-device or device-to-cloud communication across industrial, commercial, and workplace
+    settings. Includes embedded, IoT-enabled, and edge-connected devices that monitor, automate, or interact
+    with the physical environment.
+  sub_towers:
+  - name: Intelligent Devices
+    description: Edge devices capable of local processing and limited decision-making based on sensor
+      inputs (e.g., smart appliances, embedded controllers).
+  - name: Industrial & Control Systems
+    description: Specialized IoT devices and systems that manage or automate physical processes within
+      industrial environments. Includes SCADA systems, PLCs, manufacturing control units, and operational
+      sensors embedded in critical infrastructure.
+- name: End User
+  domain: Field & Office
+  description: Resources enabling individual productivity and day-to-day technology interaction. Includes
+    user computing equipment, mobile technology, workspace devices, and centralized support channels such
+    as help desks and deskside assistance.
+  sub_towers:
+  - name: Workspace
+    description: Physical devices and peripherals supporting individual workspace needs. Includes physical
+      desktops/laptops, thin client machines, and peripherals (eg monitor, mouse, personal printer, speakers,
+      keyboard). Excludes software, labor, and support resources.
+  - name: Mobile Devices
+    description: Mobile devices supporting individual productivity and communication needs. Includes smart
+      watches and other smart wearables.
+  - name: Network Printers
+    description: Network-connected printers and printing resources accessible to end users.
+  - name: Conferencing & AV
+    description: Equipment and resources for conferencing and audiovisual communication, supporting workforce
+      collaboration.
+  - name: Help Desk
+    description: Centralized help desk supporting user requests and first-line issue resolution.
+  - name: Deskside Support
+    description: Support resources assisting with moves, setups, and issue resolution.

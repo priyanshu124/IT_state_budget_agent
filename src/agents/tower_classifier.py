@@ -65,18 +65,51 @@ class TowerClassifier(BaseAgent):
             row.get("organization_sub_code")
         ).strip()
 
+    @staticmethod
+    def _resolve_it_flag_column(rows: list[dict]) -> str:
+        """Use exact is_it column from subprograms.csv for IT filtering."""
+        if not rows:
+            return "is_it"
+
+        if "is_it" not in rows[0]:
+            raise ValueError("Subprogram CSV must contain exact column: is_it")
+
+        return "is_it"
+
+    @staticmethod
+    def _resolve_designation_column(rows: list[dict]) -> str:
+        """Use exact it_designation column from subprograms.csv."""
+        if not rows:
+            return "it_designation"
+
+        if "it_designation" not in rows[0]:
+            raise ValueError("Subprogram CSV must contain exact column: it_designation")
+
+        return "it_designation"
+
     def _load_it_subprograms(self, subprograms_path: Path) -> list[dict]:
         """Load CSV and return only confirmed IT subprograms."""
         with open(subprograms_path, encoding="utf-8-sig") as f:
             rows = list(csv.DictReader(f))
 
         total = len(rows)
-        it_rows = [r for r in rows if r.get("is_IT", "").strip().upper() == "TRUE"]
+        it_flag_col = self._resolve_it_flag_column(rows)
+        desig_col = self._resolve_designation_column(rows)
+
+        it_rows = [
+            r for r in rows
+            if str(r.get(it_flag_col, "")).strip().upper() == "TRUE"
+        ]
 
         # Log breakdown by designation
         from collections import Counter
-        desig_counts = Counter(r.get("IT_designination", "").strip() for r in it_rows)
-        logger.info(f"Loaded {total} subprograms, {len(it_rows)} confirmed IT")
+        desig_counts = Counter(r.get(desig_col, "").strip() for r in it_rows)
+        logger.info(
+            "Loaded {} subprograms, {} confirmed IT using column {}",
+            total,
+            len(it_rows),
+            it_flag_col,
+        )
         for d, c in desig_counts.most_common():
             logger.info(f"  {d}: {c}")
 
@@ -104,28 +137,35 @@ class TowerClassifier(BaseAgent):
         return "\n".join(lines)
 
     def _build_records_payload(self, it_rows: list[dict]) -> str:
-        """Build pipe-delimited payload with format varying by designation.
+        """Build pipe-delimited payload exactly as classify_towers prompt expects.
 
-        MITDP/ITIF: code|subprogram_name|agency_name
-            - Subprogram name IS the project — specific enough for classification.
-            - Description is program-level boilerplate — adds tokens, no signal.
-
-        F50_AGENCY: code|subprogram_name|agency_name|program_name|description
-            - Subprogram names are often vague ("Network", "Platforms", "TAM").
-            - program_name tells you which DoIT division (Security, Infrastructure, etc).
-            - description explains what that division does.
+        Record formats:
+          - MITDP/ITIF: code|subprogram_name|agency_name
+          - F50_AGENCY: code|subprogram_name|agency_name|program_name|description
+          - shadow_it:  code|subprogram_name|agency_name|program_name|description|shadow_it_reason
         """
+        desig_col = self._resolve_designation_column(it_rows)
+
+        def _clean_field(value: str | None) -> str:
+            text = str(value or "")
+            # Keep one record per line and one field per pipe segment.
+            return text.replace("|", " /").replace("\n", " ").replace("\r", " ").strip()
+
         lines = []
         for r in it_rows:
             code = self._record_code(r)
-            name = r["subprogram_name"]
-            agency = r["agency_name"]
-            desig = r.get("IT_designination", "").strip()
+            name = _clean_field(r.get("subprogram_name"))
+            agency = _clean_field(r.get("agency_name"))
+            desig = r.get(desig_col, "").strip()
 
-            if desig == "F50_AGENCY":
-                prog = r.get("program_name", "")
-                desc = r.get("description", "")[:self.F50_DESC_LIMIT]
-                desc = desc.replace("\n", " ").replace("\r", " ")
+            if desig.lower() == "shadow_it":
+                prog = _clean_field(r.get("program_name", ""))
+                desc = _clean_field(r.get("description", "")[:self.F50_DESC_LIMIT])
+                reason = _clean_field(r.get("shadow_it_reason", ""))
+                lines.append(f"{code}|{name}|{agency}|{prog}|{desc}|{reason}")
+            elif desig == "F50_AGENCY":
+                prog = _clean_field(r.get("program_name", ""))
+                desc = _clean_field(r.get("description", "")[:self.F50_DESC_LIMIT])
                 lines.append(f"{code}|{name}|{agency}|{prog}|{desc}")
             else:
                 lines.append(f"{code}|{name}|{agency}")
@@ -185,6 +225,7 @@ class TowerClassifier(BaseAgent):
     ) -> list[dict]:
         """Parse pipe-delimited response and merge with original row data."""
         row_lookup = {self._record_code(r): r for r in it_rows}
+        desig_col = self._resolve_designation_column(it_rows)
 
         results = []
         lines = raw_response.strip().split("\n")
@@ -216,7 +257,7 @@ class TowerClassifier(BaseAgent):
                 "subprogram_code": original.get("subprogram_code", ""),
                 "subprogram_name": original.get("subprogram_name", ""),
                 "agency_name": original.get("agency_name", ""),
-                "it_designation": original.get("IT_designination", ""),
+                "it_designation": original.get(desig_col, ""),
                 "tower": tower,
                 "sub_tower": sub_tower,
                 "confidence": confidence,
@@ -363,6 +404,14 @@ def main():
             if fallback_candidate.exists():
                 return fallback_candidate
 
+            if fallback.exists():
+                logger.warning(
+                    "Configured path '{}' not found. Falling back to '{}'",
+                    chosen,
+                    fallback,
+                )
+                return fallback
+
             return candidate
         return fallback
 
@@ -372,13 +421,13 @@ def main():
     parser.add_argument(
         "--subprograms",
         type=str,
-        default=cfg.get("subprograms"),
-        help="Subprogram CSV path (defaults to tower_classifier.subprograms or data/processed/subprogram.csv)",
+        default=cfg.get("subprograms", "data/processed/subprograms.csv"),
+        help="Subprogram CSV path (defaults to tower_classifier.subprograms or data/processed/subprograms.csv)",
     )
     parser.add_argument(
         "--towers",
         type=str,
-        default=cfg.get("towers"),
+        default=cfg.get("towers", "data/processed/tbm_towers.yaml"),
         help="Tower taxonomy YAML path (defaults to tower_classifier.towers or data/output/tbm_towers.yaml)",
     )
     parser.add_argument(
@@ -389,7 +438,7 @@ def main():
     parser.add_argument(
         "--csv",
         type=str,
-        default=cfg.get("csv"),
+        default="data/output/tower_classifications.csv",
         help="Also save CSV (defaults to tower_classifier.csv if set)",
     )
     parser.add_argument("--model", type=str, default=cfg.get("model", "claude-sonnet-4-20250514"))
@@ -404,7 +453,7 @@ def main():
         print("ERROR: Set ANTHROPIC_API_KEY in your .env file")
         return
 
-    subprograms_path = _resolve_path(args.subprograms, cfg.get("subprograms"), DATA_PROCESSED / "subprogram.csv")
+    subprograms_path = _resolve_path(args.subprograms, cfg.get("subprograms"), DATA_PROCESSED / "subprograms.csv")
     towers_path = _resolve_path(args.towers, cfg.get("towers"), DATA_OUTPUT / "tbm_towers.yaml")
 
     if not subprograms_path.exists():

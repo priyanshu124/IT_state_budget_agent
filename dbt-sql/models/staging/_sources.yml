@@ -1,0 +1,32 @@
+version: 2
+
+sources:
+  - name: raw
+    description: "Raw Maryland budget data loaded from CSV/Excel"
+    schema: main
+    tables:
+      - name: budget_line_items
+        description: >
+          Raw operating budget line items from Maryland state budget data (2017-2027).
+          Each row is a budget amount for a specific fiscal year, organizational unit,
+          accounting code, and fund type combination. Pre-enriched with TBM classifications
+          from the classification pipeline (is_it, it_designation, tower, cost_pool).
+        columns:
+          - name: fiscal_year
+            description: "Fiscal year (e.g. 2020)"
+            tests: [not_null]
+          - name: organization_sub_code
+            description: "Composite key: agency_code + unit_code + program_code + subprogram_code"
+          - name: budget
+            description: "Dollar amount (can be negative for adjustments)"
+            tests: [not_null]
+          - name: type
+            description: "Budget type: Budget - Actual, Budget - Appropriation, etc."
+          - name: is_it
+            description: "Boolean: confirmed IT program (from designation classifier)"
+          - name: it_designation
+            description: "IT designation source (e.g. MITDP, ITIF, F50_AGENCY, shadow_it)"
+          - name: tower
+            description: "TBM resource tower (from tower classifier agent)"
+          - name: cost_pool
+            description: "TBM cost pool (from cost pool mapper agent)"

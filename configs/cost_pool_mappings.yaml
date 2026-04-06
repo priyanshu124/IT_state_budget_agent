@@ -1,1105 +1,1114 @@
 mappings:
-  '152':
+  0869:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '0724':
     cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '112':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '105':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '151':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '110':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '174':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '192':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '161':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '172':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '154':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '162':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '101':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '189':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '104':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '169':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '111':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '175':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '102':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '156':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '165':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '164':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '198':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '125':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '171':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '157':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '199':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '195':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '167':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '191':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '163':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '153':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '166':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '170':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '181':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '168':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '155':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '213':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '217':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '210':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '214':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '220':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '289':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '299':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '208':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '204':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '205':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '209':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '211':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '203':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '202':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '221':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '215':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '201':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '207':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '206':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '397':
-    cost_pool: Telecom
     cost_sub_pool: Other Operating
-  '304':
-    cost_pool: Telecom
-    cost_sub_pool: Other Operating
-  '306':
-    cost_pool: Telecom
-    cost_sub_pool: Other Operating
-  '301':
-    cost_pool: Telecom
-    cost_sub_pool: Other Operating
-  '302':
-    cost_pool: Telecom
-    cost_sub_pool: Other Operating
-  '303':
-    cost_pool: Telecom
-    cost_sub_pool: Other Operating
-  '305':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '399':
-    cost_pool: Telecom
-    cost_sub_pool: Other Operating
-  '322':
-    cost_pool: Telecom
-    cost_sub_pool: Lease
-  '401':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '404':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '402':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '403':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '495':
-    cost_pool: Staffing
-    cost_sub_pool: Internal Labor
-  '501':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '619':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '606':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '603':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '620':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '699':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '621':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '698':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '697':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '605':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '622':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '608':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '604':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '602':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '789':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '705':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '722':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '702':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '703':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '799':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '701':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '721':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '704':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '731':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '732':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '734':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '711':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '733':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '712':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '723':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '724':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '730':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '720':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '741':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '795':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '714':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '710':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '713':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '809':
+  0883:
     cost_pool: Hardware
     cost_sub_pool: Maintenance & Support
-  '858':
-    cost_pool: Software & SaaS
-    cost_sub_pool: Licensing
-  '806':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '854':
-    cost_pool: Hardware
-    cost_sub_pool: Maintenance & Support
-  '838':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '832':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '811':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '876':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '808':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '899':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '826':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '804':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '898':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '827':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '834':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '801':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '814':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '885':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '897':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '830':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '861':
-    cost_pool: Software & SaaS
-    cost_sub_pool: Capital (CapEx)
-  '829':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '812':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '803':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '818':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '823':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '820':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '831':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '824':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '817':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '819':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '810':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '863':
-    cost_pool: Software & SaaS
-    cost_sub_pool: Capital (CapEx)
-  '815':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '850':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '821':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '835':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '813':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '895':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '873':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '849':
-    cost_pool: Telecom
-    cost_sub_pool: Capital (CapEx)
-  '868':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '875':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '862':
-    cost_pool: Software & SaaS
-    cost_sub_pool: Maintenance & Support
-  '836':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '864':
-    cost_pool: Software & SaaS
-    cost_sub_pool: Maintenance & Support
-  '894':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '802':
-    cost_pool: Software & SaaS
-    cost_sub_pool: Maintenance & Support
-  '805':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '840':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '828':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '816':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '874':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '886':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '877':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '843':
-    cost_pool: Telecom
-    cost_sub_pool: Capital (CapEx)
-  '866':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '892':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '872':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '869':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '890':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '893':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '865':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '822':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '825':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '879':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '882':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '857':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '839':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '891':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '896':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '884':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '859':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '837':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '841':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '853':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '833':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '867':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '889':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '845':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '846':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '807':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '887':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '878':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '842':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '856':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '881':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '852':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '855':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '848':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '847':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '870':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '860':
-    cost_pool: Hardware
-    cost_sub_pool: Maintenance & Support
-  '883':
-    cost_pool: Outside Services
-    cost_sub_pool: Consulting
-  '851':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '999':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '917':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '908':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '902':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '901':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '912':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '914':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '906':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '904':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '995':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '915':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '920':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '930':
-    cost_pool: Software & SaaS
-    cost_sub_pool: Capital (CapEx)
-  '916':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '926':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '909':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '933':
-    cost_pool: Software & SaaS
-    cost_sub_pool: Capital (CapEx)
-  '932':
-    cost_pool: Software & SaaS
-    cost_sub_pool: Capital (CapEx)
-  '911':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '990':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '903':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '913':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '951':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '998':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '925':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '907':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '910':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '919':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '905':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '918':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '921':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '991':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '924':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '922':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1099':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1007':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1013':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1015':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1031':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1017':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1036':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1001':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1019':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1032':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1014':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1002':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1033':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1008':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1004':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1034':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1005':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1006':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1041':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1035':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1095':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1011':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1010':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1021':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1040':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1003':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1091':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1043':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1009':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1012':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1090':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1016':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1044':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1042':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1102':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1133':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1113':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1136':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1106':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1105':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1119':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1115':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1131':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1107':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1101':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1199':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1134':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1141':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1110':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1108':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1117':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1132':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1114':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1111':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1103':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1195':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1109':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1135':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1104':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1124':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1144':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1140':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1118':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1116':
-    cost_pool: Hardware
-    cost_sub_pool: Capital (CapEx)
-  '1123':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1121':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1143':
-    cost_pool: Hardware
-    cost_sub_pool: Lease
-  '1214':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1208':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '1299':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1207':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1206':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1202':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1205':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1204':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1298':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1203':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1296':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1294':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1210':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1213':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1270':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1201':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1211':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1288':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1295':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1260':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1212':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1297':
-    cost_pool: Outside Services
-    cost_sub_pool: Other Operating
-  '1304':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1305':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1301':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1310':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1399':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1303':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1302':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1308':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1309':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1320':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '2999':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '1307':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1306':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '1395':
-    cost_pool: Misc Costs
-    cost_sub_pool: Other Operating
-  '9997':
-    cost_pool: Cross Charges
-    cost_sub_pool: By Internal Department
-  '1444':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1433':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1430':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1499':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1414':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1447':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1443':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1445':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1442':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1402':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1448':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1415':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1446':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1440':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1449':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1441':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1481':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1401':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
   '1416':
     cost_pool: Misc Costs
     cost_sub_pool: Capital (CapEx)
-  '1432':
-    cost_pool: Misc Costs
+  0922:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1102':
+    cost_pool: Hardware
     cost_sub_pool: Capital (CapEx)
-  '1412':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1411':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1431':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1410':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1498':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1413':
-    cost_pool: Misc Costs
-    cost_sub_pool: Capital (CapEx)
-  '1497':
+  0815:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0831:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0896:
+    cost_pool: Outside Services
+    cost_sub_pool: Consulting
+  '1481':
     cost_pool: Misc Costs
     cost_sub_pool: Capital (CapEx)
   '1406':
     cost_pool: Misc Costs
     cost_sub_pool: Capital (CapEx)
+  '0211':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0174':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0923:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0921:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0895:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0289:
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0830:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1023':
+    cost_pool: Hardware
+    cost_sub_pool: Lease
+  '0166':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0875:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0168:
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0802:
+    cost_pool: Software & SaaS
+    cost_sub_pool: Maintenance & Support
+  0915:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0495:
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0698:
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '1309':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0926:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '0202':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1211':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '1412':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1140':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1015':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1104':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1430':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '0156':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0846:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  0795:
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0822:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1499':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1305':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '1101':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0909:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1017':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1103':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1446':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  0878:
+    cost_pool: Outside Services
+    cost_sub_pool: Consulting
+  0181:
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0870:
+    cost_pool: Hardware
+    cost_sub_pool: Maintenance & Support
+  0812:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '0322':
+    cost_pool: Telecom
+    cost_sub_pool: Capital (CapEx)
+  '1402':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '0205':
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0825:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1413':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  0823:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '0201':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0919:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0828:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '0741':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0850:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '0155':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1013':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0732':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0403':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1019':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0826:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1044':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1106':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0806:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0892:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1004':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0302':
+    cost_pool: Telecom
+    cost_sub_pool: Other Operating
+  0856:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '1091':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1302':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '1399':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0857:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '1303':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0697:
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '0714':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0873:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1442':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1208':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0818:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1144':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0804:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1121':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0404':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1411':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1498':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '2999':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '0705':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0172':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0195:
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1401':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  0799:
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0891:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  0874:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0932:
+    cost_pool: Software & SaaS
+    cost_sub_pool: Licensing
+  '1036':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1431':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  0835:
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '9997':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '1210':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0887:
+    cost_pool: Data Center Facilities
+    cost_sub_pool: Other Operating
+  0814:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0881:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0876:
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '1288':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '1110':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0220':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0619:
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0885:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1395':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '0206':
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '0722':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0817:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1133':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0165':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0903:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0819:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0917:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0839:
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0299:
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1143':
+    cost_pool: Hardware
+    cost_sub_pool: Lease
+  '1212':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '0175':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1033':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0914:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '0304':
+    cost_pool: Telecom
+    cost_sub_pool: Other Operating
+  0851:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '1002':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1306':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '0710':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0713':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0907:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1320':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '1021':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1113':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1195':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0803:
+    cost_pool: Outside Services
+    cost_sub_pool: Consulting
+  0886:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  0813:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0998:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0189:
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '0305':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0859:
+    cost_pool: Hardware
+    cost_sub_pool: Lease
+  '1440':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '0171':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0816:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0840:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1134':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0809:
+    cost_pool: Hardware
+    cost_sub_pool: Maintenance & Support
+  0862:
+    cost_pool: Software & SaaS
+    cost_sub_pool: Maintenance & Support
+  '0733':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0721':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0906:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1006':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1031':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1441':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1118':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0402':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1443':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1032':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1135':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1114':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1199':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0711':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0898:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '0204':
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0908:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0933:
+    cost_pool: Software & SaaS
+    cost_sub_pool: Licensing
+  0897:
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0924:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  0860:
+    cost_pool: Hardware
+    cost_sub_pool: Maintenance & Support
+  '1432':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  0838:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1003':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0820:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0853:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '0602':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '1099':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0890:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  0894:
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '0730':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0215':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1109':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1001':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0864:
+    cost_pool: Software & SaaS
+    cost_sub_pool: Maintenance & Support
+  0918:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0399:
+    cost_pool: Telecom
+    cost_sub_pool: Other Operating
+  0849:
+    cost_pool: Telecom
+    cost_sub_pool: Other Operating
+  0858:
+    cost_pool: Software & SaaS
+    cost_sub_pool: Licensing
+  0836:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1035':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0167':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0699:
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '1298':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0991:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0845:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  0913:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '0102':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1296':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '1034':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0884:
+    cost_pool: Hardware
+    cost_sub_pool: Maintenance & Support
+  '1117':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1299':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0916:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1447':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1297':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0930:
+    cost_pool: Software & SaaS
+    cost_sub_pool: Licensing
+  0912:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1449':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  0910:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1111':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0990:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1448':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  0893:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '1014':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1043':
+    cost_pool: Hardware
+    cost_sub_pool: Lease
+  0842:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '1444':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '0163':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0833:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '0620':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '0704':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1040':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0397:
+    cost_pool: Telecom
+    cost_sub_pool: Other Operating
+  '0210':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0863:
+    cost_pool: Software & SaaS
+    cost_sub_pool: Licensing
+  '1204':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0871:
+    cost_pool: Hardware
+    cost_sub_pool: Maintenance & Support
+  '1010':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0789:
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0604':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '1410':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '0170':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0847:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '1124':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1132':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1007':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1005':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0603':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0905:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '0213':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0110':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0877:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '0111':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '0101':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '0161':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1433':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  0872:
+    cost_pool: Outside Services
+    cost_sub_pool: Consulting
+  '0112':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0821:
+    cost_pool: Outside Services
+    cost_sub_pool: Consulting
+  '1294':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0861:
+    cost_pool: Software & SaaS
+    cost_sub_pool: Licensing
+  '0621':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '1414':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1119':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0866:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0899:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0192:
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1008':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0303':
+    cost_pool: Telecom
+    cost_sub_pool: Other Operating
+  0169:
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0868:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1136':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0723':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1123':
+    cost_pool: Hardware
+    cost_sub_pool: Lease
+  '1308':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '1041':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1042':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0834:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0865:
+    cost_pool: Outside Services
+    cost_sub_pool: Consulting
+  '0151':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1131':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1203':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '0214':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0841:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '0606':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0951:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '0157':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1095':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1295':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '1009':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0702':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0801:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '0605':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '0105':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0995:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1115':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1202':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0810:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '0154':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '0217':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1213':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '0734':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1415':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '0152':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '0401':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1201':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '1108':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1116':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0199:
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '0153':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0843:
+    cost_pool: Telecom
+    cost_sub_pool: Other Operating
+  '0731':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0889:
+    cost_pool: Data Center Facilities
+    cost_sub_pool: Other Operating
+  0824:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0999:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '0622':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0807:
+    cost_pool: Outside Services
+    cost_sub_pool: Consulting
+  0855:
+    cost_pool: Hardware
+    cost_sub_pool: Lease
+  0805:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '0301':
+    cost_pool: Telecom
+    cost_sub_pool: Other Operating
+  0904:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0191:
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0827:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1011':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '1304':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '0221':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0125':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '0203':
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1497':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1214':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '1205':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '0207':
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1301':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0811:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1270':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0882:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '1016':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0306':
+    cost_pool: Telecom
+    cost_sub_pool: Other Operating
+  0854:
+    cost_pool: Hardware
+    cost_sub_pool: Maintenance & Support
+  '0164':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0920:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1206':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '1012':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0501':
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0852:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '1260':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  '0162':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1107':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0879:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1090':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  '0712':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0104':
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  '1207':
+    cost_pool: Cross Charges
+    cost_sub_pool: By Internal Department
+  0848:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  0832:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0608:
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0209:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0808:
+    cost_pool: Hardware
+    cost_sub_pool: Lease
+  0925:
+    cost_pool: Hardware
+    cost_sub_pool: Other Operating
+  '1445':
+    cost_pool: Misc Costs
+    cost_sub_pool: Capital (CapEx)
+  '1141':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0867:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0208:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '0701':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '0703':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  0902:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  '1105':
+    cost_pool: Hardware
+    cost_sub_pool: Capital (CapEx)
+  0829:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  '1310':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  '0720':
+    cost_pool: Staffing
+    cost_sub_pool: Other Operating
+  '1307':
+    cost_pool: Misc Costs
+    cost_sub_pool: Other Operating
+  0198:
+    cost_pool: Staffing
+    cost_sub_pool: Internal Labor
+  0901:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating
+  0837:
+    cost_pool: Outside Services
+    cost_sub_pool: Other Operating
+  0911:
+    cost_pool: Supplies and Materials
+    cost_sub_pool: Other Operating

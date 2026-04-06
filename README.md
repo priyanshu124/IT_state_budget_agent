@@ -249,3 +249,14 @@ If `.\.venv\Scripts\activate` fails, run commands with explicit interpreter path
 
 1. Currently: only tose whcih we know are IT programs like F50, MITDP, ITIF have been enriched.
 Pending: enriching programs that are IT inside different agencies
+
+## 11) Web Deployment (Dashboard + Query Agent)
+
+Use the single-site deployment assets in repo root:
+
+1. `Dockerfile`
+2. `render.yaml`
+3. `requirements.deploy.txt`
+4. `DEPLOYMENT.md`
+
+See `DEPLOYMENT.md` for local Docker and Render deployment steps.

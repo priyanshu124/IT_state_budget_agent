@@ -233,12 +233,12 @@ def main():
     parser = argparse.ArgumentParser(
         description="Extract TBM resource towers from a PDF"
     )
-    parser.add_argument("--pdf", type=str, required=True, help="Path to TBM taxonomy PDF")
+    parser.add_argument("--pdf", type=str,default="data/raw/tbm_v5.pdf", help="Path to TBM taxonomy PDF")
     parser.add_argument(
-        "--pages", type=str, default=None,
+        "--pages", type=str, default='12-20',
         help="Page range, e.g. '12-20'. Reduces token cost."
     )
-    parser.add_argument("--output", type=str, default="configs/tbm_towers.yaml")
+    parser.add_argument("--output", type=str, default="configs/tbm_taxonomy.yaml")
     parser.add_argument("--model", type=str, default="claude-sonnet-4-20250514")
     args = parser.parse_args()
 

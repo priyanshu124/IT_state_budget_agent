@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: fct_it_spend
+    description: "Fact table: all budget line items with TBM classifications"
+    columns:
+      - name: spend_id
+        description: "Surrogate key"
+        data_tests:
+          - unique
+          - not_null
+      - name: fiscal_year
+        data_tests:
+          - not_null
+      - name: amount
+        data_tests:
+          - not_null
+      - name: cost_pool
+        data_tests:
+          - not_null
+      - name: is_it
+        data_tests:
+          - not_null
+
+  - name: fct_budget_anomalies
+    description: "Precomputed anomalies for selectable hierarchy levels"
+    columns:
+      - name: anomaly_id
+        data_tests:
+          - unique
+          - not_null
+      - name: anomaly_level
+        data_tests:
+          - not_null
+      - name: entity
+        data_tests:
+          - not_null
+      - name: fiscal_year
+        data_tests:
+          - not_null
+      - name: spend
+        data_tests:
+          - not_null
+      - name: avg_spend
+        data_tests:
+          - not_null
+
+  - name: fct_budget_anomalies_deep
+    description: "Precomputed anomalies at full hierarchy + fund for deep drill-down"
+    columns:
+      - name: deep_anomaly_id
+        data_tests:
+          - unique
+          - not_null
+      - name: fiscal_year
+        data_tests:
+          - not_null
+      - name: spend
+        data_tests:
+          - not_null
+      - name: avg_spend
+        data_tests:
+          - not_null
+
+  - name: dim_agency
+    description: "Agency dimension"
+    columns:
+      - name: agency_code
+        data_tests:
+          - unique
+          - not_null
+
+  - name: dim_program
+    description: "Program/subprogram dimension"
+    columns:
+      - name: line_item_key
+        data_tests:
+          - unique
+          - not_null

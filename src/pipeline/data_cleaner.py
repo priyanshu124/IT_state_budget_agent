@@ -68,14 +68,9 @@ _CODE_PAD_WIDTHS: dict[str, int] = {
 # ---------------------------------------------------------------------------
 
 def _filter_data(df: pl.DataFrame) -> pl.DataFrame:
-    # Filter on Fiscal year >=2020 and type contains 'actual', "working", governer allowance (case-insensitive). 
+    # Filter on Fiscal year >=2020. 
     return df.filter(
         (pl.col("fiscal_year") >= 2020)
-        & (
-            pl.col("type").str.to_lowercase().str.contains("actual")
-            | pl.col("type").str.to_lowercase().str.contains("working")
-            | pl.col("type").str.to_lowercase().str.contains("allowance")
-            )
     )
 
 def _apply_text_cleaning(expr: pl.Expr) -> pl.Expr:

@@ -1,0 +1,7 @@
+mbtsa:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'D:/projects/maryland_budget_pipeline/Agentic/dbt-sql/mbtsa_work.duckdb'
+      threads: 4

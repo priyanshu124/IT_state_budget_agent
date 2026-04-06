@@ -1,0 +1,4 @@
+name: mbtsa
+type: duckdb
+options:
+  filename: mbtsa_work.duckdb

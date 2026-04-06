@@ -57,6 +57,16 @@ class CostPoolMapper(BaseAgent):
         with open(taxonomy_path, "r") as f:
             data = yaml.safe_load(f)
 
+        if not isinstance(data, dict) or "cost_pools" not in data:
+            if isinstance(data, dict) and "towers" in data:
+                raise ValueError(
+                    f"Expected cost-pool taxonomy YAML but got towers YAML: {taxonomy_path}. "
+                    "Use data/output/tbm_taxonomy.yaml (from cost_pool_extractor), not a towers file."
+                )
+            raise ValueError(
+                f"Invalid taxonomy YAML format in {taxonomy_path}: missing top-level 'cost_pools' key."
+            )
+
         lines = []
         for cp in data["cost_pools"]:
             lines.append(cp["name"])
@@ -248,8 +258,8 @@ def main():
     parser = argparse.ArgumentParser(
         description="Map subobject codes to TBM cost pools"
     )
-    parser.add_argument("--codes", type=str, default='data/processed/subobject_codes.csv', help="CSV with subobject codes")
-    parser.add_argument("--taxonomy", type=str, default='configs/tbm_taxonomy.yaml', help="TBM taxonomy YAML")
+    parser.add_argument("--codes", type=str, default='data/processed/subobjects.csv', help="CSV with subobject codes")
+    parser.add_argument("--taxonomy", type=str, default='data/output/tbm_taxonomy.yaml', help="TBM taxonomy YAML")
     parser.add_argument("--output", type=str, default="configs/cost_pool_mappings.yaml")
     parser.add_argument("--model", type=str, default="claude-sonnet-4-20250514")
     args = parser.parse_args()
