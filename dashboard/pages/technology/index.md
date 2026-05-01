@@ -219,7 +219,7 @@ select agency_name, sum(amount) as spend from ${filtered} group by agency_name o
 ```
 
 ```sql tower_drill
-select it_tower, '/budget-office/agencies/overview?tower=' || replace(it_tower, ' ', '%20') as tower_link,
+select it_tower, '/budget-office/agencies/explorer?tower=' || replace(it_tower, ' ', '%20') as tower_link,
     sum(amount) as spend, count(distinct agency_name) as agencies, count(distinct subprogram_name) as programs
 from ${filtered} where it_tower is not null group by it_tower order by spend desc
 ```

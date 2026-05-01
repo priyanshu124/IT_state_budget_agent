@@ -18,19 +18,7 @@
 
 with base as (
 	select
-		fiscal_year,
-		fund_type,
-		agency_code,
-		agency_name,
-		unit_code,
-		unit_name,
-		program_code,
-		program_name,
-		subprogram_code,
-		subprogram_name,
-        organization_code,
-        organization_sub_code,
-		amount
+		*
 	from "mbtsa_work"."main_marts"."fct_it_spend"
 	where amount is not null
 ),
@@ -51,9 +39,13 @@ final as (
 		organization_sub_code,
         organization_code,
         organization_sub_code,
+        is_it,
+        it_designation,
+        it_tower,
+        it_sub_tower,
 		sum(amount) as total_budget_amount
 	from base
-	group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12
+	group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
 )
 
 select *

@@ -9,10 +9,10 @@ sidebar_position: 6
 </div>
 
 ```sql g_agency
-select distinct agency_name from mbtsa.subprogram_level where agency_name is not null order by agency_name
+select distinct agency_name from mbtsa.program_level where agency_name is not null order by agency_name
 ```
 ```sql g_fy
-select distinct fiscal_year as fy from mbtsa.subprogram_level order by fiscal_year
+select distinct fiscal_year as fy from mbtsa.program_level order by fiscal_year
 ```
 
 <Details title=" Filters  click to expand" open=true>
@@ -34,7 +34,7 @@ with agency_yearly as (
         agency_name,
         fiscal_year,
         sum(total_budget_amount) as spend
-    from mbtsa.subprogram_level
+    from mbtsa.program_level
     where coalesce(agency_name,'') like '${inputs.f_agency.value ?? "%"}'
     group by agency_name, fiscal_year
 ),
@@ -125,7 +125,7 @@ select * from ${anomalies} where anomaly_type = 'Drop' order by deviation_pct as
 ```sql deep_anomalies
 with prog_yearly as (
     select agency_name, program_name, fiscal_year, sum(total_budget_amount) as spend
-    from mbtsa.subprogram_level
+    from mbtsa.program_level
     where coalesce(agency_name,'') like '${inputs.f_agency.value ?? "%"}'
     group by agency_name, program_name, fiscal_year
 ),

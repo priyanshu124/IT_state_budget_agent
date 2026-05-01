@@ -10,39 +10,39 @@ prerender: false
 
 ```sql g_fy
 select distinct fiscal_year as fy
-from mbtsa.program_level
+from mbtsa.subprogram_level
 order by fiscal_year
 ```
 ```sql g_fund
 select distinct fund_type
-from mbtsa.program_level
+from mbtsa.subprogram_level
 where fund_type is not null
   and agency_name = '${params.agency}'
 order by fund_type
 ```
 ```sql g_agency
 select distinct agency_name
-from mbtsa.program_level
+from mbtsa.subprogram_level
 where agency_name is not null
 order by agency_name
 ```
 ```sql g_unit
 select distinct unit_name
-from mbtsa.program_level
+from mbtsa.subprogram_level
 where unit_name is not null
   and agency_name = '${params.agency}'
 order by unit_name
 ```
 ```sql g_program
 select distinct program_name
-from mbtsa.program_level
+from mbtsa.subprogram_level
 where program_name is not null
   and agency_name = '${params.agency}'
 order by program_name
 ```
 ```sql g_subprogram
 select distinct subprogram_name
-from mbtsa.program_level
+from mbtsa.subprogram_level
 where subprogram_name is not null
   and agency_name = '${params.agency}'
 order by subprogram_name
@@ -68,12 +68,6 @@ order by subprogram_name
     </Dropdown>
 </Grid>
 
-{#if contextLabel}
-    <Alert status=info>
-        <b>IT Context:</b> {contextLabel}
-    </Alert>
-{/if}
-
 <Alert status=info>
     Switch between <b>Trend Over Years</b> and <b>Latest Year Snapshot</b> using the View selector above.
 </Alert>
@@ -82,18 +76,6 @@ order by subprogram_name
     // Pull params.agency into a plain JS variable to avoid quote-collision
     // inside Evidence SQL template literals.
     const agencyDefault = (params.agency ?? '').replace(/'/g, "''");
-
-    // Read tower/program context from URL query parameters (from Technology drilldown)
-    const urlParams = typeof window !== 'undefined' ? new URLSearchParams(window.location.search) : new URLSearchParams();
-    const queryTower = urlParams.get('tower') 
-        ? decodeURIComponent(urlParams.get('tower')).toLowerCase()
-        : null;
-    const queryProgram = urlParams.get('program')
-        ? decodeURIComponent(urlParams.get('program')).toLowerCase()
-        : null;
-    const querySubprogram = urlParams.get('subprogram')
-        ? decodeURIComponent(urlParams.get('subprogram')).toLowerCase()
-        : null;
 
     // Drives the hierarchy drilldown table toggle (trend vs snapshot).
     // Mirrors the f_view dropdown used in the top section.
@@ -125,9 +107,6 @@ order by subprogram_name
 
     $: hierarchyTrendPivot = (() => {
         const rows = hierarchy_trend_long ?? [];
-        const level = inputs.f_hierarchy_level?.value ?? 'unit';
-        const showProgram    = level === 'program' || level === 'subprogram';
-        const showSubprogram = level === 'subprogram';
         const grouped = new Map();
 
         for (const row of rows) {
@@ -161,11 +140,10 @@ order by subprogram_name
             .sort((a, b) => (b._sort_total ?? 0) - (a._sort_total ?? 0))
             .map(({ _unit_name, _program_name, _subprogram_name, _sort_total, ...yearCols }) => {
                 const row = {
-                    unit_name: _unit_name,
+                    unit_name:       _unit_name,
+                    program_name:    _program_name,
+                    subprogram_name: _subprogram_name,
                 };
-                // Add hierarchy columns based on selected level
-                if (showProgram)    row.program_name    = _program_name;
-                if (showSubprogram) row.subprogram_name = _subprogram_name;
                 // Add year keys in sorted ascending order
                 for (const y of allYears) {
                     row[y] = yearCols[y] ?? null;
@@ -217,15 +195,6 @@ order by subprogram_name
                 .map((v) => String(v ?? '').toLowerCase())
                 .some((v) => v.includes(needle))
         );
-    })();
-
-    // Format context from query parameters
-    $: contextLabel = (() => {
-        const parts = [];
-        if (queryTower) parts.push(`Tower: ${queryTower}`);
-        if (queryProgram) parts.push(`Program: ${queryProgram}`);
-        if (querySubprogram) parts.push(`Subprogram: ${querySubprogram}`);
-        return parts.length > 0 ? parts.join(' | ') : null;
     })();
 </script>
 
@@ -320,7 +289,7 @@ select
     b.program_name,
     b.subprogram_name,
     b.total_budget_amount as amount
-from mbtsa.program_level b
+from mbtsa.subprogram_level b
 cross join ${filter_meta} f
 where cast(b.fiscal_year as varchar) like f.selected_fy
     and coalesce(b.fund_type, '') like f.selected_fund
