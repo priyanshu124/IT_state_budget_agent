@@ -281,22 +281,37 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
         containLabel: true
     });
 
-    // Calculate linear regression trend line for fiscal overview
+    // Calculate polynomial regression trend line (degree 2) for fiscal overview
     const calculateTrendLine = (data) => {
-        if (!data || data.length < 2) return [];
+        if (!data || data.length < 3) return [];
         const n = data.length;
         const x = Array.from({ length: n }, (_, i) => i);
         const y = data.map(d => Number(d.total_it_spend) || 0);
         
+        // Build system for quadratic regression: y = a + bx + cx²
         const sumX = x.reduce((a, b) => a + b, 0);
         const sumY = y.reduce((a, b) => a + b, 0);
-        const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
         const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+        const sumX3 = x.reduce((sum, xi) => sum + xi * xi * xi, 0);
+        const sumX4 = x.reduce((sum, xi) => sum + xi * xi * xi * xi, 0);
+        const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+        const sumX2Y = x.reduce((sum, xi, i) => sum + xi * xi * y[i], 0);
         
-        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
-        const intercept = (sumY - slope * sumX) / n;
+        // Solve using Cramer's rule
+        const A = n * sumX2 - sumX * sumX;
+        const B = sumX * sumX2 - n * sumX3;
+        const C = sumX2 * sumX2 - A * sumX4;
+        const D = sumY * sumX2 - sumXY * sumX;
+        const E = sumXY * sumX2 - sumX2Y * sumX;
         
-        return y.map((_, i) => slope * i + intercept);
+        const denom = A * sumX2 - B * B;
+        if (Math.abs(denom) < 1e-10) return y; // Fallback to raw data if singular
+        
+        const c = (D * sumX2 - E * B) / denom;
+        const b = (E - c * B) / A;
+        const a = (sumY - b * sumX - c * sumX2) / n;
+        
+        return x.map(xi => a + b * xi + c * xi * xi);
     };
 
     $: selectedFy = selectedValue($inputStore?.f_fy);
