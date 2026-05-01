@@ -1,0 +1,1 @@
+[{"name":"fiscal_year","evidenceType":"number","typeFidelity":"precise"},{"name":"fund_type","evidenceType":"string","typeFidelity":"precise"},{"name":"agency_code","evidenceType":"string","typeFidelity":"precise"},{"name":"agency_name","evidenceType":"string","typeFidelity":"precise"},{"name":"total_budget_amount","evidenceType":"number","typeFidelity":"precise"}]

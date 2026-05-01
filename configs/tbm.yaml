@@ -1,0 +1,84 @@
+# ============================================
+# TBM Classification Engine - Configuration
+# ============================================
+
+pipeline:
+  batch_size: 50
+  max_retries: 3
+
+tower_classifier:
+  subprograms: "data/processed/subprograms.csv"
+  towers: "data/raw/tbm/it_towers.csv"
+  output: "data/output/tower_classifications.csv"
+  csv: "data/output/tower_classifications.csv"
+  model: "claude-sonnet-4-20250514"
+
+cost_pool_mapper:
+  codes: "data/processed/subobject_codes.csv"
+  taxonomy: "data/raw/tbm/cost_pools.csv"
+  output: "data/output/cost_pool_mappings.csv"
+  model: "claude-sonnet-4-20250514"
+
+
+# -------------------------------------------------
+# Known IT Agencies (Fast-Track → is_it_related=True)
+# -------------------------------------------------
+known_it_agencies:
+  - agency_code: "F50"
+    name: "Department of Information Technology (DoIT)"
+  - agency_code: "F10"
+    name: "Major Information Technology Development Fund"
+
+# -------------------------------------------------
+# Keyword Sieve for Shadow IT Detection
+# Regex patterns applied to non-IT agency rows
+# -------------------------------------------------
+shadow_it_keywords:
+  - "\\bdata\\b"
+  - "\\bcyber\\w*\\b"
+  - "\\bsoftware\\b"
+  - "\\bcloud\\b"
+  - "\\bSaaS\\b"
+  - "\\bdatabase\\b"
+  - "\\bdata center\\b"
+  - "\\binformation technology\\b"
+  - "\\bIT\\b"
+  - "\\bserver\\b"
+  - "\\bnetwork\\b"
+  - "\\bsystem\\b"
+  - "\\bapplication\\b"
+  - "\\bdigital\\b"
+  - "\\bautomation\\b"
+  - "\\belectronic\\b"
+  - "\\btechnology\\b"
+  - "\\bERP\\b"
+  - "\\bRPA\\b"
+  - "\\bAI\\b"
+  - "\\bmachine learning\\b"
+  - "Office of Information Technology Management"
+  - "Office of Data and Information Management"
+  - "\\bplatform\\b"
+  - "\\bmoderniz\\w*\\b"
+  - "\\bupgrade\\b"
+  - "\\bportal\\b"
+  - "\\bhelp desk\\b"
+
+# -------------------------------------------------
+# Agent Routing Rules
+# -------------------------------------------------
+agent_routing:
+  functional_analyst:
+    description: "Known IT, unknown tower"
+    trigger: "is_it_related == True AND tbm_it_tower == null"
+
+  contextual_gatekeeper:
+    description: "Generic accounting code, needs program context"
+    trigger: "cost_pool in ['Internal Labor', 'External Labor', 'Other'] AND is_it_related == null"
+
+  hierarchical_context:
+    description: "Parent description conflicts with subprogram"
+    trigger: "description_mismatch_flag == True"
+
+  shadow_it_skeptic:
+    description: "Non-IT agency with tech keyword hit"
+    trigger: "agency not in known_it_agencies AND keyword_hit == True"

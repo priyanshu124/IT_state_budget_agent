@@ -1,0 +1,7 @@
+mbtsa:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'D:/projects/IT_state_budget_agent/dbt-sql/mbtsa_work.duckdb'
+      threads: 4

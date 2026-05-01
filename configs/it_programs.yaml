@@ -1,0 +1,25 @@
+it_programs:
+  fields:
+    program_name: program_name
+    agency_code: agency_code
+    match_fields:
+      - program_name
+      - subprogram_name
+
+  designations:
+    - id: MITDP
+      label: Major Information Technology Development Project Fund - MITDP
+      patterns:
+        - Major Information Technology Development Projects
+        - Major Information Technology Development Project Fund
+        - Major IT
+        - Major Information Technology
+
+    - id: ITIF
+      patterns:
+        - Information Technology Investment Fund
+
+    - id: F50_AGENCY
+      match_field: agency_code
+      patterns:
+        - F50

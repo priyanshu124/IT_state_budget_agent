@@ -1,0 +1,28 @@
+{
+  "version": "1.0",
+  "customFormats": [
+    {
+      "formatTag": "usd2compact",
+      "formatCode": "auto",
+      "valueType": "number",
+      "_autoFormat": {
+        "autoFormatCode": "$#,##0.00",
+        "truncateUnits": true
+      }
+    },
+    {
+      "formatTag": "usd2compactviz",
+      "formatCode": "[>=1000000000]$#,##0.00,,,\"B\";[>=1000000]$#,##0.00,,\"M\";[>=1000]$#,##0.00,\"K\";$#,##0.00",
+      "valueType": "number"
+    },
+    {
+      "formatTag": "usd2compactvizsigned",
+      "formatCode": "auto",
+      "valueType": "number",
+      "_autoFormat": {
+        "autoFormatCode": "$#,##0.00;-$#,##0.00",
+        "truncateUnits": true
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+.evidence/template/*
+!.evidence/template/static/
+.evidence/template/static/*
+!.evidence/template/static/data/
+!.evidence/template/static/data/**
+.svelte-kit
+build
+node_modules
+.DS_Store
+static/data
+*.options.yaml
+.vscode/settings.json
+.env
+.evidence/meta
+
+sources/mbtsa/mbtsa_work.duckdb

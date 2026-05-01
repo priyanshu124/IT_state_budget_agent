@@ -1,0 +1,63 @@
+version: 2
+
+metrics:
+
+  # ================================================================
+  # CORE SPEND METRICS
+  # ================================================================
+
+  - name: total_spend
+    label: "Total Spend"
+    description: "Total budget spend across all programs"
+    type: simple
+    type_params:
+      measure: total_amount
+
+  - name: it_spend
+    label: "IT Spend"
+    description: "Total IT-classified budget spend"
+    type: simple
+    type_params:
+      measure: it_amount
+
+  - name: non_it_spend
+    label: "Non-IT Spend"
+    description: "Total non-IT budget spend"
+    type: simple
+    type_params:
+      measure: non_it_amount
+
+  - name: it_line_items
+    label: "IT Line Items"
+    description: "Count of IT budget line items"
+    type: simple
+    type_params:
+      measure: line_item_count
+    filter:
+      - "{{ Dimension('spend_item__is_it') }} = true"
+
+  # ================================================================
+  # DERIVED METRICS — RATIOS
+  # ================================================================
+
+  - name: it_spend_pct
+    label: "IT Spend %"
+    description: "IT spend as percentage of total spend"
+    type: derived
+    type_params:
+      expr: "it_spend / nullif(total_spend, 0) * 100"
+      metrics:
+        - name: it_spend
+        - name: total_spend
+
+  # ================================================================
+  # NOTE: YoY metrics are handled by the query agent via SQL
+  # window functions (LAG over fiscal_year), not MetricFlow offsets.
+  # This is because fiscal_year is categorical, not a time dimension.
+  #
+  # Example SQL the agent generates:
+  #   SELECT fiscal_year, it_spend,
+  #     it_spend - LAG(it_spend) OVER (ORDER BY fiscal_year) as yoy_change
+  #   FROM (SELECT fiscal_year, SUM(it_amount) as it_spend
+  #         FROM fct_it_spend GROUP BY fiscal_year)
+  # ================================================================

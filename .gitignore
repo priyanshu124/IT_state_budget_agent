@@ -1,0 +1,49 @@
+# Environment
+.env
+.venv/
+venv/
+env/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Data - don't commit raw data
+data/raw/*
+data/processed/*
+data/output/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/output/.gitkeep
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Jupyter
+.ipynb_checkpoints/
+# Include notebooks in repo, exclude only checkpoints
+!*.ipynb
+
+# Logs
+logs/*.log
+
+# OS
+.DS_Store
+Thumbs.db
+
+/data/
+# Large binaries and generated artifacts
+*.duckdb
+*.parquet
+data/enriched/*.csv
+dashboard/build/_app/immutable/**/*.js
+dashboard/build/_app/immutable/workers/*.js
+dbt-sql/dbt_packages/**
