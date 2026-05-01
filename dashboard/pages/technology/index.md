@@ -281,43 +281,85 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
         containLabel: true
     });
 
-    // Calculate exponential regression trend line for fiscal overview
-    // Fits y = a * e^(bx) where growth is exponential
-    const calculateTrendLine = (data) => {
-        if (!data || data.length < 2) return [];
-        const n = data.length;
-        const x = Array.from({ length: n }, (_, i) => i);
-        const y = data.map(d => Number(d.total_it_spend) || 0);
-        
-        // Filter out zero/negative values for log transformation
-        const validPoints = x.map((xi, i) => ({ x: xi, y: y[i] })).filter(p => p.y > 0);
-        
-        if (validPoints.length < 2) return y; // Fallback if insufficient valid data
-        
-        // Transform to log space: ln(y) = ln(a) + bx
-        const lnY = validPoints.map(p => Math.log(p.y));
-        const xVals = validPoints.map(p => p.x);
-        
-        const sumX = xVals.reduce((a, b) => a + b, 0);
-        const sumLnY = lnY.reduce((a, b) => a + b, 0);
-        const sumXLnY = xVals.reduce((sum, xi, i) => sum + xi * lnY[i], 0);
-        const sumX2 = xVals.reduce((sum, xi) => sum + xi * xi, 0);
-        const m = xVals.length;
-        
-        // Linear regression in log space
-        const b = (m * sumXLnY - sumX * sumLnY) / (m * sumX2 - sumX * sumX);
-        const lnA = (sumLnY - b * sumX) / m;
+    // Calculate an enhanced power-curve trend with variance coloring and forecast points.
+    const calculateTrendResults = (data) => {
+        if (!data || data.length < 2) {
+            return { chartData: [], growthRate: 0, trendPoints: [], forecastYears: [] };
+        }
+
+        const years = data.map((d) => Number(d.fiscal_year) || 0);
+        const values = data.map((d) => Number(d.total_it_spend) || 0);
+        const x = Array.from({ length: data.length }, (_, index) => index + 1);
+        const validPoints = x.map((xi, index) => ({ x: xi, y: values[index] })).filter((point) => point.y > 0);
+
+        if (validPoints.length < 2) {
+            return {
+                chartData: values.map((value) => ({ value, itemStyle: { color: '#FFC838' } })),
+                growthRate: 0,
+                trendPoints: values,
+                forecastYears: []
+            };
+        }
+
+        const lnX = validPoints.map((point) => Math.log(point.x));
+        const lnY = validPoints.map((point) => Math.log(point.y));
+        const count = validPoints.length;
+
+        const sumLnX = lnX.reduce((total, value) => total + value, 0);
+        const sumLnY = lnY.reduce((total, value) => total + value, 0);
+        const sumLnXLnY = lnX.reduce((total, value, index) => total + value * lnY[index], 0);
+        const sumLnX2 = lnX.reduce((total, value) => total + value * value, 0);
+        const denominator = count * sumLnX2 - sumLnX * sumLnX;
+
+        if (Math.abs(denominator) < 1e-10) {
+            return {
+                chartData: values.map((value) => ({ value, itemStyle: { color: '#FFC838' } })),
+                growthRate: 0,
+                trendPoints: values,
+                forecastYears: []
+            };
+        }
+
+        const b = (count * sumLnXLnY - sumLnX * sumLnY) / denominator;
+        const lnA = (sumLnY - b * sumLnX) / count;
         const a = Math.exp(lnA);
-        
-        // Transform back to original space: y = a * e^(bx)
-        return x.map(xi => a * Math.exp(b * xi));
+
+        const forecastYears = years.length > 0
+            ? [years[years.length - 1] + 1, years[years.length - 1] + 2]
+            : [];
+        const extendedX = Array.from({ length: x.length + forecastYears.length }, (_, index) => index + 1);
+        const trendPoints = extendedX.map((xi) => a * Math.pow(xi, b));
+        const growthRate = years.length > 1 && values[0] > 0 && values[values.length - 1] > 0
+            ? (Math.pow(values[values.length - 1] / values[0], 1 / (values.length - 1)) - 1) * 100
+            : 0;
+
+        const chartData = values.map((value, index) => {
+            const predicted = trendPoints[index] ?? value;
+            return {
+                value,
+                itemStyle: {
+                    color: value > (predicted * 1.05) ? '#C8122C' : '#FFC838'
+                }
+            };
+        });
+
+        return {
+            chartData: [...chartData, ...forecastYears.map(() => null)],
+            growthRate,
+            trendPoints,
+            forecastYears
+        };
     };
 
     $: selectedFy = selectedValue($inputStore?.f_fy);
     $: selectedFund = selectedValue($inputStore?.f_fund);
     $: selectedAgency = selectedValue($inputStore?.f_agency);
     $: viewMode = readInputValue($inputStore?.f_view, 'trend');
-    $: trendLine = calculateTrendLine(yearly);
+    $: trendResults = calculateTrendResults(yearly);
+    $: yearsWithForecast = [
+        ...(yearly ?? []).map((d) => String(d.fiscal_year)),
+        ...(trendResults.forecastYears ?? []).map((year) => `${year} (F)`)
+    ];
 </script>
 
 {#if viewMode == 'latest'}
@@ -371,6 +413,12 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
             config={{
                 title: {
                     text: 'Total IT spend by fiscal year',
+                    subtext: `Approx. CAGR: ${trendResults.growthRate.toFixed(1)}% (Power Curve)`,
+                    subtextStyle: {
+                        color: '#C8122C',
+                        fontSize: 12,
+                        fontWeight: 600
+                    },
                     left: 'left',
                     top: 0,
                     textStyle: towerChartTitleStyle
@@ -392,7 +440,7 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
                 },
                 xAxis: {
                     type: 'category',
-                    data: yearly.map((d) => String(d.fiscal_year))
+                    data: yearsWithForecast
                 },
                 yAxis: {
                     type: 'value',
@@ -404,7 +452,7 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
                     {
                         type: 'bar',
                         barMaxWidth: 36,
-                        data: yearly.map((d) => Number(d.total_it_spend) || 0),
+                        data: trendResults.chartData,
                         label: {
                             show: true,
                             position: 'top',
@@ -425,7 +473,7 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
                         type: 'line',
                         smooth: true,
                         name: 'Trend',
-                        data: trendLine,
+                        data: trendResults.trendPoints,
                         lineStyle: {
                             color: '#C8122C',
                             width: 3
