@@ -281,10 +281,29 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
         containLabel: true
     });
 
+    // Calculate linear regression trend line for fiscal overview
+    const calculateTrendLine = (data) => {
+        if (!data || data.length < 2) return [];
+        const n = data.length;
+        const x = Array.from({ length: n }, (_, i) => i);
+        const y = data.map(d => Number(d.total_it_spend) || 0);
+        
+        const sumX = x.reduce((a, b) => a + b, 0);
+        const sumY = y.reduce((a, b) => a + b, 0);
+        const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
+        const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
+        
+        const slope = (n * sumXY - sumX * sumY) / (n * sumX2 - sumX * sumX);
+        const intercept = (sumY - slope * sumX) / n;
+        
+        return y.map((_, i) => slope * i + intercept);
+    };
+
     $: selectedFy = selectedValue($inputStore?.f_fy);
     $: selectedFund = selectedValue($inputStore?.f_fund);
     $: selectedAgency = selectedValue($inputStore?.f_agency);
     $: viewMode = readInputValue($inputStore?.f_view, 'trend');
+    $: trendLine = calculateTrendLine(yearly);
 </script>
 
 {#if viewMode == 'latest'}
@@ -331,110 +350,128 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
 
 ## Fiscal Overview
 
-{#if yearly?.length > 0}
-    <ECharts
-        height={towerChartHeight}
-        config={{
-            title: {
-                text: 'Total IT spend by fiscal year',
-                left: 'left',
-                top: 0,
-                textStyle: towerChartTitleStyle
-            },
-            grid: getTowerChartGrid(),
-            tooltip: {
-                trigger: 'axis',
-                formatter: (params) => {
-                    if (!params || params.length === 0) return '';
-                    const p = params[0];
-                    return `<b>${p.axisValue}</b><br/>IT Spend: ${usdCompact(p.value)}`;
-                }
-            },
-            xAxis: {
-                type: 'category',
-                data: yearly.map((d) => String(d.fiscal_year))
-            },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    formatter: (v) => usdCompact(v)
-                }
-            },
-            series: [
-                {
-                    type: 'bar',
-                    barMaxWidth: 36,
-                    data: yearly.map((d) => Number(d.total_it_spend) || 0),
-                    label: {
-                        show: true,
-                        position: 'top',
-                        distance: 5,
-                        color: '#231F20',
-                        fontSize: 11,
-                        formatter: (p) => usdCompact(p.value)
-                    },
-                    labelLayout: {
-                        hideOverlap: true
-                    },
-                    itemStyle: {
-                        color: '#FFC838'
+{#if yearly?.length > 0 && yoy_detail?.length > 0}
+    <Grid cols=2>
+        <ECharts
+            height={towerChartHeight}
+            config={{
+                title: {
+                    text: 'Total IT spend by fiscal year',
+                    left: 'left',
+                    top: 0,
+                    textStyle: towerChartTitleStyle
+                },
+                grid: getTowerChartGrid(),
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: (params) => {
+                        if (!params || params.length === 0) return '';
+                        const values = params.map(p => {
+                            if (p.seriesType === 'bar') {
+                                return `${p.marker} Spend: ${usdCompact(p.value)}`;
+                            } else {
+                                return `${p.marker} Trend: ${usdCompact(p.value)}`;
+                            }
+                        });
+                        return `<b>${params[0].axisValue}</b><br/>${values.join('<br/>')}`;
                     }
-                }
-            ]
-        }}
-    />
+                },
+                xAxis: {
+                    type: 'category',
+                    data: yearly.map((d) => String(d.fiscal_year))
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: (v) => usdCompact(v)
+                    }
+                },
+                series: [
+                    {
+                        type: 'bar',
+                        barMaxWidth: 36,
+                        data: yearly.map((d) => Number(d.total_it_spend) || 0),
+                        label: {
+                            show: true,
+                            position: 'top',
+                            distance: 5,
+                            color: '#231F20',
+                            fontSize: 11,
+                            formatter: (p) => usdCompact(p.value)
+                        },
+                        labelLayout: {
+                            hideOverlap: true
+                        },
+                        itemStyle: {
+                            color: '#FFC838'
+                        },
+                        z: 1
+                    },
+                    {
+                        type: 'line',
+                        smooth: true,
+                        name: 'Trend',
+                        data: trendLine,
+                        lineStyle: {
+                            color: '#C8122C',
+                            width: 3
+                        },
+                        symbol: 'none',
+                        z: 2
+                    }
+                ]
+            }}
+        />
+        <ECharts
+            height={towerChartHeight}
+            config={{
+                title: {
+                    text: 'Year-over-year IT spend change',
+                    left: 'left',
+                    top: 0,
+                    textStyle: towerChartTitleStyle
+                },
+                grid: getTowerChartGrid(),
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: (params) => {
+                        if (!params || params.length === 0) return '';
+                        const p = params[0];
+                        const v = Number(p.value) || 0;
+                        return `<b>${p.axisValue}</b><br/>YoY: ${v.toFixed(1)}%`;
+                    }
+                },
+                xAxis: {
+                    type: 'category',
+                    data: yoy_detail.map((d) => String(d.fiscal_year))
+                },
+                yAxis: {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: (v) => `${Number(v).toFixed(0)}%`
+                    }
+                },
+                series: [
+                    {
+                        type: 'bar',
+                        data: yoy_detail.map((d) => Number(d.change_pct) || 0),
+                        label: {
+                            show: true,
+                            position: 'top',
+                            formatter: (p) => `${(Number(p.value) || 0).toFixed(1)}%`
+                        },
+                        itemStyle: {
+                            color: (p) => ((Number(p.value) || 0) >= 0 ? '#2EAD6B' : '#C8122C')
+                        }
+                    }
+                ]
+            }}
+        />
+    </Grid>
+{:else if yearly?.length > 0}
+    <Alert status=warning>Fiscal overview data is incomplete for this filter selection.</Alert>
 {:else}
     <Alert status=warning>No fiscal-year IT spend data available for this filter selection.</Alert>
-{/if}
-
-{#if yoy_detail?.length > 0}
-    <ECharts
-        height={towerChartHeight}
-        config={{
-            title: {
-                text: 'Year-over-year IT spend change',
-                left: 'left',
-                top: 0,
-                textStyle: towerChartTitleStyle
-            },
-            grid: getTowerChartGrid(),
-            tooltip: {
-                trigger: 'axis',
-                formatter: (params) => {
-                    if (!params || params.length === 0) return '';
-                    const p = params[0];
-                    const v = Number(p.value) || 0;
-                    return `<b>${p.axisValue}</b><br/>YoY: ${v.toFixed(1)}%`;
-                }
-            },
-            xAxis: {
-                type: 'category',
-                data: yoy_detail.map((d) => String(d.fiscal_year))
-            },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    formatter: (v) => `${Number(v).toFixed(0)}%`
-                }
-            },
-            series: [
-                {
-                    type: 'bar',
-                    data: yoy_detail.map((d) => Number(d.change_pct) || 0),
-                    label: {
-                        show: true,
-                        position: 'top',
-                        formatter: (p) => `${(Number(p.value) || 0).toFixed(1)}%`
-                    },
-                    itemStyle: {
-                        color: (p) => ((Number(p.value) || 0) >= 0 ? '#2EAD6B' : '#C8122C')
-                    }
-                }
-            ]
-        }}
-    />
-{:else}
-    <Alert status=warning>Year-over-year IT spend change is unavailable for this filter selection.</Alert>
 {/if}
 
 ---
