@@ -281,37 +281,36 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
         containLabel: true
     });
 
-    // Calculate polynomial regression trend line (degree 2) for fiscal overview
+    // Calculate exponential regression trend line for fiscal overview
+    // Fits y = a * e^(bx) where growth is exponential
     const calculateTrendLine = (data) => {
-        if (!data || data.length < 3) return [];
+        if (!data || data.length < 2) return [];
         const n = data.length;
         const x = Array.from({ length: n }, (_, i) => i);
         const y = data.map(d => Number(d.total_it_spend) || 0);
         
-        // Build system for quadratic regression: y = a + bx + cx²
-        const sumX = x.reduce((a, b) => a + b, 0);
-        const sumY = y.reduce((a, b) => a + b, 0);
-        const sumX2 = x.reduce((sum, xi) => sum + xi * xi, 0);
-        const sumX3 = x.reduce((sum, xi) => sum + xi * xi * xi, 0);
-        const sumX4 = x.reduce((sum, xi) => sum + xi * xi * xi * xi, 0);
-        const sumXY = x.reduce((sum, xi, i) => sum + xi * y[i], 0);
-        const sumX2Y = x.reduce((sum, xi, i) => sum + xi * xi * y[i], 0);
+        // Filter out zero/negative values for log transformation
+        const validPoints = x.map((xi, i) => ({ x: xi, y: y[i] })).filter(p => p.y > 0);
         
-        // Solve using Cramer's rule
-        const A = n * sumX2 - sumX * sumX;
-        const B = sumX * sumX2 - n * sumX3;
-        const C = sumX2 * sumX2 - A * sumX4;
-        const D = sumY * sumX2 - sumXY * sumX;
-        const E = sumXY * sumX2 - sumX2Y * sumX;
+        if (validPoints.length < 2) return y; // Fallback if insufficient valid data
         
-        const denom = A * sumX2 - B * B;
-        if (Math.abs(denom) < 1e-10) return y; // Fallback to raw data if singular
+        // Transform to log space: ln(y) = ln(a) + bx
+        const lnY = validPoints.map(p => Math.log(p.y));
+        const xVals = validPoints.map(p => p.x);
         
-        const c = (D * sumX2 - E * B) / denom;
-        const b = (E - c * B) / A;
-        const a = (sumY - b * sumX - c * sumX2) / n;
+        const sumX = xVals.reduce((a, b) => a + b, 0);
+        const sumLnY = lnY.reduce((a, b) => a + b, 0);
+        const sumXLnY = xVals.reduce((sum, xi, i) => sum + xi * lnY[i], 0);
+        const sumX2 = xVals.reduce((sum, xi) => sum + xi * xi, 0);
+        const m = xVals.length;
         
-        return x.map(xi => a + b * xi + c * xi * xi);
+        // Linear regression in log space
+        const b = (m * sumXLnY - sumX * sumLnY) / (m * sumX2 - sumX * sumX);
+        const lnA = (sumLnY - b * sumX) / m;
+        const a = Math.exp(lnA);
+        
+        // Transform back to original space: y = a * e^(bx)
+        return x.map(xi => a * Math.exp(b * xi));
     };
 
     $: selectedFy = selectedValue($inputStore?.f_fy);
