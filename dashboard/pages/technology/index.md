@@ -20,14 +20,6 @@ select distinct fund_type from mbtsa.subprogram_level where fund_type is not nul
 select distinct agency_name from mbtsa.subprogram_level where agency_name is not null order by agency_name
 ```
 
-```sql g_tower
-select distinct it_tower from mbtsa.subprogram_level where is_it=true and it_tower is not null order by it_tower
-```
-
-```sql g_desig
-select distinct it_designation from mbtsa.subprogram_level where is_it=true and it_designation is not null order by it_designation
-```
-
 <Details title="🔍 Filters — click to expand" open=true>
 
 <Grid cols=3>
@@ -109,17 +101,10 @@ cross join ${scope_meta} m
 where f.fiscal_year = m.max_year
 ```
 
-```sql filtered_prior
-select f.*
-from ${filtered} f
-cross join ${scope_meta} m
-where f.fiscal_year = m.prior_year
-```
-
 ```sql overview
 with points as (
     select
-        m.*, 
+        m.*,
         y_5.total_it_spend as spend_5y_ago,
         y_10.total_it_spend as spend_10y_ago
     from ${scope_meta} m
@@ -160,11 +145,19 @@ from ${filtered_latest}
 ```
 
 ```sql snapshot_towers
-select it_tower, sum(amount) as spend from ${filtered_latest} where it_tower is not null group by it_tower order by spend desc
+select it_tower, sum(amount) as spend
+from ${filtered_latest}
+where it_tower is not null
+group by it_tower
+order by spend desc
 ```
 
 ```sql snapshot_subprograms
-select subprogram_name, sum(amount) as spend from ${filtered_latest} where subprogram_name is not null group by subprogram_name order by spend desc
+select subprogram_name, sum(amount) as spend
+from ${filtered_latest}
+where subprogram_name is not null
+group by subprogram_name
+order by spend desc
 ```
 
 ```sql yearly
@@ -200,28 +193,71 @@ limit 10
 ```
 
 ```sql tower_trend
+with tower_spend as (
+    select
+        f.fiscal_year,
+        f.it_tower,
+        sum(f.amount) as spend
+    from ${filtered} f
+    where f.it_tower in (select it_tower from ${top_towers_trend})
+    group by f.fiscal_year, f.it_tower
+),
+yearly_totals as (
+    select fiscal_year, total_it_spend
+    from ${yearly_rollup}
+)
+select
+    t.fiscal_year,
+    t.it_tower,
+    t.spend,
+    t.spend / nullif(y.total_it_spend, 0) as pct_of_total
+from tower_spend t
+left join yearly_totals y on y.fiscal_year = t.fiscal_year
+order by t.fiscal_year
+```
+
+```sql top_agencies
+select agency_name, sum(amount) as total_agency_spend
+from ${filtered}
+where agency_name is not null
+group by agency_name
+order by total_agency_spend desc
+limit 5
+```
+
+```sql agency_trend_raw
 select
     f.fiscal_year,
-    f.it_tower,
+    f.agency_name,
     sum(f.amount) as spend
 from ${filtered} f
-where f.it_tower in (select it_tower from ${top_towers_trend})
-group by f.fiscal_year, f.it_tower
-order by f.fiscal_year
+where f.agency_name is not null
+group by f.fiscal_year, f.agency_name
 ```
 
-```sql desig
-select it_designation, sum(amount) as spend, count(distinct subprogram_name) as programs from ${filtered} group by it_designation order by spend desc
+```sql agency_trend
+select
+    fiscal_year,
+    case
+        when agency_name in (select agency_name from ${top_agencies})
+            then agency_name
+        else 'Others'
+    end as agency_name,
+    sum(spend) as spend
+from ${agency_trend_raw}
+group by fiscal_year, agency_name
+order by fiscal_year, agency_name
 ```
 
-```sql agency_it
-select agency_name, sum(amount) as spend from ${filtered} group by agency_name order by spend desc limit 15
-```
-
-```sql tower_drill
-select it_tower, '/budget-office/agencies/explorer?tower=' || replace(it_tower, ' ', '%20') as tower_link,
-    sum(amount) as spend, count(distinct agency_name) as agencies, count(distinct subprogram_name) as programs
-from ${filtered} where it_tower is not null group by it_tower order by spend desc
+```sql agency_drill
+select
+    agency_name,
+    fiscal_year,
+    sum(amount) as spend
+from ${filtered}
+where agency_name is not null
+group by agency_name, fiscal_year
+order by agency_name, fiscal_year
 ```
 
 <script>
@@ -243,12 +279,10 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
 
         for (const candidate of candidates) {
             if (candidate == null) continue;
-
             if (typeof candidate === 'object') {
                 if (candidate.value != null) return String(candidate.value).toLowerCase();
                 if (candidate.label != null) return String(candidate.label).toLowerCase();
             }
-
             const normalized = String(candidate).toLowerCase();
             if (normalized && normalized !== '[object object]') return normalized;
         }
@@ -268,107 +302,107 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
     };
 
     const towerChartHeight = '320px';
-    const towerChartTitleStyle = {
-        fontSize: 14,
-        fontWeight: 600,
-        color: '#231F20'
-    };
+    const towerChartTitleStyle = { fontSize: 14, fontWeight: 600, color: '#231F20' };
     const getTowerChartGrid = () => ({
-        top: '15%',
-        right: '4%',
-        bottom: '11%',
-        left: '8%',
-        containLabel: true
+        top: '15%', right: '4%', bottom: '11%', left: '8%', containLabel: true
     });
 
-    // Calculate an enhanced power-curve trend with variance coloring and forecast points.
     const calculateTrendResults = (data) => {
-        if (!data || data.length < 2) {
-            return { chartData: [], growthRate: 0, trendPoints: [], forecastYears: [] };
-        }
+        if (!data || data.length < 2) return { chartData: [], growthRate: 0, trendPoints: [] };
 
         const years = data.map((d) => Number(d.fiscal_year) || 0);
         const values = data.map((d) => Number(d.total_it_spend) || 0);
-        const x = Array.from({ length: data.length }, (_, index) => index + 1);
-        const validPoints = x.map((xi, index) => ({ x: xi, y: values[index] })).filter((point) => point.y > 0);
+        const x = Array.from({ length: data.length }, (_, i) => i + 1);
+        const validPoints = x.map((xi, i) => ({ x: xi, y: values[i] })).filter((p) => p.y > 0);
 
-        if (validPoints.length < 2) {
-            return {
-                chartData: values.map((value) => ({ value, itemStyle: { color: '#FFC838' } })),
-                growthRate: 0,
-                trendPoints: values,
-                forecastYears: []
-            };
-        }
+        if (validPoints.length < 2) return { chartData: values, growthRate: 0, trendPoints: values };
 
-        const lnX = validPoints.map((point) => Math.log(point.x));
-        const lnY = validPoints.map((point) => Math.log(point.y));
+        const lnX = validPoints.map((p) => Math.log(p.x));
+        const lnY = validPoints.map((p) => Math.log(p.y));
         const count = validPoints.length;
-
-        const sumLnX = lnX.reduce((total, value) => total + value, 0);
-        const sumLnY = lnY.reduce((total, value) => total + value, 0);
-        const sumLnXLnY = lnX.reduce((total, value, index) => total + value * lnY[index], 0);
-        const sumLnX2 = lnX.reduce((total, value) => total + value * value, 0);
+        const sumLnX = lnX.reduce((t, v) => t + v, 0);
+        const sumLnY = lnY.reduce((t, v) => t + v, 0);
+        const sumLnXLnY = lnX.reduce((t, v, i) => t + v * lnY[i], 0);
+        const sumLnX2 = lnX.reduce((t, v) => t + v * v, 0);
         const denominator = count * sumLnX2 - sumLnX * sumLnX;
 
-        if (Math.abs(denominator) < 1e-10) {
-            return {
-                chartData: values.map((value) => ({ value, itemStyle: { color: '#FFC838' } })),
-                growthRate: 0,
-                trendPoints: values,
-                forecastYears: []
-            };
-        }
+        if (Math.abs(denominator) < 1e-10) return { chartData: values, growthRate: 0, trendPoints: values };
 
         const b = (count * sumLnXLnY - sumLnX * sumLnY) / denominator;
-        const lnA = (sumLnY - b * sumLnX) / count;
-        const a = Math.exp(lnA);
-
-        const forecastYears = years.length > 0
-            ? [years[years.length - 1] + 1, years[years.length - 1] + 2]
-            : [];
-        const extendedX = Array.from({ length: x.length + forecastYears.length }, (_, index) => index + 1);
-        const trendPoints = extendedX.map((xi) => a * Math.pow(xi, b));
+        const a = Math.exp((sumLnY - b * sumLnX) / count);
+        const trendPoints = x.map((xi) => a * Math.pow(xi, b));
         const growthRate = years.length > 1 && values[0] > 0 && values[values.length - 1] > 0
             ? (Math.pow(values[values.length - 1] / values[0], 1 / (values.length - 1)) - 1) * 100
             : 0;
 
-        const chartData = values.map((value, index) => {
-            const predicted = trendPoints[index] ?? value;
-            return {
-                value,
-                itemStyle: {
-                    color: value > (predicted * 1.05) ? '#C8122C' : '#FFC838'
-                }
-            };
-        });
-
-        return {
-            chartData: [...chartData, ...forecastYears.map(() => null)],
-            growthRate,
-            trendPoints,
-            forecastYears
-        };
+        return { chartData: values, growthRate, trendPoints };
     };
+
+    let selectedTower = null;
+    let selectedAgencySeries = null;
+    let pivotYearView = '5y';
+    let searchTerm = '';
 
     $: selectedFy = selectedValue($inputStore?.f_fy);
     $: selectedFund = selectedValue($inputStore?.f_fund);
     $: selectedAgency = selectedValue($inputStore?.f_agency);
     $: viewMode = readInputValue($inputStore?.f_view, 'trend');
     $: trendResults = calculateTrendResults(yearly);
-    $: yearsWithForecast = [
-        ...(yearly ?? []).map((d) => String(d.fiscal_year)),
-        ...(trendResults.forecastYears ?? []).map((year) => `${year} (F)`)
-    ];
+    $: towerTrendYears = [...new Set(tower_trend.map((d) => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
+    $: highlightedTowerNames = (top_towers_trend ?? []).slice(0, 3).map((t) => t.it_tower);
+    $: agencyTrendYears = [...new Set(agency_trend.map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
+    $: agencySeriesNames = [...(top_agencies ?? []).map(a => a.agency_name), 'Others'];
+    $: pivotYears = [...new Set((agency_drill ?? []).map(d => d.fiscal_year))].sort((a, b) => a - b);
+    $: tower_agency_pivot = Object.values(
+        (agency_drill ?? []).reduce(function(acc, row) {
+            const key = row.agency_name;
+            if (!acc[key]) acc[key] = { agency_name: row.agency_name };
+            acc[key]['FY' + row.fiscal_year] = (acc[key]['FY' + row.fiscal_year] || 0) + row.spend;
+            return acc;
+        }, {})
+    );
+    $: pivotViewYears = (() => {
+        if (pivotYearView === '3y') return pivotYears.slice(-3);
+        if (pivotYearView === '5y') return pivotYears.slice(-5);
+        return pivotYears;
+    })();
+    $: filteredPivot = searchTerm
+        ? tower_agency_pivot.filter(function(r) {
+            return r.agency_name.toLowerCase().includes(searchTerm.toLowerCase());
+        })
+        : tower_agency_pivot;
+    $: sortedPivot = pivotViewYears.length > 0
+        ? filteredPivot.slice().sort(function(a, b) {
+            const lastYr = 'FY' + pivotViewYears[pivotViewYears.length - 1];
+            return (b[lastYr] || 0) - (a[lastYr] || 0);
+        }).map(function(r) {
+            return Object.assign({}, r, {
+                agency_link: '/technology/agencies/' + encodeURIComponent(r.agency_name)
+            });
+        })
+        : filteredPivot.map(function(r) {
+            return Object.assign({}, r, {
+                agency_link: '/technology/agencies/' + encodeURIComponent(r.agency_name)
+            });
+        });
+
+    const toggleTower = (name) => {
+        selectedTower = selectedTower === name ? null : name;
+    };
+
+    const toggleAgencySeries = (name) => {
+        selectedAgencySeries = selectedAgencySeries === name ? null : name;
+    };
 </script>
 
 {#if viewMode == 'latest'}
-    <Grid cols=4>
-        <BigValue data={overview} value=latest_it_spend fmt=usd2compactviz title="Latest Year ({overview?.[0]?.max_year_label ?? 'N/A'})"/>
-        <BigValue data={overview} value=yoy_pct fmt='0.0"%"' title="YoY Change"/>
-        <BigValue data={overview} value=cagr_5y_pct fmt='0.0"%"' title="5-Year CAGR"/>
-        <BigValue data={overview} value=cagr_10y_pct fmt='0.0"%"' title="10-Year CAGR"/>
-    </Grid>
+
+<Grid cols=4>
+    <BigValue data={overview} value=latest_it_spend fmt=usd2compactviz title="Latest Year ({overview?.[0]?.max_year_label ?? 'N/A'})"/>
+    <BigValue data={overview} value=yoy_pct fmt='0.0"%"' title="YoY Change"/>
+    <BigValue data={overview} value=cagr_5y_pct fmt='0.0"%"' title="5-Year CAGR"/>
+    <BigValue data={overview} value=cagr_10y_pct fmt='0.0"%"' title="10-Year CAGR"/>
+</Grid>
 
 ---
 
@@ -411,75 +445,40 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
         <ECharts
             height={towerChartHeight}
             config={{
-                title: {
-                    text: 'Total IT spend by fiscal year',
-                    subtext: `Approx. CAGR: ${trendResults.growthRate.toFixed(1)}% (Power Curve)`,
-                    subtextStyle: {
-                        color: '#C8122C',
-                        fontSize: 12,
-                        fontWeight: 600
-                    },
-                    left: 'left',
-                    top: 0,
-                    textStyle: towerChartTitleStyle
-                },
+                title: { text: 'Total IT spend by fiscal year', left: 'left', top: 0, textStyle: towerChartTitleStyle },
                 grid: getTowerChartGrid(),
                 tooltip: {
                     trigger: 'axis',
                     formatter: (params) => {
                         if (!params || params.length === 0) return '';
                         const values = params.map(p => {
-                            if (p.seriesType === 'bar') {
-                                return `${p.marker} Spend: ${usdCompact(p.value)}`;
-                            } else {
-                                return `${p.marker} Trend: ${usdCompact(p.value)}`;
-                            }
+                            if (p.seriesType === 'bar') return `${p.marker} Spend: ${usdCompact(p.value)}`;
+                            return `${p.marker} Trend: ${usdCompact(p.value)}`;
                         });
                         return `<b>${params[0].axisValue}</b><br/>${values.join('<br/>')}`;
                     }
                 },
-                xAxis: {
-                    type: 'category',
-                    data: yearsWithForecast
-                },
-                yAxis: {
-                    type: 'value',
-                    axisLabel: {
-                        formatter: (v) => usdCompact(v)
-                    }
-                },
+                xAxis: { type: 'category', data: yearly.map((d) => String(d.fiscal_year)) },
+                yAxis: { type: 'value', axisLabel: { formatter: (v) => usdCompact(v) } },
                 series: [
                     {
                         type: 'bar',
                         barMaxWidth: 36,
                         data: trendResults.chartData,
                         label: {
-                            show: true,
-                            position: 'top',
-                            distance: 5,
-                            color: '#231F20',
-                            fontSize: 11,
+                            show: true, position: 'top', distance: 5,
+                            color: '#231F20', fontSize: 11,
                             formatter: (p) => usdCompact(p.value)
                         },
-                        labelLayout: {
-                            hideOverlap: true
-                        },
-                        itemStyle: {
-                            color: '#FFC838'
-                        },
+                        labelLayout: { hideOverlap: true },
+                        itemStyle: { color: '#FFC838' },
                         z: 1
                     },
                     {
-                        type: 'line',
-                        smooth: true,
-                        name: 'Trend',
+                        type: 'line', smooth: true, name: 'Trend',
                         data: trendResults.trendPoints,
-                        lineStyle: {
-                            color: '#C8122C',
-                            width: 3
-                        },
-                        symbol: 'none',
-                        z: 2
+                        lineStyle: { color: '#C8122C', width: 3 },
+                        symbol: 'none', z: 2
                     }
                 ]
             }}
@@ -487,12 +486,7 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
         <ECharts
             height={towerChartHeight}
             config={{
-                title: {
-                    text: 'Year-over-year IT spend change',
-                    left: 'left',
-                    top: 0,
-                    textStyle: towerChartTitleStyle
-                },
+                title: { text: 'Year-over-year IT spend change', left: 'left', top: 0, textStyle: towerChartTitleStyle },
                 grid: getTowerChartGrid(),
                 tooltip: {
                     trigger: 'axis',
@@ -503,28 +497,14 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
                         return `<b>${p.axisValue}</b><br/>YoY: ${v.toFixed(1)}%`;
                     }
                 },
-                xAxis: {
-                    type: 'category',
-                    data: yoy_detail.map((d) => String(d.fiscal_year))
-                },
-                yAxis: {
-                    type: 'value',
-                    axisLabel: {
-                        formatter: (v) => `${Number(v).toFixed(0)}%`
-                    }
-                },
+                xAxis: { type: 'category', data: yoy_detail.map((d) => String(d.fiscal_year)) },
+                yAxis: { type: 'value', axisLabel: { formatter: (v) => `${Number(v).toFixed(0)}%` } },
                 series: [
                     {
                         type: 'bar',
                         data: yoy_detail.map((d) => Number(d.change_pct) || 0),
-                        label: {
-                            show: true,
-                            position: 'top',
-                            formatter: (p) => `${(Number(p.value) || 0).toFixed(1)}%`
-                        },
-                        itemStyle: {
-                            color: (p) => ((Number(p.value) || 0) >= 0 ? '#2EAD6B' : '#C8122C')
-                        }
+                        label: { show: true, position: 'top', formatter: (p) => `${(Number(p.value) || 0).toFixed(1)}%` },
+                        itemStyle: { color: (p) => ((Number(p.value) || 0) >= 0 ? '#2EAD6B' : '#C8122C') }
                     }
                 ]
             }}
@@ -541,66 +521,47 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
 ## Tower Trends (Top 10)
 
 {#if tower_trend?.length > 0}
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 8px 0 14px 0;">
+        {#each top_towers_trend as t}
+            <button
+                on:click={() => toggleTower(t.it_tower)}
+                style={`border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ${selectedTower === t.it_tower ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)'}; background: ${selectedTower === t.it_tower ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white'}; box-shadow: ${selectedTower === t.it_tower ? '0 4px 10px rgba(200,20,44,0.08)' : 'none'}`}
+                aria-pressed={selectedTower === t.it_tower}
+            >
+                <span style={`width:10px; height:10px; border-radius:50%; background: ${t.it_tower === highlightedTowerNames[0] ? '#C8122C' : t.it_tower === highlightedTowerNames[1] ? '#FFC838' : t.it_tower === highlightedTowerNames[2] ? '#231F20' : '#C9CED6'}; display:inline-block;`}></span>
+                <span style={`color:${selectedTower === t.it_tower ? '#C8122C' : '#231F20'}; font-weight:${selectedTower === t.it_tower ? 700 : 500}`}>{t.it_tower}</span>
+            </button>
+        {/each}
+    </div>
     <ECharts
         height="520px"
         config={{
-            color: ['#C8122C','#FFC838','#231F20','#E04B3F','#C99A06','#6F2030','#5B5148','#F26A3D','#A7842A','#8A3C4A'],
-            title: {
-                text: 'Top 10 towers over time',
-                left: 'left',
-                top: 0,
-                textStyle: {
-                    fontSize: 14,
-                    fontWeight: 600,
-                    color: '#231F20'
-                }
-            },
+            title: { text: 'Top 10 towers over time', left: 'left', top: 0, textStyle: { fontSize: 14, fontWeight: 600, color: '#231F20' } },
             tooltip: {
-                trigger: 'axis',
-                formatter: (params) => {
-                    if (!params || params.length === 0) return '';
-                    const year = params[0].axisValue;
-                    const lines = params.map((p) => {
-                        const v = Number(p.value) || 0;
-                        const money = Math.abs(v) >= 1e9
-                            ? `$${(v / 1e9).toFixed(2)}B`
-                            : Math.abs(v) >= 1e6
-                                ? `$${(v / 1e6).toFixed(1)}M`
-                                : `$${Math.round(v).toLocaleString()}`;
-                        return `${p.marker} ${p.seriesName}: ${money}`;
-                    });
-                    return [`<b>${year}</b>`, ...lines].join('<br/>');
+                trigger: 'item',
+                formatter: function(param) {
+                    if (!param) return '';
+                    const hoveredTower = param.seriesName;
+                    const rows = towerTrendYears.slice()
+                        .sort(function(a, b) { return Number(b) - Number(a); })
+                        .map(function(year) {
+                            const point = tower_trend.find(function(d) {
+                                return String(d.fiscal_year) === year && d.it_tower === hoveredTower;
+                            });
+                            const v = point ? point.spend : 0;
+                            const pct = point ? (point.pct_of_total * 100).toFixed(1) : '0.0';
+                            const fmt = Math.abs(v) >= 1e9
+                                ? '$' + (v/1e9).toFixed(2) + 'B'
+                                : Math.abs(v) >= 1e6
+                                    ? '$' + (v/1e6).toFixed(1) + 'M'
+                                    : '$' + Math.round(v).toLocaleString();
+                            return year + ': ' + fmt + ' (' + pct + '%)';
+                        });
+                    return '<b>' + hoveredTower + '</b><br/>' + rows.join('<br/>');
                 }
             },
-            legend: {
-                type: 'plain',
-                orient: 'horizontal',
-                left: 'center',
-                top: 24,
-                itemGap: 12,
-                textStyle: {
-                    fontSize: 11,
-                    lineHeight: 14
-                },
-                formatter: (name) => {
-                    const raw = String(name || '');
-                    const maxLen = 22;
-                    if (raw.length <= maxLen) return raw;
-                    const splitAt = raw.lastIndexOf(' ', maxLen);
-                    if (splitAt > 8) return `${raw.slice(0, splitAt).trim()}\n${raw.slice(splitAt + 1).trim()}`;
-                    return `${raw.slice(0, maxLen)}\n${raw.slice(maxLen)}`;
-                }
-            },
-            grid: {
-                left: 64,
-                right: 24,
-                top: 170,
-                bottom: 46
-            },
-            xAxis: {
-                type: 'category',
-                data: [...new Set(tower_trend.map((d) => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b))
-            },
+            grid: { left: 56, right: 24, top: 86, bottom: 46 },
+            xAxis: { type: 'category', data: towerTrendYears },
             yAxis: {
                 type: 'value',
                 axisLabel: {
@@ -613,14 +574,63 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
             },
             series: top_towers_trend.map((tower) => {
                 const towerName = tower.it_tower;
-                const years = [...new Set(tower_trend.map((d) => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
+                const years = towerTrendYears;
+                const isHighlighted = highlightedTowerNames.includes(towerName);
+                const hasTowerSelection = Boolean(selectedTower);
+                const isSelectedTower = selectedTower === towerName;
+                const isSelected = !hasTowerSelection || isSelectedTower;
+                const baseColor = isHighlighted
+                    ? (towerName === highlightedTowerNames[0] ? '#C8122C'
+                        : towerName === highlightedTowerNames[1] ? '#FFC838'
+                        : '#231F20')
+                    : '#C9CED6';
                 return {
                     name: towerName,
                     type: 'line',
                     smooth: false,
                     symbol: 'circle',
-                    symbolSize: 6,
-                    data: years.map((y) => tower_trend.find((d) => String(d.fiscal_year) === y && d.it_tower === towerName)?.spend ?? 0)
+                    symbolSize: hasTowerSelection
+                        ? (isSelectedTower ? (isHighlighted ? 12 : 11) : 4)
+                        : (isHighlighted ? 7 : 6),
+                    showSymbol: true,
+                    lineStyle: {
+                        color: baseColor,
+                        width: hasTowerSelection
+                            ? (isSelectedTower ? (isHighlighted ? 6 : 5) : 1)
+                            : (isHighlighted ? 3 : 2),
+                        opacity: isSelected ? 1 : 0.06
+                    },
+                    itemStyle: { color: baseColor, opacity: isSelected ? 1 : 0.06 },
+                    label: {
+                        show: isHighlighted,
+                        position: 'top',
+                        offset: [0, -10],
+                        backgroundColor: 'rgba(255, 255, 255, 0.92)',
+                        padding: [2, 5],
+                        borderRadius: 3,
+                        lineHeight: 14,
+                        color: baseColor,
+                        fontWeight: isHighlighted ? 700 : 500,
+                        formatter: (params) => {
+                            const middleIndex = Math.floor(years.length / 2);
+                            return params.dataIndex === middleIndex ? towerName : '';
+                        }
+                    },
+                    emphasis: {
+                        focus: 'series',
+                        scale: true,
+                        lineStyle: { color: isHighlighted ? baseColor : '#3B7DD8', width: 4, opacity: 1 },
+                        itemStyle: { color: isHighlighted ? baseColor : '#3B7DD8', opacity: 1 },
+                        label: { show: false }
+                    },
+                    blur: {
+                        lineStyle: { opacity: 0.06 },
+                        itemStyle: { opacity: 0.06 }
+                    },
+                    data: years.map((y) => {
+                        const point = tower_trend.find((d) => String(d.fiscal_year) === y && d.it_tower === towerName);
+                        return { value: point?.spend ?? 0, pct: point?.pct_of_total ?? 0 };
+                    })
                 };
             })
         }}
@@ -631,46 +641,123 @@ from ${filtered} where it_tower is not null group by it_tower order by spend des
 
 ---
 
-## Designation Breakdown
+## Top IT Agencies by Spend — Trend Over Time
 
-{#if desig?.length > 0}
-    <Grid cols=2>
-        <BarChart data={desig} x=it_designation y=spend yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="IT Spend by designation" colorPalette={['#C8122C','#FFC838','#3B7DD8','#E67E22']}/>
-        <DataTable data={desig} totalRow=true search=true>
-            <Column id=it_designation title="Designation"/>
-            <Column id=spend title="IT Spend" fmt=usd2compactviz/>
-            <Column id=programs title="Programs"/>
-        </DataTable>
-    </Grid>
+{#if agency_trend?.length > 0}
+    <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 8px 0 14px 0;">
+        {#each agencySeriesNames as name}
+            <button
+                on:click={() => toggleAgencySeries(name)}
+                style={'border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ' + (selectedAgencySeries === name ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (selectedAgencySeries === name ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white') + '; box-shadow: ' + (selectedAgencySeries === name ? '0 4px 10px rgba(200,20,44,0.08)' : 'none')}
+                aria-pressed={selectedAgencySeries === name}
+            >
+                <span style={'width:10px; height:10px; border-radius:50%; background: ' + (['#C8122C','#FFC838','#231F20','#E04B3F','#C99A06','#C9CED6'][agencySeriesNames.indexOf(name)] ?? '#C9CED6') + '; display:inline-block;'}></span>
+                <span style={'color:' + (selectedAgencySeries === name ? '#C8122C' : '#231F20') + '; font-weight:' + (selectedAgencySeries === name ? 700 : 500)}>{name}</span>
+            </button>
+        {/each}
+    </div>
+    <ECharts
+        height="420px"
+        config={{
+            tooltip: {
+                trigger: 'item',
+                formatter: function(param) {
+                    if (!param) return '';
+                    const hoveredAgency = param.seriesName;
+                    const rows = agencyTrendYears.slice()
+                        .sort(function(a, b) { return Number(b) - Number(a); })
+                        .map(function(year) {
+                            const row = agency_trend.find(function(d) {
+                                return String(d.fiscal_year) === year && d.agency_name === hoveredAgency;
+                            });
+                            const v = row ? row.spend : 0;
+                            const yearTotal = agency_trend
+                                .filter(function(d) { return String(d.fiscal_year) === year; })
+                                .reduce(function(sum, d) { return sum + (d.spend || 0); }, 0);
+                            const pct = yearTotal > 0 ? ((v / yearTotal) * 100).toFixed(1) : '0.0';
+                            const fmt = Math.abs(v) >= 1e9
+                                ? '$' + (v/1e9).toFixed(2) + 'B'
+                                : Math.abs(v) >= 1e6
+                                    ? '$' + (v/1e6).toFixed(1) + 'M'
+                                    : '$' + Math.round(v).toLocaleString();
+                            return year + ': ' + fmt + ' (' + pct + '%)';
+                        });
+                    return '<b>' + hoveredAgency + '</b><br/>' + rows.join('<br/>');
+                }
+            },
+            grid: { left: 64, right: 24, top: 20, bottom: 40 },
+            xAxis: { type: 'category', boundaryGap: false, data: agencyTrendYears },
+            yAxis: {
+                type: 'value',
+                axisLabel: {
+                    formatter: function(v) {
+                        const n = Number(v) || 0;
+                        return Math.abs(n) >= 1e9 ? '$' + (n/1e9).toFixed(0) + 'B' : '$' + (n/1e6).toFixed(0) + 'M';
+                    }
+                },
+                splitLine: { lineStyle: { color: '#D9DDE3' } }
+            },
+            color: ['#C8122C','#FFC838','#231F20','#E04B3F','#C99A06','#C9CED6'],
+            series: Array.from(agencySeriesNames, function(name, idx) {
+                const seriesColor = ['#C8122C','#FFC838','#231F20','#E04B3F','#C99A06','#C9CED6'][idx] ?? '#C9CED6';
+                const hasSelection = Boolean(selectedAgencySeries);
+                const isSelected = !hasSelection || selectedAgencySeries === name;
+                const isOthers = name === 'Others';
+                return {
+                    name: name,
+                    type: 'line',
+                    stack: 'total',
+                    smooth: false,
+                    symbol: 'circle',
+                    symbolSize: 30,
+                    showSymbol: true,
+                    lineStyle: { width: 0 },
+                    itemStyle: { opacity: 0 },
+                    areaStyle: { opacity: isSelected ? (isOthers ? 0.45 : 0.85) : 0.06 },
+                    emphasis: { focus: 'series' },
+                    blur: { areaStyle: { opacity: 0.06 }, lineStyle: { opacity: 0.06 } },
+                    data: agencyTrendYears.map(function(y) {
+                        const row = agency_trend.find(function(d) {
+                            return String(d.fiscal_year) === y && d.agency_name === name;
+                        });
+                        return row ? row.spend : 0;
+                    })
+                };
+            })
+        }}
+    />
 {:else}
-    <Alert status=warning>No designation breakdown data available for this filter selection.</Alert>
+    <Alert status=warning>No agency trend data available for this filter selection.</Alert>
 {/if}
 
 ---
 
-## Top IT Agencies by Spend
+## Agency IT Spend by Year
 
-{#if agency_it?.length > 0}
-    <BarChart data={agency_it} x=agency_name y=spend swapXY=true sort=false yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="Top 15 IT agencies by spend" colorPalette={['#C8122C']}/>
-{:else}
-    <Alert status=warning>No agency spend data available for this filter selection.</Alert>
-{/if}
+<div style="display:flex; gap:8px; margin: 8px 0 14px 0;">
+    {#each [['3y','Last 3 Years'],['5y','Last 5 Years'],['all','All Years']] as [val, label]}
+        <button
+            on:click={() => pivotYearView = val}
+            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (pivotYearView === val ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (pivotYearView === val ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white') + '; color: ' + (pivotYearView === val ? '#C8122C' : '#231F20') + '; font-weight: ' + (pivotYearView === val ? 700 : 500)}
+        >{label}</button>
+    {/each}
+</div>
 
----
+<input
+    bind:value={searchTerm}
+    placeholder="Search agencies..."
+    style="border: 1px solid #D9DDE3; border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; width: 280px; margin-bottom: 12px;"
+/>
 
-## Tower Explorer — Click to Drill Down
-
-<Alert status=info>Click a tower to see agencies and programs. Links route to agency detail page with tower context.</Alert>
-
-{#if tower_drill?.length > 0}
-    <DataTable data={tower_drill} link=tower_link totalRow=true search=true>
-        <Column id=it_tower title="Tower"/>
-        <Column id=spend title="IT Spend" fmt=usd2compactviz/>
-        <Column id=agencies title="Agencies"/>
-        <Column id=programs title="Programs"/>
+{#if sortedPivot?.length > 0}
+    <DataTable data={sortedPivot} link=agency_link>
+        <Column id=agency_name title="Agency"/>
+        {#each pivotViewYears as yr}
+            <Column id={'FY' + yr} title={'FY' + yr} fmt=usd2compactviz/>
+        {/each}
     </DataTable>
 {:else}
-    <Alert status=warning>No tower explorer data available for this filter selection.</Alert>
+    <Alert status=warning>No agency data available for this filter selection.</Alert>
 {/if}
 
 {/if}
