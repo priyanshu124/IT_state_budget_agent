@@ -111,12 +111,46 @@ select
 from ${filtered_latest}
 ```
 
-```sql unit_breakdown_latest
-select unit_name, sum(amount) as spend
+```sql pareto_units
+select
+    unit_name as label,
+    sum(amount) as spend,
+    round(sum(amount) * 100.0 / nullif(sum(sum(amount)) over (), 0), 1) as pct_of_total,
+    sum(sum(amount)) over (order by sum(amount) desc rows between unbounded preceding and current row) as cumulative,
+    sum(sum(amount)) over () as grand_total
 from ${filtered_latest}
 where unit_name is not null
 group by unit_name
 order by spend desc
+limit 10
+```
+
+```sql pareto_programs
+select
+    program_name as label,
+    sum(amount) as spend,
+    round(sum(amount) * 100.0 / nullif(sum(sum(amount)) over (), 0), 1) as pct_of_total,
+    sum(sum(amount)) over (order by sum(amount) desc rows between unbounded preceding and current row) as cumulative,
+    sum(sum(amount)) over () as grand_total
+from ${filtered_latest}
+where program_name is not null
+group by program_name
+order by spend desc
+limit 10
+```
+
+```sql pareto_subprograms
+select
+    subprogram_name as label,
+    sum(amount) as spend,
+    round(sum(amount) * 100.0 / nullif(sum(sum(amount)) over (), 0), 1) as pct_of_total,
+    sum(sum(amount)) over (order by sum(amount) desc rows between unbounded preceding and current row) as cumulative,
+    sum(sum(amount)) over () as grand_total
+from ${filtered_latest}
+where subprogram_name is not null
+group by subprogram_name
+order by spend desc
+limit 10
 ```
 
 ```sql fund_breakdown_latest
@@ -286,7 +320,7 @@ order by unit_name, program_name, subprogram_name, fiscal_year
         const a = Math.exp((sumLnY - b * sumLnX) / count);
         return { chartData: values, trendPoints: x.map((xi) => a * Math.pow(xi, b)) };
     };
-
+    let localView = 'latest';
     let drillYearView = '5y';
     let expandedUnits = {};
     let expandedPrograms = {};
@@ -310,8 +344,22 @@ order by unit_name, program_name, subprogram_name, fiscal_year
         }
     };
 
-    $: viewMode = readInputValue($inputStore?.f_view, 'trend');
+    $: viewMode = localView;
     $: trendResults = calculateTrendResults(yearly_rollup);
+
+    let paretoLevel = 'unit';
+
+    $: paretoData = paretoLevel === 'program'
+        ? (pareto_programs ?? [])
+        : paretoLevel === 'subprogram'
+            ? (pareto_subprograms ?? [])
+            : (pareto_units ?? []);
+
+    $: paretoTitle = paretoLevel === 'program'
+        ? 'Top 10 programs by budget — Latest Year'
+        : paretoLevel === 'subprogram'
+            ? 'Top 10 subprograms by budget — Latest Year'
+            : 'Top 10 units by budget — Latest Year';
 
     $: fundTrendYears = [...new Set((fund_trend ?? []).map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
     $: fundSeriesNames = [...new Set((fund_trend ?? []).map(d => d.fund_type))].sort((a, b) => {
@@ -454,6 +502,8 @@ order by unit_name, program_name, subprogram_name, fiscal_year
     };
 </script>
 
+
+
 <div style="background: linear-gradient(135deg, #C8122C 0%, #231F20 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #FFC838; margin-bottom: 0;">
     <h1 style="color: white; font-family: Montserrat, sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
     <p style="color: #FFC838; font-size: 0.95rem; margin: 4px 0 0 0;">Agency Budget Detail </p>
@@ -461,14 +511,67 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 <a href="/budget-office" style="display:inline-block; margin: 12px 0; color: #C8122C; font-size: 0.9rem; text-decoration: none;">← Back to Budget Office</a>
 
-<Grid cols=1>
-    <Dropdown name=f_view title="View" defaultValue="trend">
-        <DropdownOption value="trend" valueLabel="Trend Over Years"/>
-        <DropdownOption value="latest" valueLabel="Latest Year Snapshot"/>
-    </Dropdown>
+<div style="display:flex; gap:0; margin: 16px 0 8px 0; border: 1px solid #D9DDE3; border-radius:6px; width:fit-content; overflow:hidden;">
+    {#each [['latest','Latest Year'], ['trend','Trend Over Years']] as [val, label]}
+        <button
+            on:click={() => localView = val}
+            style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid #D9DDE3; background: ' + (viewMode === val ? '#C8122C' : 'white') + '; color: ' + (viewMode === val ? 'white' : '#231F20') + '; font-weight: ' + (viewMode === val ? 600 : 400)}
+        >{label}</button>
+    {/each}
+</div>
+
+{#if viewMode == 'latest'}
+
+<p style="font-size:1.1rem; font-weight:700; color:#231F20; margin: 16px 0 16px 0;">Latest Year FY{overview?.[0]?.max_year_label ?? ''}</p>
+
+<Grid cols=4>
+    <BigValue data={overview} value=latest_budget fmt=usd2compactviz title="Latest Year Budget"/>
+    <BigValue data={overview} value=yoy_pct fmt='0.0"%"' title="YoY Change"/>
+    <BigValue data={overview} value=cagr_5y_pct fmt='0.0"%"' title="5-Year CAGR"/>
+    <BigValue data={overview} value=cagr_10y_pct fmt='0.0"%"' title="10-Year CAGR"/>
 </Grid>
 
 ---
+
+
+
+{/if}
+
+{#if viewMode == 'latest'}
+
+
+<div style="display:flex; gap:8px; margin: 8px 0 14px 0;">
+    {#each [['unit','Units'],['program','Programs'],['subprogram','Subprograms']] as [val, label]}
+        <button
+            on:click={() => paretoLevel = val}
+            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (paretoLevel === val ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (paretoLevel === val ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white') + '; color: ' + (paretoLevel === val ? '#C8122C' : '#231F20') + '; font-weight: ' + (paretoLevel === val ? 700 : 500)}
+        >{label}</button>
+    {/each}
+</div>
+
+## {paretoTitle}
+
+
+{#if paretoData?.length > 0}
+    <ParetoInsight data={paretoData} entityLabel={paretoLevel + 's'}/>
+    <ParetoBarChart
+        data={paretoData}
+        title=""
+        barField="spend"
+        labelField="label"
+        pctField="pct_of_total"
+        cumulativeField="cumulative"
+        totalField="grand_total"
+        height="420px"
+    />
+{:else}
+    <Alert status=warning>No data available for this selection.</Alert>
+{/if}
+
+---
+
+
+{/if}
 
 {#if viewMode == 'trend'}
 
@@ -738,21 +841,3 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 {/if}
 
-{#if viewMode == 'latest'}
-
-## Latest Year Snapshot
-
-{#if unit_breakdown_latest?.length > 0}
-    <Grid cols=2>
-        <BarChart data={unit_breakdown_latest} x=unit_name y=spend swapXY=true sort=false yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="Budget by Unit — Latest Year" colorPalette={['#C8122C','#FFC838','#3B7DD8','#2EAD6B','#E67E22','#8E44AD','#1ABC9C','#E74C3C','#95A5A6','#34495E']}/>
-        {#if fund_breakdown_latest?.length > 0}
-            <BarChart data={fund_breakdown_latest} x=fund_type y=spend swapXY=true sort=false yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="Budget by Fund Type — Latest Year" colorPalette={['#C8122C','#FFC838','#3B7DD8','#2EAD6B','#E67E22','#8E44AD','#1ABC9C']}/>
-        {:else}
-            <Alert status=warning>No fund type data available.</Alert>
-        {/if}
-    </Grid>
-{:else}
-    <Alert status=warning>No unit data available for this agency.</Alert>
-{/if}
-
-{/if}

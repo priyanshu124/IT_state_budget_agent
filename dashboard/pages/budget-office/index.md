@@ -1,11 +1,11 @@
 ---
-title: Budget Office
+# title: Budget Office
 sidebar_position: 3
 ---
 
 <div style="background: linear-gradient(135deg, #C8122C 0%, #231F20 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #FFC838; margin-bottom: 0;">
     <h1 style="color: white; font-family: Montserrat, sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ Budget Office View</h1>
-    <p style="color: #FFC838; font-size: 0.95rem; margin: 4px 0 0 0;">Statewide Budget Analysis </p>
+    <p style="color: #FFC838; font-size: 0.95rem; margin: 4px 0 0 0;">Statewide Budget Analysis</p>
 </div>
 
 ```sql g_fy
@@ -20,26 +20,8 @@ select distinct fund_type from mbtsa.agency_level where fund_type is not null or
 select distinct agency_name from mbtsa.agency_level where agency_name is not null order by agency_name
 ```
 
-<Details title="🔍 Filters — click to expand" open=true>
 
-<Grid cols=3>
-    <Dropdown name=f_fy data={g_fy} value=fy title="Fiscal Year" defaultValue="%"><DropdownOption value="%" valueLabel="All Years"/></Dropdown>
-    <Dropdown name=f_fund data={g_fund} value=fund_type title="Fund Type" defaultValue="%"><DropdownOption value="%" valueLabel="All Fund Types"/></Dropdown>
-    <Dropdown name=f_agency data={g_agency} value=agency_name title="Agency" defaultValue="%"><DropdownOption value="%" valueLabel="All Agencies"/></Dropdown>
-</Grid>
 
-</Details>
-
-<Grid cols=1>
-    <Dropdown name=f_view title="View" defaultValue="trend">
-        <DropdownOption value="trend" valueLabel="Trend Over Years"/>
-        <DropdownOption value="latest" valueLabel="Latest Year Snapshot"/>
-    </Dropdown>
-</Grid>
-
-<Alert status=info>
-    Switch between <b>Trend Over Years</b> and <b>Latest Year Snapshot</b> using the View selector above.
-</Alert>
 
 ```sql filtered
 select
@@ -49,9 +31,18 @@ select
     b.fund_type,
     b.total_budget_amount as amount
 from mbtsa.agency_level b
-where cast(b.fiscal_year as varchar) like '${selectedFy}'
-    and coalesce(b.fund_type, '') like '${selectedFund}'
-    and coalesce(b.agency_name, '') like '${selectedAgency}'
+where (
+    '${selectedFund}' = '%'
+    or '${selectedFund}' = ''
+    or '${selectedFund}' like '(select%'
+    or lower(coalesce(b.fund_type, '')) like '${selectedFund}'
+)
+and (
+    '${selectedAgency}' = '%'
+    or '${selectedAgency}' = ''
+    or '${selectedAgency}' like '(select%'
+    or lower(coalesce(b.agency_name, '')) like '${selectedAgency}'
+)
 ```
 
 ```sql yearly_rollup
@@ -75,24 +66,36 @@ bounds as (
         max(fiscal_year) as max_year,
         sum(total_budget) as total_budget
     from ${yearly_rollup}
+),
+selected_year as (
+    select
+        case
+            when '${selectedFy}' = '%' then max(fiscal_year)
+            when '${selectedFy}' = '' then max(fiscal_year)
+            when '${selectedFy}' like '(select%' then max(fiscal_year)
+            else cast('${selectedFy}' as int)
+        end as chosen_year
+    from ${yearly_rollup}
 )
 select
     b.start_year,
     b.max_year,
-    max(case when o.year_rank = 2 then o.fiscal_year end) as prior_year,
-    b.total_budget,
-    max(case when o.year_rank = 1 then o.total_budget end) as latest_budget,
-    max(case when o.year_rank = 2 then o.total_budget end) as prior_budget
+    s.chosen_year as display_year,
+    max(case when o.fiscal_year = s.chosen_year then o.total_budget end) as latest_budget,
+    max(case when o.fiscal_year = s.chosen_year - 1 then o.total_budget end) as prior_budget,
+    s.chosen_year - 1 as prior_year,
+    b.total_budget
 from bounds b
+cross join selected_year s
 left join ordered o on true
-group by b.start_year, b.max_year, b.total_budget
+group by b.start_year, b.max_year, b.total_budget, s.chosen_year
 ```
 
 ```sql filtered_latest
 select f.*
 from ${filtered} f
 cross join ${scope_meta} m
-where f.fiscal_year = m.max_year
+where f.fiscal_year = m.display_year
 ```
 
 ```sql filtered_prior
@@ -130,7 +133,7 @@ select
             else null
         end, 1
     ) as cagr_10y_pct,
-    coalesce(cast(max_year as varchar), 'N/A') as max_year_label
+    coalesce(cast(display_year as varchar), 'N/A') as max_year_label
 from points
 ```
 
@@ -156,19 +159,17 @@ order by fiscal_year
 ```
 
 ```sql snapshot_agencies
-select agency_name, sum(amount) as spend
+select
+    agency_name,
+    sum(amount) as spend,
+    round(sum(amount) * 100.0 / nullif(sum(sum(amount)) over (), 0), 1) as pct_of_total,
+    sum(sum(amount)) over (order by sum(amount) desc rows between unbounded preceding and current row) as cumulative,
+    sum(sum(amount)) over () as grand_total
 from ${filtered_latest}
 where agency_name is not null
 group by agency_name
 order by spend desc
-```
-
-```sql snapshot_funds
-select fund_type, sum(amount) as spend
-from ${filtered_latest}
-where fund_type is not null
-group by fund_type
-order by spend desc
+limit 10
 ```
 
 ```sql fund_rules
@@ -214,6 +215,81 @@ from distinct_funds d
 left join matches m on m.fund_type = d.fund_type and m.rank_order = 1
 ```
 
+```sql fund_snapshot
+with latest as (
+    select fund_type, sum(amount) as latest_budget
+    from ${filtered_latest}
+    where fund_type is not null and trim(fund_type) <> ''
+    group by fund_type
+),
+prior as (
+    select fund_type, sum(amount) as prior_budget
+    from ${filtered_prior}
+    where fund_type is not null and trim(fund_type) <> ''
+    group by fund_type
+),
+hist_5y as (
+    select f.fund_type, sum(f.amount) as budget_5y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fund_type is not null and trim(f.fund_type) <> ''
+        and f.fiscal_year = m.max_year - 5
+    group by f.fund_type
+),
+hist_10y as (
+    select f.fund_type, sum(f.amount) as budget_10y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fund_type is not null and trim(f.fund_type) <> ''
+        and f.fiscal_year = m.max_year - 10
+    group by f.fund_type
+)
+select
+    l.fund_type,
+    l.latest_budget,
+    coalesce(p.prior_budget, 0) as prior_budget,
+    l.latest_budget - coalesce(p.prior_budget, 0) as dollar_change,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as yoy_change_pct,
+    round(case when h5.budget_5y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h5.budget_5y_ago, 1.0/5.0) - 1.0) * 100.0
+        else null end, 1) as cagr_5y_pct,
+    round(case when h10.budget_10y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h10.budget_10y_ago, 1.0/10.0) - 1.0) * 100.0
+        else null end, 1) as cagr_10y_pct,
+    round(l.latest_budget * 100.0 / nullif(m.latest_budget, 0), 1) as latest_year_pct,
+    coalesce(fp.fund_color, '#4C4743') as fund_color
+from latest l
+left join prior p using (fund_type)
+left join hist_5y h5 using (fund_type)
+left join hist_10y h10 using (fund_type)
+cross join ${scope_meta} m
+left join ${fund_profile} fp on fp.fund_type = l.fund_type
+order by l.latest_budget desc
+```
+
+```sql agency_movers
+with latest as (
+    select agency_name, sum(amount) as latest_budget
+    from ${filtered_latest}
+    where agency_name is not null and trim(agency_name) <> ''
+    group by agency_name
+),
+prior as (
+    select agency_name, sum(amount) as prior_budget
+    from ${filtered_prior}
+    where agency_name is not null and trim(agency_name) <> ''
+    group by agency_name
+)
+select
+    l.agency_name,
+    l.latest_budget,
+    coalesce(p.prior_budget, 0) as prior_budget,
+    l.latest_budget - coalesce(p.prior_budget, 0) as dollar_change,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as pct_change
+from latest l
+left join prior p using (agency_name)
+order by abs(l.latest_budget - coalesce(p.prior_budget, 0)) desc
+limit 20
+```
+
 ```sql fund_trend
 select
     f.fiscal_year,
@@ -226,39 +302,6 @@ left join ${fund_profile} fp on fp.fund_type = f.fund_type
 where f.fund_type is not null
 group by f.fiscal_year, f.fund_type, fp.fund_rank, fp.fund_color
 order by f.fiscal_year, fund_rank
-```
-
-```sql top_agencies
-select agency_name, sum(amount) as total_agency_spend
-from ${filtered}
-where agency_name is not null
-group by agency_name
-order by total_agency_spend desc
-limit 5
-```
-
-```sql agency_trend_raw
-select
-    f.fiscal_year,
-    f.agency_name,
-    sum(f.amount) as spend
-from ${filtered} f
-where f.agency_name is not null
-group by f.fiscal_year, f.agency_name
-```
-
-```sql agency_trend
-select
-    fiscal_year,
-    case
-        when agency_name in (select agency_name from ${top_agencies})
-            then agency_name
-        else 'Others'
-    end as agency_name,
-    sum(spend) as spend
-from ${agency_trend_raw}
-group by fiscal_year, agency_name
-order by fiscal_year, agency_name
 ```
 
 ```sql top_agencies_trend
@@ -367,7 +410,10 @@ order by l.latest_budget desc
         return fallback;
     };
 
-    const selectedValue = (entry) => readInputValue(entry, '%').replace(/'/g, "''");
+    const selectedValue = (entry, lower = true) => {
+        const val = readInputValue(entry, '%').replace(/'/g, "''");
+        return lower ? val.toLowerCase() : val;
+    };
 
     const usdCompact = (value) => {
         const num = Number(value) || 0;
@@ -401,16 +447,69 @@ order by l.latest_budget desc
         const a = Math.exp((sumLnY - b * sumLnX) / count);
         return { chartData: values, trendPoints: x.map((xi) => a * Math.pow(xi, b)) };
     };
-    
 
-    let selectedAgencySeries = null;
+    const sparkline = (row, years) => {
+        const vals = years.map(y => row['FY' + y] || 0);
+        const max = Math.max(...vals);
+        if (max === 0) return '';
+        const w = 48;
+        const h = 16;
+        const points = vals.map((v, i) => {
+            const x = (i / (vals.length - 1)) * w;
+            const y = h - (v / max) * h;
+            return x + ',' + y;
+        }).join(' ');
+        const last = vals[vals.length - 1];
+        const prev = vals[vals.length - 2] ?? last;
+        const color = last >= prev ? '#2EAD6B' : '#C8122C';
+        return '<svg width="' + w + '" height="' + h + '" style="display:inline-block;vertical-align:middle;margin-left:8px;"><polyline points="' + points + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-linejoin="round"/><circle cx="' + (w) + '" cy="' + (h - (last/max)*h) + '" r="2" fill="' + color + '"/></svg>';
+    };
+
+    const cellTint = (row, yr, allYears) => {
+        const idx = allYears.indexOf(yr);
+        if (idx <= 0) return '';
+        const curr = row['FY' + yr] || 0;
+        const prev = row['FY' + allYears[idx - 1]] || 0;
+        if (prev === 0) return '';
+        const pct = (curr - prev) / prev * 100;
+        if (pct >= 15) return 'background:rgba(46,173,107,0.18);';
+        if (pct >= 8) return 'background:rgba(46,173,107,0.11);';
+        if (pct >= 3) return 'background:rgba(46,173,107,0.06);';
+        if (pct > 0) return 'background:rgba(46,173,107,0.03);';
+        if (pct <= -15) return 'background:rgba(200,18,44,0.18);';
+        if (pct <= -8) return 'background:rgba(200,18,44,0.11);';
+        if (pct <= -3) return 'background:rgba(200,18,44,0.06);';
+        return 'background:rgba(200,18,44,0.03);';
+    };
+
+    let localView = 'latest';
     let pivotYearView = '5y';
     let searchTerm = '';
     let selectedFundSeries = null;
-
     let selectedAgencyLine = null;
 
+    $: selectedFy = selectedValue($inputStore?.f_fy, false);
+    $: selectedFund = selectedValue($inputStore?.f_fund);
+    $: selectedAgency = selectedValue($inputStore?.f_agency);
 
+
+    $: agencyTableColumns = [
+        { id: 'agency_name', title: 'Agency', align: 'left' },
+        { id: 'latest_budget', title: `Latest Year (${overview?.[0]?.max_year_label ?? 'N/A'})`, fmt: 'money', sortable: true },
+        { id: 'latest_year_pct', title: '% of Total', fmt: 'pct', sortable: true },
+        { id: 'yoy_change_pct', title: 'YoY Change', fmt: 'pct', conditional: true, sortable: true },
+        { id: 'cagr_5y_pct', title: '5-Year CAGR', fmt: 'pct', conditional: true, sortable: true },
+        { id: 'cagr_10y_pct', title: '10-Year CAGR', fmt: 'pct', conditional: true, sortable: true }
+    ];
+
+    $: fundTableColumns = [
+        { id: 'fund_type', title: 'Fund Type', align: 'left' },
+        { id: 'latest_budget', title: `Latest Year (${overview?.[0]?.max_year_label ?? 'N/A'})`, fmt: 'money', sortable: true },
+        { id: 'latest_year_pct', title: '% of Total', fmt: 'pct', sortable: true },
+        { id: 'yoy_change_pct', title: 'YoY Change', fmt: 'pct', conditional: true, sortable: true },
+        { id: 'cagr_5y_pct', title: '5-Year CAGR', fmt: 'pct', conditional: true, sortable: true },
+        { id: 'cagr_10y_pct', title: '10-Year CAGR', fmt: 'pct', conditional: true, sortable: true }
+    ];
 
     const toggleAgencyLine = (name) => {
         selectedAgencyLine = selectedAgencyLine === name ? null : name;
@@ -420,25 +519,34 @@ order by l.latest_budget desc
         selectedFundSeries = selectedFundSeries === name ? null : name;
     };
 
+    $: topGainers = (agency_movers ?? [])
+        .filter(d => (d.dollar_change || 0) > 0)
+        .sort((a, b) => (b.dollar_change || 0) - (a.dollar_change || 0))
+        .slice(0, 10);
 
+    $: topLosers = (agency_movers ?? [])
+        .filter(d => (d.dollar_change || 0) < 0)
+        .sort((a, b) => (a.dollar_change || 0) - (b.dollar_change || 0))
+        .slice(0, 10);
+
+    $: waterfallData = [
+        ...topGainers.map(d => ({ ...d, type: 'increase' })),
+        ...topLosers.map(d => ({ ...d, type: 'decrease' }))
+    ].sort((a, b) => (b.dollar_change || 0) - (a.dollar_change || 0));
 
     $: selectedFy = selectedValue($inputStore?.f_fy);
     $: selectedFund = selectedValue($inputStore?.f_fund);
     $: selectedAgency = selectedValue($inputStore?.f_agency);
-    $: viewMode = readInputValue($inputStore?.f_view, 'trend');
+    $: viewMode = localView;
     $: trendResults = calculateTrendResults(yearly, 'total_budget');
-    $: agencyTrendYears = [...new Set(agency_trend.map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
-    $: agencySeriesNames = [...(top_agencies ?? []).map(a => a.agency_name), 'Others'];
     $: fundTrendYears = [...new Set(fund_trend.map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
     $: fundSeriesNames = [...new Set(fund_trend.map(d => d.fund_type))].sort((a, b) => {
         const ra = fund_trend.find(d => d.fund_type === a)?.fund_rank ?? 99;
         const rb = fund_trend.find(d => d.fund_type === b)?.fund_rank ?? 99;
         return ra - rb;
     });
-
     $: agencyLineTrendYears = [...new Set((agency_trend_lines ?? []).map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
     $: highlightedAgencyNames = (top_agencies_trend ?? []).slice(0, 3).map(a => a.agency_name);
-
     $: pivotYears = [...new Set((agency_drill ?? []).map(d => d.fiscal_year))].sort((a, b) => a - b);
     $: agency_pivot = Object.values(
         (agency_drill ?? []).reduce(function(acc, row) {
@@ -472,11 +580,42 @@ order by l.latest_budget desc
                 agency_link: '/budget-office/agencies/' + encodeURIComponent(r.agency_name)
             });
         });
-
-    const toggleAgencySeries = (name) => {
-        selectedAgencySeries = selectedAgencySeries === name ? null : name;
-    };
 </script>
+
+
+<div id="page-filters">
+    <Details title="🔍 Filters" open=false>
+        <Grid cols=3>
+            <Dropdown name=f_fy data={g_fy} value=fy title="Fiscal Year" defaultValue="%">
+                <DropdownOption value="%" valueLabel="All Years"/>
+            </Dropdown>
+            <Dropdown name=f_fund data={g_fund} value=fund_type title="Fund Type" defaultValue="%">
+                <DropdownOption value="%" valueLabel="All Fund Types"/>
+            </Dropdown>
+            <Dropdown name=f_agency data={g_agency} value=agency_name title="Agency" defaultValue="%">
+                <DropdownOption value="%" valueLabel="All Agencies"/>
+            </Dropdown>
+        </Grid>
+    </Details>
+</div>
+
+<FilterSidebar title="⚙ Filters" targetId="page-filters"/>
+
+<div style="display:none;">
+    <Dropdown name=f_view title="View" defaultValue="latest">
+        <DropdownOption value="trend" valueLabel="Trend Over Years"/>
+        <DropdownOption value="latest" valueLabel="Latest Year Snapshot"/>
+    </Dropdown>
+</div>
+
+<div style="display:flex; margin: 16px 0 12px 0; border: 1px solid #D9DDE3; border-radius:6px; width:fit-content; overflow:hidden;">
+    {#each [['latest','Latest Year'],['trend','Trend Over Years']] as [val, label]}
+        <button
+            on:click={() => localView = val}
+            style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid #D9DDE3; background: ' + (localView === val ? '#C8122C' : 'white') + '; color: ' + (localView === val ? 'white' : '#231F20') + '; font-weight: ' + (localView === val ? 600 : 400)}
+        >{label}</button>
+    {/each}
+</div>
 
 {#if viewMode == 'latest'}
 
@@ -488,37 +627,165 @@ order by l.latest_budget desc
 </Grid>
 
 ---
-
-## Latest Year Snapshot
+## Top 10 agencies by budget — Latest Year
 
 {#if snapshot_agencies?.length > 0}
-    <Grid cols=2>
-        <BarChart data={snapshot_agencies} x=agency_name y=spend swapXY=true sort=false yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="Budget by Agency — Latest Year" colorPalette={['#C8122C','#FFC838','#3B7DD8','#2EAD6B','#E67E22','#8E44AD','#1ABC9C','#E74C3C','#95A5A6','#34495E']}/>
-        {#if snapshot_funds?.length > 0}
-            <BarChart data={snapshot_funds} x=fund_type y=spend swapXY=true sort=false yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="Budget by Fund Type — Latest Year" colorPalette={['#C8122C','#FFC838','#3B7DD8','#2EAD6B','#E67E22','#8E44AD','#1ABC9C']}/>
-        {:else}
-            <Alert status=warning>No fund type data available for this filter selection.</Alert>
-        {/if}
-    </Grid>
+    <ParetoInsight data={snapshot_agencies} entityLabel="agencies"/>
+    <ParetoBarChart
+        data={snapshot_agencies}
+        title=""
+        barField="spend"
+        labelField="agency_name"
+        pctField="pct_of_total"
+        cumulativeField="cumulative"
+        totalField="grand_total"
+        height="420px"
+    />
 {:else}
     <Alert status=warning>No agency snapshot data available for this filter selection.</Alert>
 {/if}
 
 ---
 
-## Agency Snapshot Table
+## Fund type share — Latest Year
 
-<Alert status=info>Click an agency row to open that agency's detail page.</Alert>
+{#if fund_snapshot?.length > 0}
+    <DonutFundSnapshot
+        data={fund_snapshot}
+        fund_profile={fund_profile}
+        title=""
+        height="420px"
+        nameField="fund_type"
+        valueField="latest_budget"
+        pctField="latest_year_pct"
+    />
+    <ConditionalTable
+        data={fund_snapshot}
+        columns={fundTableColumns}
+        search={true}
+        defaultSort="latest_budget"
+        defaultDir={-1}
+    />
+{:else}
+    <Alert status=warning>No fund type data available for this filter selection.</Alert>
+{/if}
+
+---
+
+## Budget Changes — Year over Year
+
+<Alert status=info>Agencies sorted by absolute dollar change from prior year. </Alert>
+
+{#if waterfallData?.length > 0}
+    <ECharts
+        height="520px"
+        config={{
+            title: { text: 'Biggest budget changes vs prior year', left: 'left', top: 0, textStyle: { fontSize: 14, fontWeight: 600, color: '#231F20' } },
+            tooltip: {
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                formatter: function(params) {
+                    if (!params || params.length === 0) return '';
+                    const idx = params[0].dataIndex;
+                    const row = waterfallData.slice().reverse()[idx];
+                    if (!row) return '';
+                    const v = Number(row.dollar_change) || 0;
+                    const abs = Math.abs(v);
+                    const money = abs >= 1e9 ? '$' + (abs/1e9).toFixed(1) + 'B' : '$' + (abs/1e6).toFixed(0) + 'M';
+                    const pctStr = row.pct_change != null ? (row.pct_change > 0 ? '+' : '') + row.pct_change + '%' : 'N/A';
+                    return '<b>' + row.agency_name + '</b><br/>Change: ' + (v >= 0 ? '+' : '-') + money + '<br/>YoY: ' + pctStr;
+                }
+            },
+            grid: { left: 16, right: 120, top: 40, bottom: 20, containLabel: true },
+            xAxis: {
+                type: 'value',
+                axisLine: { show: true, lineStyle: { color: '#231F20', width: 1.5 } },
+                axisLabel: {
+                    formatter: function(v) {
+                        const n = Number(v) || 0;
+                        const abs = Math.abs(n);
+                        return abs >= 1e9 ? '$' + (n/1e9).toFixed(1) + 'B' : '$' + (n/1e6).toFixed(0) + 'M';
+                    },
+                    color: '#6B7280',
+                    fontSize: 11
+                },
+                splitLine: { lineStyle: { color: '#E5E7EB', type: 'dashed' } }
+            },
+            yAxis: {
+                type: 'category',
+                data: waterfallData.map(function(d) { return d.agency_name; }).reverse(),
+                axisLine: { show: false },
+                axisTick: { show: false },
+                axisLabel: {
+                    width: 220,
+                    overflow: 'truncate',
+                    fontSize: 11,
+                    color: '#231F20',
+                    align: 'right',
+                    formatter: function(name) {
+                        return name.length > 30 ? name.slice(0, 30) + '…' : name;
+                    }
+                }
+            },
+            series: [{
+                type: 'bar',
+                barMaxWidth: 24,
+                data: waterfallData.map(function(d) { return d.dollar_change || 0; }).reverse(),
+                label: {
+                    show: true,
+                    position: function(params) { return Number(params.value) >= 0 ? 'right' : 'left'; },
+                    distance: 8,
+                    padding: [2, 4],
+                    backgroundColor: 'rgba(255,255,255,0.85)',
+                    borderRadius: 2,
+                    formatter: function(params) {
+                        const v = Number(params.value) || 0;
+                        const abs = Math.abs(v);
+                        const money = abs >= 1e9
+                            ? (v >= 0 ? '+$' : '-$') + (abs/1e9).toFixed(1) + 'B'
+                            : (v >= 0 ? '+$' : '-$') + (abs/1e6).toFixed(0) + 'M';
+                        const idx = params.dataIndex;
+                        const row = waterfallData.slice().reverse()[idx];
+                        const pct = row && row.pct_change != null
+                            ? ' (' + (row.pct_change > 0 ? '+' : '') + row.pct_change + '%)'
+                            : '';
+                        return money + pct;
+                    },
+                    fontSize: 11,
+                    fontWeight: 600,
+                    color: '#231F20'
+                },
+                itemStyle: {
+                    color: function(params) { return Number(params.value) >= 0 ? '#2EAD6B' : '#C8122C'; },
+                    borderRadius: 2
+                },
+                markLine: {
+                    silent: true,
+                    symbol: ['none', 'none'],
+                    lineStyle: { color: '#231F20', width: 1.5, type: 'solid' },
+                    label: { show: false },
+                    data: [{ xAxis: 0 }]
+                }
+            }]
+        }}
+    />
+{:else}
+    <Alert status=warning>No mover data available for this filter selection.</Alert>
+{/if}
+
+---
+
+## Agency Drill-Down Table -Click Agency row to navigate to Agencies Page
 
 {#if agency_snapshot?.length > 0}
-    <DataTable data={agency_snapshot} link=agency_link totalRow=true search=true rows=15>
-        <Column id=agency_name title="Agency"/>
-        <Column id=latest_budget title="Latest Year ({overview?.[0]?.max_year_label ?? 'N/A'})" fmt=usd2compactviz/>
-        <Column id=latest_year_pct title="% of Total" fmt='0.0"%"'/>
-        <Column id=yoy_change_pct title="YoY Change" fmt='0.0"%"' totalAgg="-"/>
-        <Column id=cagr_5y_pct title="5-Year CAGR" fmt='0.0"%"' totalAgg="-"/>
-        <Column id=cagr_10y_pct title="10-Year CAGR" fmt='0.0"%"' totalAgg="-"/>
-    </DataTable>
+    <ConditionalTable
+        data={agency_snapshot}
+        columns={agencyTableColumns}
+        linkField="agency_link"
+        search={true}
+        defaultSort="latest_budget"
+        defaultDir={-1}
+    />
 {:else}
     <Alert status=warning>No agency snapshot data available for this filter selection.</Alert>
 {/if}
@@ -606,6 +873,7 @@ order by l.latest_budget desc
 {/if}
 
 ---
+
 ## Fund Composition Over Time
 
 {#if fund_trend?.length > 0}
@@ -831,12 +1099,46 @@ order by l.latest_budget desc
 />
 
 {#if sortedPivot?.length > 0}
-    <DataTable data={sortedPivot} link=agency_link>
-        <Column id=agency_name title="Agency"/>
-        {#each pivotViewYears as yr}
-            <Column id={'FY' + yr} title={'FY' + yr} fmt=usd2compactviz/>
-        {/each}
-    </DataTable>
+<div style="overflow-x:auto; border-radius:8px; border:1px solid #E5E7EB;">
+    <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
+        <thead>
+            <tr style="background:#F9FAFB; border-bottom:2px solid #C8122C;">
+                <th style="text-align:left; padding:10px 14px; font-weight:700; color:#231F20; min-width:260px;">Agency</th>
+                {#each pivotViewYears as yr}
+                    <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20; white-space:nowrap;">FY{yr}</th>
+                {/each}
+                <th style="padding:10px 8px;"></th>
+            </tr>
+        </thead>
+        <tbody>
+            {#each sortedPivot as row, i}
+                <tr
+                    on:click={() => window.location.href = row.agency_link}
+                    style={'border-bottom:1px solid #F3F4F6; cursor:pointer; background:' + (i % 2 === 0 ? 'white' : '#FAFAFA') + ';'}
+                    onmouseenter="this.style.background='#FFF7F0'"
+                    onmouseleave={'this.style.background=' + (i % 2 === 0 ? "'white'" : "'#FAFAFA'") + ''}
+                >
+                    <td style="padding:9px 14px; color:#231F20; font-weight:500;">
+                        {row.agency_name}
+                        {@html sparkline(row, pivotViewYears)}
+                    </td>
+                    {#each pivotViewYears as yr}
+                        <td style={'text-align:right; padding:9px 14px; color:#231F20; ' + cellTint(row, yr, pivotViewYears)}>
+                            {(row['FY' + yr] ?? 0) >= 1e9
+                                ? '$' + ((row['FY' + yr])/1e9).toFixed(2) + 'B'
+                                : (row['FY' + yr] ?? 0) >= 1e6
+                                    ? '$' + ((row['FY' + yr])/1e6).toFixed(1) + 'M'
+                                    : (row['FY' + yr] ?? 0) >= 1e3
+                                        ? '$' + ((row['FY' + yr])/1e3).toFixed(0) + 'K'
+                                        : '-'}
+                        </td>
+                    {/each}
+                    <td style="padding:9px 8px; color:#C8122C; font-size:0.8rem;">›</td>
+                </tr>
+            {/each}
+        </tbody>
+    </table>
+</div>
 {:else}
     <Alert status=warning>No agency data available for this filter selection.</Alert>
 {/if}
