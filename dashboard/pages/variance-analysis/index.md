@@ -9,13 +9,13 @@ sidebar_position: 5
 </div>
 
 ```sql g_fy_all
-select distinct fiscal_year as fy from mbtsa.subprogram_level order by fiscal_year desc
+select distinct fiscal_year as fy from mbtsa.program_level order by fiscal_year desc
 ```
 ```sql g_agency
-select distinct agency_name from mbtsa.subprogram_level where agency_name is not null order by agency_name
+select distinct agency_name from mbtsa.program_level where agency_name is not null order by agency_name
 ```
 ```sql g_fund
-select distinct fund_type from mbtsa.subprogram_level where fund_type is not null order by fund_type
+select distinct fund_type from mbtsa.program_level where fund_type is not null order by fund_type
 ```
 
 <Details title=" Filters  click to expand" open=true>
@@ -30,21 +30,21 @@ select distinct fund_type from mbtsa.subprogram_level where fund_type is not nul
 select
     max(fiscal_year)                                    as latest_year,
     max(fiscal_year) - 1                               as prior_year
-from mbtsa.subprogram_level
+from mbtsa.program_level
 where total_budget_amount > 0
 ```
 
 ```sql agency_variance
 with a as (
         select agency_name, sum(total_budget_amount) as spend_a
-        from mbtsa.subprogram_level
+        from mbtsa.program_level
     where fiscal_year = (select latest_year from ${year_bounds})
       and coalesce(agency_name,'') like '${inputs.f_agency.value ?? "%"}'
     group by agency_name
 ),
 b as (
         select agency_name, sum(total_budget_amount) as spend_b
-        from mbtsa.subprogram_level
+        from mbtsa.program_level
     where fiscal_year = (select prior_year from ${year_bounds})
       and coalesce(agency_name,'') like '${inputs.f_agency.value ?? "%"}'
     group by agency_name
@@ -122,14 +122,14 @@ limit 10
 ```sql program_variance
 with a as (
         select agency_name, unit_name, program_name, sum(total_budget_amount) as spend_a
-        from mbtsa.subprogram_level
+        from mbtsa.program_level
     where fiscal_year = (select latest_year from ${year_bounds})
       and coalesce(agency_name,'') like '${inputs.f_agency.value ?? "%"}'
     group by agency_name, unit_name, program_name
 ),
 b as (
         select agency_name, unit_name, program_name, sum(total_budget_amount) as spend_b
-        from mbtsa.subprogram_level
+        from mbtsa.program_level
     where fiscal_year = (select prior_year from ${year_bounds})
       and coalesce(agency_name,'') like '${inputs.f_agency.value ?? "%"}'
     group by agency_name, unit_name, program_name

@@ -20,6 +20,11 @@ data/output/*
 !data/raw/.gitkeep
 !data/processed/.gitkeep
 !data/output/.gitkeep
+#! Allow committing selected output artifacts (use Git LFS for large files)
+!data/output/final_budget_enriched.csv
+!data/output/final_budget_enriched.parquet
+!data/output/tower_classifications.csv
+!data/output/cost_pool_mappings.csv
 
 # IDE
 .vscode/
