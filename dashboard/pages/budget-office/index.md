@@ -32,14 +32,12 @@ select
     b.total_budget_amount as amount
 from mbtsa.agency_level b
 where (
-    '${selectedFund}' = '%'
-    or '${selectedFund}' = ''
+    '${selectedFund}' in ('%', '', 'undefined')
     or '${selectedFund}' like '(select%'
     or lower(coalesce(b.fund_type, '')) like '${selectedFund}'
 )
 and (
-    '${selectedAgency}' = '%'
-    or '${selectedAgency}' = ''
+    '${selectedAgency}' in ('%', '', 'undefined')
     or '${selectedAgency}' like '(select%'
     or lower(coalesce(b.agency_name, '')) like '${selectedAgency}'
 )
@@ -70,8 +68,7 @@ bounds as (
 selected_year as (
     select
         case
-            when '${selectedFy}' = '%' then max(fiscal_year)
-            when '${selectedFy}' = '' then max(fiscal_year)
+            when '${selectedFy}' in ('%', '', 'undefined') then max(fiscal_year)
             when '${selectedFy}' like '(select%' then max(fiscal_year)
             else cast('${selectedFy}' as int)
         end as chosen_year
@@ -88,6 +85,7 @@ select
 from bounds b
 cross join selected_year s
 left join ordered o on true
+where b.max_year is not null
 group by b.start_year, b.max_year, b.total_budget, s.chosen_year
 ```
 
@@ -336,7 +334,7 @@ group by agency_name, fiscal_year
 order by agency_name, fiscal_year
 ```
 
-```sql agency_snapshot
+```sql agency_latest
 with latest as (
     select agency_name, sum(amount) as latest_budget
     from ${filtered_latest}
@@ -389,6 +387,7 @@ order by l.latest_budget desc
 
 <script>
     import { getInputContext } from '@evidence-dev/sdk/utils/svelte';
+    import { goto } from '$app/navigation';
 
     const inputStore = getInputContext();
 
@@ -518,21 +517,6 @@ order by l.latest_budget desc
     const toggleFundSeries = (name) => {
         selectedFundSeries = selectedFundSeries === name ? null : name;
     };
-
-    $: topGainers = (agency_movers ?? [])
-        .filter(d => (d.dollar_change || 0) > 0)
-        .sort((a, b) => (b.dollar_change || 0) - (a.dollar_change || 0))
-        .slice(0, 10);
-
-    $: topLosers = (agency_movers ?? [])
-        .filter(d => (d.dollar_change || 0) < 0)
-        .sort((a, b) => (a.dollar_change || 0) - (b.dollar_change || 0))
-        .slice(0, 10);
-
-    $: waterfallData = [
-        ...topGainers.map(d => ({ ...d, type: 'increase' })),
-        ...topLosers.map(d => ({ ...d, type: 'decrease' }))
-    ].sort((a, b) => (b.dollar_change || 0) - (a.dollar_change || 0));
 
     $: selectedFy = selectedValue($inputStore?.f_fy);
     $: selectedFund = selectedValue($inputStore?.f_fund);
@@ -674,112 +658,23 @@ order by l.latest_budget desc
 
 ## Budget Changes — Year over Year
 
-<Alert status=info>Agencies sorted by absolute dollar change from prior year. </Alert>
+<Alert status=info>Agencies sorted by absolute dollar change from prior year.</Alert>
 
-{#if waterfallData?.length > 0}
-    <ECharts
-        height="520px"
-        config={{
-            title: { text: 'Biggest budget changes vs prior year', left: 'left', top: 0, textStyle: { fontSize: 14, fontWeight: 600, color: '#231F20' } },
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: { type: 'shadow' },
-                formatter: function(params) {
-                    if (!params || params.length === 0) return '';
-                    const idx = params[0].dataIndex;
-                    const row = waterfallData.slice().reverse()[idx];
-                    if (!row) return '';
-                    const v = Number(row.dollar_change) || 0;
-                    const abs = Math.abs(v);
-                    const money = abs >= 1e9 ? '$' + (abs/1e9).toFixed(1) + 'B' : '$' + (abs/1e6).toFixed(0) + 'M';
-                    const pctStr = row.pct_change != null ? (row.pct_change > 0 ? '+' : '') + row.pct_change + '%' : 'N/A';
-                    return '<b>' + row.agency_name + '</b><br/>Change: ' + (v >= 0 ? '+' : '-') + money + '<br/>YoY: ' + pctStr;
-                }
-            },
-            grid: { left: 16, right: 120, top: 40, bottom: 20, containLabel: true },
-            xAxis: {
-                type: 'value',
-                axisLine: { show: true, lineStyle: { color: '#231F20', width: 1.5 } },
-                axisLabel: {
-                    formatter: function(v) {
-                        const n = Number(v) || 0;
-                        const abs = Math.abs(n);
-                        return abs >= 1e9 ? '$' + (n/1e9).toFixed(1) + 'B' : '$' + (n/1e6).toFixed(0) + 'M';
-                    },
-                    color: '#6B7280',
-                    fontSize: 11
-                },
-                splitLine: { lineStyle: { color: '#E5E7EB', type: 'dashed' } }
-            },
-            yAxis: {
-                type: 'category',
-                data: waterfallData.map(function(d) { return d.agency_name; }).reverse(),
-                axisLine: { show: false },
-                axisTick: { show: false },
-                axisLabel: {
-                    width: 220,
-                    overflow: 'truncate',
-                    fontSize: 11,
-                    color: '#231F20',
-                    align: 'right',
-                    formatter: function(name) {
-                        return name.length > 30 ? name.slice(0, 30) + '…' : name;
-                    }
-                }
-            },
-            series: [{
-                type: 'bar',
-                barMaxWidth: 24,
-                data: waterfallData.map(function(d) { return d.dollar_change || 0; }).reverse(),
-                label: {
-                    show: true,
-                    position: function(params) { return Number(params.value) >= 0 ? 'right' : 'left'; },
-                    distance: 8,
-                    padding: [2, 4],
-                    backgroundColor: 'rgba(255,255,255,0.85)',
-                    borderRadius: 2,
-                    formatter: function(params) {
-                        const v = Number(params.value) || 0;
-                        const abs = Math.abs(v);
-                        const money = abs >= 1e9
-                            ? (v >= 0 ? '+$' : '-$') + (abs/1e9).toFixed(1) + 'B'
-                            : (v >= 0 ? '+$' : '-$') + (abs/1e6).toFixed(0) + 'M';
-                        const idx = params.dataIndex;
-                        const row = waterfallData.slice().reverse()[idx];
-                        const pct = row && row.pct_change != null
-                            ? ' (' + (row.pct_change > 0 ? '+' : '') + row.pct_change + '%)'
-                            : '';
-                        return money + pct;
-                    },
-                    fontSize: 11,
-                    fontWeight: 600,
-                    color: '#231F20'
-                },
-                itemStyle: {
-                    color: function(params) { return Number(params.value) >= 0 ? '#2EAD6B' : '#C8122C'; },
-                    borderRadius: 2
-                },
-                markLine: {
-                    silent: true,
-                    symbol: ['none', 'none'],
-                    lineStyle: { color: '#231F20', width: 1.5, type: 'solid' },
-                    label: { show: false },
-                    data: [{ xAxis: 0 }]
-                }
-            }]
-        }}
-    />
-{:else}
-    <Alert status=warning>No mover data available for this filter selection.</Alert>
-{/if}
+<BudgetChangesChart
+    data={agency_movers}
+    labelField="agency_name"
+    title="Biggest budget changes vs prior year"
+    height="520px"
+    limit={10}
+/>
 
 ---
 
-## Agency Drill-Down Table -Click Agency row to navigate to Agencies Page
+## Agency Drill-Down Table — Click a row to open the Agency page
 
-{#if agency_snapshot?.length > 0}
+{#if agency_latest?.length > 0}
     <ConditionalTable
-        data={agency_snapshot}
+        data={agency_latest}
         columns={agencyTableColumns}
         linkField="agency_link"
         search={true}
@@ -787,7 +682,7 @@ order by l.latest_budget desc
         defaultDir={-1}
     />
 {:else}
-    <Alert status=warning>No agency snapshot data available for this filter selection.</Alert>
+    <Alert status=warning>No agency data available for this filter selection.</Alert>
 {/if}
 
 {/if}
@@ -1113,7 +1008,7 @@ order by l.latest_budget desc
         <tbody>
             {#each sortedPivot as row, i}
                 <tr
-                    on:click={() => window.location.href = row.agency_link}
+                    on:click={() => goto(row.agency_link)}
                     style={'border-bottom:1px solid #F3F4F6; cursor:pointer; background:' + (i % 2 === 0 ? 'white' : '#FAFAFA') + ';'}
                     onmouseenter="this.style.background='#FFF7F0'"
                     onmouseleave={'this.style.background=' + (i % 2 === 0 ? "'white'" : "'#FAFAFA'") + ''}

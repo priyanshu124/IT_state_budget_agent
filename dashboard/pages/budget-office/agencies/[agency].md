@@ -3,12 +3,50 @@ title: Agency Detail
 prerender: false
 ---
 
+```sql g_unit
+select distinct unit_name from mbtsa.subprogram_level
+where '${params.agency}' not in ('', 'undefined')
+  and agency_name = '${params.agency}' and unit_name is not null
+order by unit_name
+```
+
+```sql g_program
+select distinct program_name from mbtsa.subprogram_level
+where '${params.agency}' not in ('', 'undefined')
+  and agency_name = '${params.agency}' and program_name is not null
+order by program_name
+```
+
+```sql g_fund
+select distinct fund_type from mbtsa.subprogram_level
+where '${params.agency}' not in ('', 'undefined')
+  and agency_name = '${params.agency}' and fund_type is not null
+order by fund_type
+```
+
+```sql filtered
+select
+    cast(fiscal_year as int) as fiscal_year,
+    agency_code,
+    agency_name,
+    unit_name,
+    program_name,
+    subprogram_name,
+    fund_type,
+    total_budget_amount as amount
+from mbtsa.subprogram_level
+where '${params.agency}' not in ('', 'undefined')
+  and agency_name = '${params.agency}'
+        and ('${selectedUnit}' in ('%', '', 'undefined') or '${selectedUnit}' like '(select%' or lower(coalesce(unit_name, '')) like '${selectedUnit}')
+        and ('${selectedProgram}' in ('%', '', 'undefined') or '${selectedProgram}' like '(select%' or lower(coalesce(program_name, '')) like '${selectedProgram}')
+        and ('${selectedFund}' in ('%', '', 'undefined') or '${selectedFund}' like '(select%' or lower(coalesce(fund_type, '')) like '${selectedFund}')
+```
+
 ```sql yearly_rollup
 select
     cast(fiscal_year as int) as fiscal_year,
-    sum(total_budget_amount) as total_budget
-from mbtsa.subprogram_level
-where agency_name = '${params.agency}'
+    sum(amount) as total_budget
+from ${filtered}
 group by fiscal_year
 order by fiscal_year
 ```
@@ -37,6 +75,7 @@ select
     max(case when o.year_rank = 2 then o.fiscal_year end) as prior_year
 from bounds b
 left join ordered o on true
+where b.max_year is not null
 group by b.start_year, b.max_year, b.total_budget
 ```
 
@@ -88,18 +127,10 @@ order by fiscal_year
 ```
 
 ```sql filtered_latest
-select
-    cast(fiscal_year as int) as fiscal_year,
-    agency_code,
-    agency_name,
-    unit_name,
-    program_name,
-    subprogram_name,
-    fund_type,
-    total_budget_amount as amount
-from mbtsa.subprogram_level
-where agency_name = '${params.agency}'
-    and fiscal_year = (select max_year from ${scope_meta})
+select f.*
+from ${filtered} f
+cross join ${scope_meta} m
+where f.fiscal_year = m.max_year
 ```
 
 ```sql metrics_latest
@@ -153,22 +184,61 @@ order by spend desc
 limit 10
 ```
 
-```sql fund_breakdown_latest
-select fund_type, sum(amount) as spend
-from ${filtered_latest}
-where fund_type is not null
-group by fund_type
-order by spend desc
+```sql fund_snapshot
+with latest as (
+    select fund_type, sum(amount) as latest_budget
+    from ${filtered_latest}
+    where fund_type is not null and trim(fund_type) <> ''
+    group by fund_type
+),
+prior as (
+    select f.fund_type, sum(f.amount) as prior_budget
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fund_type is not null and trim(f.fund_type) <> ''
+        and f.fiscal_year = m.prior_year
+    group by f.fund_type
+),
+hist_5y as (
+    select f.fund_type, sum(f.amount) as budget_5y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fund_type is not null and trim(f.fund_type) <> ''
+        and f.fiscal_year = m.max_year - 5
+    group by f.fund_type
+),
+hist_10y as (
+    select f.fund_type, sum(f.amount) as budget_10y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fund_type is not null and trim(f.fund_type) <> ''
+        and f.fiscal_year = m.max_year - 10
+    group by f.fund_type
+)
+select
+    l.fund_type,
+    l.latest_budget,
+    round(l.latest_budget * 100.0 / nullif(sum(l.latest_budget) over (), 0), 1) as latest_year_pct,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as yoy_change_pct,
+    round(case when h5.budget_5y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h5.budget_5y_ago, 1.0/5.0) - 1.0) * 100.0
+        else null end, 1) as cagr_5y_pct,
+    round(case when h10.budget_10y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h10.budget_10y_ago, 1.0/10.0) - 1.0) * 100.0
+        else null end, 1) as cagr_10y_pct,
+    coalesce(fp.fund_color, '#4C4743') as fund_color
+from latest l
+left join prior p using (fund_type)
+left join hist_5y h5 using (fund_type)
+left join hist_10y h10 using (fund_type)
+left join ${fund_profile} fp on fp.fund_type = l.fund_type
+order by l.latest_budget desc
 ```
 
 ```sql pivot_units
 select
     unit_name,
     cast(fiscal_year as int) as fiscal_year,
-    sum(total_budget_amount) as spend
-from mbtsa.subprogram_level
-where agency_name = '${params.agency}'
-    and unit_name is not null
+    sum(amount) as spend
+from ${filtered}
+where unit_name is not null
 group by unit_name, fiscal_year
 order by unit_name, fiscal_year
 ```
@@ -177,21 +247,19 @@ order by unit_name, fiscal_year
 select
     cast(f.fiscal_year as int) as fiscal_year,
     f.fund_type,
-    sum(f.total_budget_amount) as spend,
+    sum(f.amount) as spend,
     coalesce(fp.fund_rank, 99) as fund_rank,
     coalesce(fp.fund_color, '#4C4743') as fund_color
-from mbtsa.subprogram_level f
+from ${filtered} f
 left join ${fund_profile} fp on fp.fund_type = f.fund_type
-where f.agency_name = '${params.agency}'
-    and f.fund_type is not null
+where f.fund_type is not null
 group by f.fiscal_year, f.fund_type, fp.fund_rank, fp.fund_color
 order by f.fiscal_year, fund_rank
 ```
 
 ```sql fund_profile
 with distinct_funds as (
-    select distinct fund_type from mbtsa.subprogram_level
-    where agency_name = '${params.agency}' and fund_type is not null
+    select distinct fund_type from ${filtered} where fund_type is not null
 ),
 rules(pattern, fund_rank, fund_color, is_like) as (
     values
@@ -227,15 +295,214 @@ from distinct_funds d
 left join matches m on m.fund_type = d.fund_type and m.rank_order = 1
 ```
 
+```sql unit_movers
+with latest as (
+    select coalesce(unit_name, '(No Unit)') as label, sum(amount) as latest_budget
+    from ${filtered_latest}
+    group by unit_name
+),
+prior as (
+    select coalesce(unit_name, '(No Unit)') as label, sum(amount) as prior_budget
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.prior_year
+    group by unit_name
+)
+select
+    l.label,
+    l.latest_budget - coalesce(p.prior_budget, 0) as dollar_change,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as pct_change
+from latest l
+left join prior p using (label)
+```
+
+```sql program_movers
+with latest as (
+    select coalesce(program_name, '(No Program)') as label, sum(amount) as latest_budget
+    from ${filtered_latest}
+    where program_name is not null
+    group by program_name
+),
+prior as (
+    select coalesce(program_name, '(No Program)') as label, sum(amount) as prior_budget
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.prior_year
+        and f.program_name is not null
+    group by program_name
+)
+select
+    l.label,
+    l.latest_budget - coalesce(p.prior_budget, 0) as dollar_change,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as pct_change
+from latest l
+left join prior p using (label)
+```
+
+```sql subprogram_movers
+with latest as (
+    select coalesce(subprogram_name, '(No Subprogram)') as label, sum(amount) as latest_budget
+    from ${filtered_latest}
+    where subprogram_name is not null
+    group by subprogram_name
+),
+prior as (
+    select coalesce(subprogram_name, '(No Subprogram)') as label, sum(amount) as prior_budget
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.prior_year
+        and f.subprogram_name is not null
+    group by subprogram_name
+)
+select
+    l.label,
+    l.latest_budget - coalesce(p.prior_budget, 0) as dollar_change,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as pct_change
+from latest l
+left join prior p using (label)
+```
+
+```sql unit_latest
+with latest as (
+    select unit_name, sum(amount) as latest_budget
+    from ${filtered_latest}
+    where unit_name is not null
+    group by unit_name
+),
+prior as (
+    select unit_name, sum(amount) as prior_budget
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.prior_year and f.unit_name is not null
+    group by unit_name
+),
+hist_5y as (
+    select unit_name, sum(amount) as budget_5y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.max_year - 5 and f.unit_name is not null
+    group by unit_name
+),
+hist_10y as (
+    select unit_name, sum(amount) as budget_10y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.max_year - 10 and f.unit_name is not null
+    group by unit_name
+)
+select
+    l.unit_name,
+    l.latest_budget,
+    round(l.latest_budget * 100.0 / nullif(sum(l.latest_budget) over (), 0), 1) as latest_year_pct,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as yoy_change_pct,
+    round(case when h5.budget_5y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h5.budget_5y_ago, 1.0/5.0) - 1.0) * 100.0
+        else null end, 1) as cagr_5y_pct,
+    round(case when h10.budget_10y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h10.budget_10y_ago, 1.0/10.0) - 1.0) * 100.0
+        else null end, 1) as cagr_10y_pct
+from latest l
+left join prior p using (unit_name)
+left join hist_5y h5 using (unit_name)
+left join hist_10y h10 using (unit_name)
+order by l.latest_budget desc
+```
+
+```sql program_latest
+with latest as (
+    select unit_name, program_name, sum(amount) as latest_budget
+    from ${filtered_latest}
+    where unit_name is not null and program_name is not null
+    group by unit_name, program_name
+),
+prior as (
+    select unit_name, program_name, sum(amount) as prior_budget
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.prior_year and f.unit_name is not null and f.program_name is not null
+    group by unit_name, program_name
+),
+hist_5y as (
+    select unit_name, program_name, sum(amount) as budget_5y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.max_year - 5 and f.unit_name is not null and f.program_name is not null
+    group by unit_name, program_name
+),
+hist_10y as (
+    select unit_name, program_name, sum(amount) as budget_10y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.max_year - 10 and f.unit_name is not null and f.program_name is not null
+    group by unit_name, program_name
+),
+total as (select sum(latest_budget) as grand_total from latest)
+select
+    l.unit_name,
+    l.program_name,
+    l.latest_budget,
+    round(l.latest_budget * 100.0 / nullif(t.grand_total, 0), 1) as latest_year_pct,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as yoy_change_pct,
+    round(case when h5.budget_5y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h5.budget_5y_ago, 1.0/5.0) - 1.0) * 100.0
+        else null end, 1) as cagr_5y_pct,
+    round(case when h10.budget_10y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h10.budget_10y_ago, 1.0/10.0) - 1.0) * 100.0
+        else null end, 1) as cagr_10y_pct
+from latest l
+left join prior p using (unit_name, program_name)
+left join hist_5y h5 using (unit_name, program_name)
+left join hist_10y h10 using (unit_name, program_name)
+cross join total t
+order by l.unit_name, l.latest_budget desc
+```
+
+```sql subprogram_latest
+with latest as (
+    select unit_name, program_name, subprogram_name, sum(amount) as latest_budget
+    from ${filtered_latest}
+    where unit_name is not null and program_name is not null and subprogram_name is not null
+    group by unit_name, program_name, subprogram_name
+),
+prior as (
+    select unit_name, program_name, subprogram_name, sum(amount) as prior_budget
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.prior_year and f.unit_name is not null and f.program_name is not null and f.subprogram_name is not null
+    group by unit_name, program_name, subprogram_name
+),
+hist_5y as (
+    select unit_name, program_name, subprogram_name, sum(amount) as budget_5y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.max_year - 5 and f.unit_name is not null and f.program_name is not null and f.subprogram_name is not null
+    group by unit_name, program_name, subprogram_name
+),
+hist_10y as (
+    select unit_name, program_name, subprogram_name, sum(amount) as budget_10y_ago
+    from ${filtered} f cross join ${scope_meta} m
+    where f.fiscal_year = m.max_year - 10 and f.unit_name is not null and f.program_name is not null and f.subprogram_name is not null
+    group by unit_name, program_name, subprogram_name
+),
+total as (select sum(latest_budget) as grand_total from latest)
+select
+    l.unit_name,
+    l.program_name,
+    l.subprogram_name,
+    l.latest_budget,
+    round(l.latest_budget * 100.0 / nullif(t.grand_total, 0), 1) as latest_year_pct,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as yoy_change_pct,
+    round(case when h5.budget_5y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h5.budget_5y_ago, 1.0/5.0) - 1.0) * 100.0
+        else null end, 1) as cagr_5y_pct,
+    round(case when h10.budget_10y_ago > 0 and l.latest_budget > 0
+        then (power(l.latest_budget / h10.budget_10y_ago, 1.0/10.0) - 1.0) * 100.0
+        else null end, 1) as cagr_10y_pct
+from latest l
+left join prior p using (unit_name, program_name, subprogram_name)
+left join hist_5y h5 using (unit_name, program_name, subprogram_name)
+left join hist_10y h10 using (unit_name, program_name, subprogram_name)
+cross join total t
+order by l.unit_name, l.program_name, l.latest_budget desc
+```
+
 ```sql pivot_programs
 select
     unit_name,
     program_name,
     cast(fiscal_year as int) as fiscal_year,
-    sum(total_budget_amount) as spend
-from mbtsa.subprogram_level
-where agency_name = '${params.agency}'
-    and unit_name is not null
+    sum(amount) as spend
+from ${filtered}
+where unit_name is not null
     and program_name is not null
 group by unit_name, program_name, fiscal_year
 order by unit_name, program_name, fiscal_year
@@ -247,10 +514,9 @@ select
     program_name,
     subprogram_name,
     cast(fiscal_year as int) as fiscal_year,
-    sum(total_budget_amount) as spend
-from mbtsa.subprogram_level
-where agency_name = '${params.agency}'
-    and unit_name is not null
+    sum(amount) as spend
+from ${filtered}
+where unit_name is not null
     and program_name is not null
     and subprogram_name is not null
 group by unit_name, program_name, subprogram_name, fiscal_year
@@ -260,6 +526,11 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 <script>
     import { getInputContext } from '@evidence-dev/sdk/utils/svelte';
     const inputStore = getInputContext();
+
+    const selectedValue = (entry, lower = true) => {
+        const val = readInputValue(entry, '%').replace(/'/g, "''");
+        return lower ? val.toLowerCase() : val;
+    };
 
     const readInputValue = (entry, fallback = '%') => {
         const candidates = [
@@ -320,6 +591,19 @@ order by unit_name, program_name, subprogram_name, fiscal_year
         const a = Math.exp((sumLnY - b * sumLnX) / count);
         return { chartData: values, trendPoints: x.map((xi) => a * Math.pow(xi, b)) };
     };
+    $: selectedUnit = selectedValue($inputStore?.f_unit);
+    $: selectedProgram = selectedValue($inputStore?.f_program);
+    $: selectedFund = selectedValue($inputStore?.f_fund);
+
+    $: fundTableColumns = [
+        { id: 'fund_type', title: 'Fund Type', align: 'left' },
+        { id: 'latest_budget', title: `Latest Year (${overview?.[0]?.max_year_label ?? 'N/A'})`, fmt: 'money', sortable: true },
+        { id: 'latest_year_pct', title: '% of Total', fmt: 'pct', sortable: true },
+        { id: 'yoy_change_pct', title: 'YoY Change', fmt: 'pct', conditional: true, sortable: true },
+        { id: 'cagr_5y_pct', title: '5-Year CAGR', fmt: 'pct', conditional: true, sortable: true },
+        { id: 'cagr_10y_pct', title: '10-Year CAGR', fmt: 'pct', conditional: true, sortable: true }
+    ];
+
     let localView = 'latest';
     let drillYearView = '5y';
     let expandedUnits = {};
@@ -348,6 +632,25 @@ order by unit_name, program_name, subprogram_name, fiscal_year
     $: trendResults = calculateTrendResults(yearly_rollup);
 
     let paretoLevel = 'unit';
+
+
+    $: moversData = paretoLevel === 'program'
+        ? (program_movers ?? [])
+        : paretoLevel === 'subprogram'
+            ? (subprogram_movers ?? [])
+            : (unit_movers ?? []);
+
+    $: moversLabel = paretoLevel === 'program'
+        ? 'Biggest program budget changes vs prior year'
+        : paretoLevel === 'subprogram'
+            ? 'Biggest subprogram budget changes vs prior year'
+            : 'Biggest unit budget changes vs prior year';
+
+    $: moversAlert = paretoLevel === 'program'
+        ? 'Programs sorted by absolute dollar change from prior year.'
+        : paretoLevel === 'subprogram'
+            ? 'Subprograms sorted by absolute dollar change from prior year.'
+            : 'Units sorted by absolute dollar change from prior year.';
 
     $: paretoData = paretoLevel === 'program'
         ? (pareto_programs ?? [])
@@ -511,6 +814,24 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 <a href="/budget-office" style="display:inline-block; margin: 12px 0; color: #C8122C; font-size: 0.9rem; text-decoration: none;">← Back to Budget Office</a>
 
+<div id="page-filters">
+    <Details title="🔍 Filters" open=false>
+        <Grid cols=3>
+            <Dropdown name=f_unit data={g_unit} value=unit_name title="Unit" defaultValue="%">
+                <DropdownOption value="%" valueLabel="All Units"/>
+            </Dropdown>
+            <Dropdown name=f_program data={g_program} value=program_name title="Program" defaultValue="%">
+                <DropdownOption value="%" valueLabel="All Programs"/>
+            </Dropdown>
+            <Dropdown name=f_fund data={g_fund} value=fund_type title="Fund Type" defaultValue="%">
+                <DropdownOption value="%" valueLabel="All Fund Types"/>
+            </Dropdown>
+        </Grid>
+    </Details>
+</div>
+
+<FilterSidebar title="🔍 Filters" targetId="page-filters"/>
+
 <div style="display:flex; gap:0; margin: 16px 0 8px 0; border: 1px solid #D9DDE3; border-radius:6px; width:fit-content; overflow:hidden;">
     {#each [['latest','Latest Year'], ['trend','Trend Over Years']] as [val, label]}
         <button
@@ -566,6 +887,69 @@ order by unit_name, program_name, subprogram_name, fiscal_year
     />
 {:else}
     <Alert status=warning>No data available for this selection.</Alert>
+{/if}
+
+---
+
+## Fund Type Share — Latest Year
+
+{#if fund_snapshot?.length > 0}
+    <DonutFundSnapshot
+        data={fund_snapshot}
+        fund_profile={fund_profile}
+        title=""
+        height="380px"
+        nameField="fund_type"
+        valueField="latest_budget"
+        pctField="latest_year_pct"
+    />
+    <ConditionalTable
+        data={fund_snapshot}
+        columns={fundTableColumns}
+        search={false}
+        defaultSort="latest_budget"
+        defaultDir={-1}
+    />
+{:else}
+    <Alert status=warning>No fund type data available for this selection.</Alert>
+{/if}
+
+---
+
+## Budget Changes — Year over Year
+
+<div style="display:flex; gap:8px; margin: 8px 0 14px 0;">
+    {#each [['unit','Units'],['program','Programs'],['subprogram','Subprograms']] as [val, label]}
+        <button
+            on:click={() => paretoLevel = val}
+            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (paretoLevel === val ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (paretoLevel === val ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white') + '; color: ' + (paretoLevel === val ? '#C8122C' : '#231F20') + '; font-weight: ' + (paretoLevel === val ? 700 : 500)}
+        >{label}</button>
+    {/each}
+</div>
+
+<Alert status=info>{moversAlert}</Alert>
+
+<BudgetChangesChart
+    data={moversData}
+    labelField="label"
+    title={moversLabel}
+    height="480px"
+    limit={10}
+/>
+
+---
+
+## Latest Year — Unit · Program · Subprogram
+
+{#if unit_latest?.length > 0}
+    <PivotLatest
+        unitData={unit_latest}
+        programData={program_latest}
+        subprogramData={subprogram_latest}
+        latestYearLabel={overview?.[0]?.max_year_label ?? ''}
+    />
+{:else}
+    <Alert status=warning>No latest year data available for this selection.</Alert>
 {/if}
 
 ---
