@@ -9,6 +9,7 @@ select
     sum(total_budget_amount) as total_it_spend
 from mbtsa.cost_pool_level
 where is_it = true
+    and '${params.agency}' not in ('', 'undefined')
     and agency_name = '${params.agency}'
 group by fiscal_year
 order by fiscal_year
@@ -38,6 +39,7 @@ select
     max(case when o.year_rank = 2 then o.fiscal_year end) as prior_year
 from bounds b
 left join ordered o on true
+where b.max_year is not null
 group by b.start_year, b.max_year, b.total_it_spend
 ```
 
@@ -137,6 +139,7 @@ select
     sum(total_budget_amount) as total_it_spend
 from mbtsa.cost_pool_level
 where is_it = true
+    and '${params.agency}' not in ('', 'undefined')
     and agency_name = '${params.agency}'
     and it_tower is not null
 group by it_tower
@@ -152,6 +155,7 @@ with tower_spend as (
         sum(total_budget_amount) as spend
     from mbtsa.cost_pool_level
     where is_it = true
+        and '${params.agency}' not in ('', 'undefined')
         and agency_name = '${params.agency}'
         and it_tower in (select it_tower from ${top_towers_trend})
     group by fiscal_year, it_tower
@@ -173,6 +177,7 @@ select
     sum(total_budget_amount) as spend
 from mbtsa.cost_pool_level
 where is_it = true
+    and '${params.agency}' not in ('', 'undefined')
     and agency_name = '${params.agency}'
     and program_name is not null
 group by program_name, fiscal_year
@@ -190,6 +195,7 @@ select
     sum(total_budget_amount) as spend
 from mbtsa.cost_pool_level
 where is_it = true
+    and '${params.agency}' not in ('', 'undefined')
     and agency_name = '${params.agency}'
 group by program_name, subprogram_name, it_tower, it_designation, fund_type, fiscal_year
 order by fiscal_year desc, spend desc
@@ -202,6 +208,7 @@ select
     sum(total_budget_amount) as spend
 from mbtsa.cost_pool_level
 where is_it = true
+    and '${params.agency}' not in ('', 'undefined')
     and agency_name = '${params.agency}'
     and program_name is not null
 group by program_name, fiscal_year
@@ -216,6 +223,7 @@ select
     sum(total_budget_amount) as spend
 from mbtsa.cost_pool_level
 where is_it = true
+    and '${params.agency}' not in ('', 'undefined')
     and agency_name = '${params.agency}'
     and program_name is not null
     and subprogram_name is not null
@@ -232,6 +240,7 @@ select
     sum(total_budget_amount) as spend
 from mbtsa.cost_pool_level
 where is_it = true
+    and '${params.agency}' not in ('', 'undefined')
     and agency_name = '${params.agency}'
     and program_name is not null
     and subprogram_name is not null

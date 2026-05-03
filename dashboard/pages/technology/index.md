@@ -55,9 +55,9 @@ select
     t.total_budget_amount as amount
 from mbtsa.subprogram_level t
 where t.is_it = true
-    and cast(t.fiscal_year as varchar) like '${selectedFy}'
-    and coalesce(t.fund_type, '') like '${selectedFund}'
-    and coalesce(t.agency_name, '') like '${selectedAgency}'
+    and ('${selectedFy}' in ('%', '', 'undefined') or cast(t.fiscal_year as varchar) like '${selectedFy}')
+    and ('${selectedFund}' in ('%', '', 'undefined') or coalesce(t.fund_type, '') like '${selectedFund}')
+    and ('${selectedAgency}' in ('%', '', 'undefined') or coalesce(t.agency_name, '') like '${selectedAgency}')
 ```
 
 ```sql yearly_rollup
@@ -91,6 +91,7 @@ select
     max(case when o.year_rank = 2 then o.total_it_spend end) as prior_it_spend
 from bounds b
 left join ordered o on true
+where b.max_year is not null
 group by b.start_year, b.max_year, b.total_it_spend
 ```
 
