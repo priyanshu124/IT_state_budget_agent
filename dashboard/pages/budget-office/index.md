@@ -3,9 +3,19 @@
 sidebar_position: 3
 ---
 
-<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0;">
-    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ Budget Office View</h1>
-    <p style="color: #b376f6; font-size: 0.95rem; margin: 4px 0 0 0;">Statewide Budget Analysis</p>
+<div style="background: linear-gradient(135deg, var(--nxt-blue-violet) 0%, var(--nxt-dark) 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid var(--nxt-lavender); margin-bottom: 0; display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;">
+    <div>
+        <h1 style="color: var(--color-primary-content); font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ Budget Office View</h1>
+        <p style="color: var(--nxt-lavender); font-size: 0.95rem; margin: 4px 0 0 0;">Statewide Budget Analysis</p>
+    </div>
+    <div style="display:flex; border: 1px solid rgba(255,255,255,0.18); border-radius:6px; width:fit-content; overflow:hidden; background:rgba(255,255,255,0.08);">
+        {#each [['latest','Latest Year'],['trend','Trend Over Years']] as [val, label]}
+            <button
+                on:click={() => localView = val}
+                style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid rgba(255,255,255,0.18); background: ' + (localView === val ? 'var(--color-primary-content)' : 'transparent') + '; color: ' + (localView === val ? 'var(--nxt-dark)' : 'var(--color-primary-content)') + '; font-weight: ' + (localView === val ? 700 : 500)}
+            >{label}</button>
+        {/each}
+    </div>
 </div>
 
 ```sql g_fy
@@ -481,7 +491,7 @@ order by l.latest_budget desc
         return 'background:rgba(200,18,44,0.03);';
     };
 
-    let localView = 'latest';
+    let localView = 'trend';
     let pivotYearView = '5y';
     let searchTerm = '';
     let selectedFundSeries = null;
@@ -518,16 +528,34 @@ order by l.latest_budget desc
         selectedFundSeries = selectedFundSeries === name ? null : name;
     };
 
+    const fundTypeDescriptions = {
+        'Federal Funds': 'Federal aid and grant funding used to support state programs.',
+        'General Funds': 'State general revenue used for core operations and services.',
+        'Special Funds': 'Dedicated or restricted funds assigned to specific purposes.',
+        'American Rescue Plan Act of 21': 'Federal recovery funding from the American Rescue Plan Act.',
+        'Coronavirus Aid, Relief, and Economic Security Act': 'Federal emergency relief funding from the CARES Act.',
+        'Coronavirus Response and Relief Sup Act': 'Federal pandemic response funding from the CRRSA Act.',
+        'Federal Funds (COVID)': 'Federal COVID-era relief and recovery funding.',
+        'Current Unrestricted Funds': 'Current-year unrestricted dollars available for use.',
+        'Current Restricted Funds': 'Current-year restricted dollars tied to specific requirements.',
+        'Federal Funds (ARRA)': 'Federal stimulus funding from the American Recovery and Reinvestment Act.'
+    };
+
     $: selectedFy = selectedValue($inputStore?.f_fy);
     $: selectedFund = selectedValue($inputStore?.f_fund);
     $: selectedAgency = selectedValue($inputStore?.f_agency);
     $: viewMode = localView;
     $: trendResults = calculateTrendResults(yearly, 'total_budget');
     $: fundTrendYears = [...new Set(fund_trend.map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
+    $: fundSeriesTotals = fund_trend.reduce((acc, row) => {
+        const key = row.fund_type ?? 'Unknown';
+        acc[key] = (acc[key] || 0) + (Number(row.spend) || 0);
+        return acc;
+    }, {});
     $: fundSeriesNames = [...new Set(fund_trend.map(d => d.fund_type))].sort((a, b) => {
-        const ra = fund_trend.find(d => d.fund_type === a)?.fund_rank ?? 99;
-        const rb = fund_trend.find(d => d.fund_type === b)?.fund_rank ?? 99;
-        return ra - rb;
+        const totalDiff = (fundSeriesTotals[b] || 0) - (fundSeriesTotals[a] || 0);
+        if (Math.abs(totalDiff) > 0.000001) return totalDiff;
+        return String(a).localeCompare(String(b));
     });
     $: agencyLineTrendYears = [...new Set((agency_trend_lines ?? []).map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
     $: highlightedAgencyNames = (top_agencies_trend ?? []).slice(0, 3).map(a => a.agency_name);
@@ -586,19 +614,10 @@ order by l.latest_budget desc
 <FilterSidebar title="⚙ Filters" targetId="page-filters"/>
 
 <div style="display:none;">
-    <Dropdown name=f_view title="View" defaultValue="latest">
+    <Dropdown name=f_view title="View" defaultValue="trend">
         <DropdownOption value="trend" valueLabel="Trend Over Years"/>
         <DropdownOption value="latest" valueLabel="Latest Year Snapshot"/>
     </Dropdown>
-</div>
-
-<div style="display:flex; margin: 16px 0 12px 0; border: 1px solid #D9DDE3; border-radius:6px; width:fit-content; overflow:hidden;">
-    {#each [['latest','Latest Year'],['trend','Trend Over Years']] as [val, label]}
-        <button
-            on:click={() => localView = val}
-            style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid #D9DDE3; background: ' + (localView === val ? '#C8122C' : 'white') + '; color: ' + (localView === val ? 'white' : '#231F20') + '; font-weight: ' + (localView === val ? 600 : 400)}
-        >{label}</button>
-    {/each}
 </div>
 
 {#if viewMode == 'latest'}
@@ -776,7 +795,8 @@ order by l.latest_budget desc
         {#each fundSeriesNames as name}
             <button
                 on:click={() => toggleFundSeries(name)}
-                style={'border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ' + (selectedFundSeries === name ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (selectedFundSeries === name ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white') + '; box-shadow: ' + (selectedFundSeries === name ? '0 4px 10px rgba(200,20,44,0.08)' : 'none')}
+                title={fundTypeDescriptions[name] ?? name}
+                style={'border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ' + (selectedFundSeries === name ? '2px solid #C8122C' : '1px solid var(--nxt-border)') + '; background: ' + (selectedFundSeries === name ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'var(--nxt-surface)') + '; box-shadow: ' + (selectedFundSeries === name ? '0 4px 10px rgba(200,20,44,0.08)' : '0 1px 0 rgba(99,33,165,0.03)')}
                 aria-pressed={selectedFundSeries === name}
             >
                 <span style={'width:10px; height:10px; border-radius:50%; background: ' + (fund_trend.find(function(d) { return d.fund_type === name; })?.fund_color ?? '#4C4743') + '; display:inline-block;'}></span>
@@ -788,29 +808,29 @@ order by l.latest_budget desc
         height="420px"
         config={{
             tooltip: {
-                trigger: 'item',
-                formatter: function(param) {
-                    if (!param) return '';
-                    const hoveredFund = param.seriesName;
-                    const rows = fundTrendYears.slice()
-                        .sort(function(a, b) { return Number(b) - Number(a); })
-                        .map(function(year) {
-                            const row = fund_trend.find(function(d) {
-                                return String(d.fiscal_year) === year && d.fund_type === hoveredFund;
-                            });
-                            const v = row ? row.spend : 0;
-                            const yearTotal = fund_trend
-                                .filter(function(d) { return String(d.fiscal_year) === year; })
-                                .reduce(function(sum, d) { return sum + (d.spend || 0); }, 0);
-                            const pct = yearTotal > 0 ? ((v / yearTotal) * 100).toFixed(1) : '0.0';
-                            const fmt = Math.abs(v) >= 1e9
-                                ? '$' + (v/1e9).toFixed(2) + 'B'
-                                : Math.abs(v) >= 1e6
-                                    ? '$' + (v/1e6).toFixed(1) + 'M'
-                                    : '$' + Math.round(v).toLocaleString();
-                            return year + ': ' + fmt + ' (' + pct + '%)';
-                        });
-                    return '<b>' + hoveredFund + '</b><br/>' + rows.join('<br/>');
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                formatter: function(params) {
+                    if (!params || params.length === 0) return '';
+                    const axisValue = params[0].axisValue;
+                    const rows = params.slice().sort(function(left, right) {
+                        const leftTotal = fundSeriesTotals[left.seriesName] || 0;
+                        const rightTotal = fundSeriesTotals[right.seriesName] || 0;
+                        return rightTotal - leftTotal;
+                    }).map(function(p) {
+                        const v = Number(p.value) || 0;
+                        const yearTotal = fund_trend
+                            .filter(function(d) { return String(d.fiscal_year) === String(axisValue); })
+                            .reduce(function(sum, d) { return sum + (d.spend || 0); }, 0);
+                        const pct = yearTotal > 0 ? ((v / yearTotal) * 100).toFixed(1) : '0.0';
+                        const fmt = Math.abs(v) >= 1e9
+                            ? '$' + (v/1e9).toFixed(2) + 'B'
+                            : Math.abs(v) >= 1e6
+                                ? '$' + (v/1e6).toFixed(1) + 'M'
+                                : '$' + Math.round(v).toLocaleString();
+                        return p.marker + ' ' + p.seriesName + ': ' + fmt + ' (' + pct + '%)';
+                    });
+                    return '<b>' + axisValue + '</b><br/>' + rows.join('<br/>');
                 }
             },
             grid: { left: 64, right: 24, top: 20, bottom: 40 },
@@ -865,7 +885,7 @@ order by l.latest_budget desc
         {#each top_agencies_trend as a}
             <button
                 on:click={() => toggleAgencyLine(a.agency_name)}
-                style={`border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ${selectedAgencyLine === a.agency_name ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)'}; background: ${selectedAgencyLine === a.agency_name ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white'}; box-shadow: ${selectedAgencyLine === a.agency_name ? '0 4px 10px rgba(200,20,44,0.08)' : 'none'}`}
+                style={`border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ${selectedAgencyLine === a.agency_name ? '2px solid #C8122C' : '1px solid var(--nxt-border)'}; background: ${selectedAgencyLine === a.agency_name ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'var(--nxt-surface)'}; box-shadow: ${selectedAgencyLine === a.agency_name ? '0 4px 10px rgba(200,20,44,0.08)' : '0 1px 0 rgba(99,33,165,0.03)'}`}
                 aria-pressed={selectedAgencyLine === a.agency_name}
             >
                 <span style={`width:10px; height:10px; border-radius:50%; background: ${a.agency_name === highlightedAgencyNames[0] ? '#C8122C' : a.agency_name === highlightedAgencyNames[1] ? '#FFC838' : a.agency_name === highlightedAgencyNames[2] ? '#231F20' : '#C9CED6'}; display:inline-block;`}></span>
@@ -878,25 +898,27 @@ order by l.latest_budget desc
         config={{
             title: { text: 'Top 10 agencies over time', left: 'left', top: 0, textStyle: { fontSize: 14, fontWeight: 600, color: '#231F20' } },
             tooltip: {
-                trigger: 'item',
-                formatter: function(param) {
-                    if (!param) return '';
-                    const hoveredAgency = param.seriesName;
-                    const rows = agencyLineTrendYears.slice()
-                        .sort(function(a, b) { return Number(b) - Number(a); })
-                        .map(function(year) {
-                            const point = agency_trend_lines.find(function(d) {
-                                return String(d.fiscal_year) === year && d.agency_name === hoveredAgency;
-                            });
-                            const v = point ? point.spend : 0;
-                            const fmt = Math.abs(v) >= 1e9
-                                ? '$' + (v/1e9).toFixed(2) + 'B'
-                                : Math.abs(v) >= 1e6
-                                    ? '$' + (v/1e6).toFixed(1) + 'M'
-                                    : '$' + Math.round(v).toLocaleString();
-                            return year + ': ' + fmt;
-                        });
-                    return '<b>' + hoveredAgency + '</b><br/>' + rows.join('<br/>');
+                trigger: 'axis',
+                axisPointer: { type: 'shadow' },
+                formatter: function(params) {
+                    if (!params || params.length === 0) return '';
+                    const axisValue = params[0].axisValue;
+                    const yearTotal = params.reduce(function(sum, p) {
+                        return sum + (Number(p.value) || 0);
+                    }, 0);
+                    const rows = params.slice().sort(function(left, right) {
+                        return (Number(right.value) || 0) - (Number(left.value) || 0);
+                    }).map(function(p) {
+                        const v = Number(p.value) || 0;
+                        const pct = yearTotal > 0 ? ((v / yearTotal) * 100).toFixed(1) : '0.0';
+                        const fmt = Math.abs(v) >= 1e9
+                            ? '$' + (v/1e9).toFixed(2) + 'B'
+                            : Math.abs(v) >= 1e6
+                                ? '$' + (v/1e6).toFixed(1) + 'M'
+                                : '$' + Math.round(v).toLocaleString();
+                        return p.marker + ' ' + p.seriesName + ': ' + fmt + ' (' + pct + '%)';
+                    });
+                    return '<b>' + axisValue + '</b><br/>' + rows.join('<br/>');
                 }
             },
             grid: { left: 56, right: 24, top: 86, bottom: 46 },
@@ -976,13 +998,13 @@ order by l.latest_budget desc
 
 ---
 
-## Agency Budget by Year
+## Agency Budget by Year - Click on Agency to drill to its specific Page
 
 <div style="display:flex; gap:8px; margin: 8px 0 14px 0;">
     {#each [['3y','Last 3 Years'],['5y','Last 5 Years'],['all','All Years']] as [val, label]}
         <button
             on:click={() => pivotYearView = val}
-            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (pivotYearView === val ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (pivotYearView === val ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white') + '; color: ' + (pivotYearView === val ? '#C8122C' : '#231F20') + '; font-weight: ' + (pivotYearView === val ? 700 : 500)}
+            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (pivotYearView === val ? '2px solid #C8122C' : '1px solid var(--nxt-border)') + '; background: ' + (pivotYearView === val ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'var(--nxt-surface)') + '; color: ' + (pivotYearView === val ? '#C8122C' : '#231F20') + '; font-weight: ' + (pivotYearView === val ? 700 : 500)}
         >{label}</button>
     {/each}
 </div>
@@ -990,14 +1012,14 @@ order by l.latest_budget desc
 <input
     bind:value={searchTerm}
     placeholder="Search agencies..."
-    style="border: 1px solid #D9DDE3; border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; width: 280px; margin-bottom: 12px;"
+    style="border: 1px solid var(--nxt-border); border-radius: 8px; padding: 8px 12px; font-size: 0.9rem; width: 280px; margin-bottom: 12px; background:var(--nxt-surface); color:var(--nxt-text);"
 />
 
 {#if sortedPivot?.length > 0}
-<div style="overflow-x:auto; border-radius:8px; border:1px solid #E5E7EB;">
+<div style="overflow-x:auto; border-radius:8px; border:1px solid var(--nxt-border); background:var(--nxt-surface);">
     <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
         <thead>
-            <tr style="background:#F9FAFB; border-bottom:2px solid #C8122C;">
+            <tr style="background:var(--nxt-pink); border-bottom:2px solid #C8122C;">
                 <th style="text-align:left; padding:10px 14px; font-weight:700; color:#231F20; min-width:260px;">Agency</th>
                 {#each pivotViewYears as yr}
                     <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20; white-space:nowrap;">FY{yr}</th>
@@ -1009,9 +1031,9 @@ order by l.latest_budget desc
             {#each sortedPivot as row, i}
                 <tr
                     on:click={() => goto(row.agency_link)}
-                    style={'border-bottom:1px solid #F3F4F6; cursor:pointer; background:' + (i % 2 === 0 ? 'white' : '#FAFAFA') + ';'}
-                    onmouseenter="this.style.background='#FFF7F0'"
-                    onmouseleave={'this.style.background=' + (i % 2 === 0 ? "'white'" : "'#FAFAFA'") + ''}
+                    style={'border-bottom:1px solid #F3F4F6; cursor:pointer; background:' + (i % 2 === 0 ? 'var(--nxt-surface)' : '#f7f2fc') + ';'}
+                    onmouseenter="this.style.background='var(--nxt-pink)'"
+                    onmouseleave={'this.style.background=' + (i % 2 === 0 ? "'var(--nxt-surface)'" : "'#f7f2fc'") + ''}
                 >
                     <td style="padding:9px 14px; color:#231F20; font-weight:500;">
                         {row.agency_name}

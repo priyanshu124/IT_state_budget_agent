@@ -296,67 +296,105 @@ left join matches m on m.fund_type = d.fund_type and m.rank_order = 1
 ```
 
 ```sql unit_movers
-with latest as (
-    select coalesce(unit_name, '(No Unit)') as label, sum(amount) as latest_budget
-    from ${filtered_latest}
-    group by unit_name
-),
-prior as (
-    select coalesce(unit_name, '(No Unit)') as label, sum(amount) as prior_budget
-    from ${filtered} f cross join ${scope_meta} m
-    where f.fiscal_year = m.prior_year
-    group by unit_name
-)
-select
-    l.label,
-    l.latest_budget - coalesce(p.prior_budget, 0) as dollar_change,
-    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as pct_change
-from latest l
-left join prior p using (label)
+    with max_yr as (
+        select max(cast(fiscal_year as int)) as max_fy, max(cast(fiscal_year as int)) - 1 as prior_fy
+        from mbtsa.subprogram_level
+        where agency_name = '${params.agency}'
+    ),
+    latest as (
+        select coalesce(unit_name, '(No Unit)') as label, sum(total_budget_amount) as latest_budget
+        from mbtsa.subprogram_level cross join max_yr
+        where agency_name = '${params.agency}'
+            and fiscal_year = max_yr.max_fy
+            and ('${selectedUnit}' in ('%','','undefined') or lower(coalesce(unit_name,'')) like '${selectedUnit}')
+            and ('${selectedProgram}' in ('%','','undefined') or lower(coalesce(program_name,'')) like '${selectedProgram}')
+            and ('${selectedFund}' in ('%','','undefined') or lower(coalesce(fund_type,'')) like '${selectedFund}')
+        group by unit_name
+    ),
+    prior as (
+        select coalesce(unit_name, '(No Unit)') as label, sum(total_budget_amount) as prior_budget
+        from mbtsa.subprogram_level cross join max_yr
+        where agency_name = '${params.agency}'
+            and fiscal_year = max_yr.prior_fy
+            and ('${selectedUnit}' in ('%','','undefined') or lower(coalesce(unit_name,'')) like '${selectedUnit}')
+            and ('${selectedProgram}' in ('%','','undefined') or lower(coalesce(program_name,'')) like '${selectedProgram}')
+            and ('${selectedFund}' in ('%','','undefined') or lower(coalesce(fund_type,'')) like '${selectedFund}')
+        group by unit_name
+    )
+    select l.label,
+        l.latest_budget - coalesce(p.prior_budget,0) as dollar_change,
+        round((l.latest_budget - coalesce(p.prior_budget,0)) * 100.0 / nullif(p.prior_budget,0), 1) as pct_change
+    from latest l left join prior p using (label)
+    where abs(l.latest_budget - coalesce(p.prior_budget,0)) > 0
+    order by abs(l.latest_budget - coalesce(p.prior_budget,0)) desc
 ```
 
 ```sql program_movers
-with latest as (
-    select coalesce(program_name, '(No Program)') as label, sum(amount) as latest_budget
-    from ${filtered_latest}
-    where program_name is not null
+with max_yr as (
+    select max(cast(fiscal_year as int)) as max_fy, max(cast(fiscal_year as int)) - 1 as prior_fy
+    from mbtsa.subprogram_level
+    where agency_name = '${params.agency}'
+),
+latest as (
+    select coalesce(program_name, '(No Program)') as label, sum(total_budget_amount) as latest_budget
+    from mbtsa.subprogram_level cross join max_yr
+    where agency_name = '${params.agency}'
+        and fiscal_year = max_yr.max_fy
+        and ('${selectedUnit}' in ('%','','undefined') or lower(coalesce(unit_name,'')) like '${selectedUnit}')
+        and ('${selectedProgram}' in ('%','','undefined') or lower(coalesce(program_name,'')) like '${selectedProgram}')
+        and ('${selectedFund}' in ('%','','undefined') or lower(coalesce(fund_type,'')) like '${selectedFund}')
     group by program_name
 ),
 prior as (
-    select coalesce(program_name, '(No Program)') as label, sum(amount) as prior_budget
-    from ${filtered} f cross join ${scope_meta} m
-    where f.fiscal_year = m.prior_year
-        and f.program_name is not null
+    select coalesce(program_name, '(No Program)') as label, sum(total_budget_amount) as prior_budget
+    from mbtsa.subprogram_level cross join max_yr
+    where agency_name = '${params.agency}'
+        and fiscal_year = max_yr.prior_fy
+        and ('${selectedUnit}' in ('%','','undefined') or lower(coalesce(unit_name,'')) like '${selectedUnit}')
+        and ('${selectedProgram}' in ('%','','undefined') or lower(coalesce(program_name,'')) like '${selectedProgram}')
+        and ('${selectedFund}' in ('%','','undefined') or lower(coalesce(fund_type,'')) like '${selectedFund}')
     group by program_name
 )
-select
-    l.label,
-    l.latest_budget - coalesce(p.prior_budget, 0) as dollar_change,
-    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as pct_change
-from latest l
-left join prior p using (label)
+select l.label,
+    l.latest_budget - coalesce(p.prior_budget,0) as dollar_change,
+    round((l.latest_budget - coalesce(p.prior_budget,0)) * 100.0 / nullif(p.prior_budget,0), 1) as pct_change
+from latest l left join prior p using (label)
+where abs(l.latest_budget - coalesce(p.prior_budget,0)) > 0
+order by abs(l.latest_budget - coalesce(p.prior_budget,0)) desc
 ```
 
 ```sql subprogram_movers
-with latest as (
-    select coalesce(subprogram_name, '(No Subprogram)') as label, sum(amount) as latest_budget
-    from ${filtered_latest}
-    where subprogram_name is not null
+with max_yr as (
+    select max(cast(fiscal_year as int)) as max_fy, max(cast(fiscal_year as int)) - 1 as prior_fy
+    from mbtsa.subprogram_level
+    where agency_name = '${params.agency}'
+),
+latest as (
+    select coalesce(subprogram_name, '(No Subprogram)') as label, sum(total_budget_amount) as latest_budget
+    from mbtsa.subprogram_level cross join max_yr
+    where agency_name = '${params.agency}'
+        and fiscal_year = max_yr.max_fy
+        and ('${selectedUnit}' in ('%','','undefined') or lower(coalesce(unit_name,'')) like '${selectedUnit}')
+        and ('${selectedProgram}' in ('%','','undefined') or lower(coalesce(program_name,'')) like '${selectedProgram}')
+        and ('${selectedFund}' in ('%','','undefined') or lower(coalesce(fund_type,'')) like '${selectedFund}')
     group by subprogram_name
 ),
 prior as (
-    select coalesce(subprogram_name, '(No Subprogram)') as label, sum(amount) as prior_budget
-    from ${filtered} f cross join ${scope_meta} m
-    where f.fiscal_year = m.prior_year
-        and f.subprogram_name is not null
+    select coalesce(subprogram_name, '(No Subprogram)') as label, sum(total_budget_amount) as prior_budget
+    from mbtsa.subprogram_level cross join max_yr
+    where agency_name = '${params.agency}'
+        and fiscal_year = max_yr.prior_fy
+        and ('${selectedUnit}' in ('%','','undefined') or lower(coalesce(unit_name,'')) like '${selectedUnit}')
+        and ('${selectedProgram}' in ('%','','undefined') or lower(coalesce(program_name,'')) like '${selectedProgram}')
+        and ('${selectedFund}' in ('%','','undefined') or lower(coalesce(fund_type,'')) like '${selectedFund}')
     group by subprogram_name
 )
-select
-    l.label,
-    l.latest_budget - coalesce(p.prior_budget, 0) as dollar_change,
-    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as pct_change
-from latest l
-left join prior p using (label)
+select l.label,
+    l.latest_budget - coalesce(p.prior_budget,0) as dollar_change,
+    round((l.latest_budget - coalesce(p.prior_budget,0)) * 100.0 / nullif(p.prior_budget,0), 1) as pct_change
+from latest l left join prior p using (label)
+where abs(l.latest_budget - coalesce(p.prior_budget,0)) > 0
+order by abs(l.latest_budget - coalesce(p.prior_budget,0)) desc
 ```
 
 ```sql unit_latest
@@ -604,7 +642,7 @@ order by unit_name, program_name, subprogram_name, fiscal_year
         { id: 'cagr_10y_pct', title: '10-Year CAGR', fmt: 'pct', conditional: true, sortable: true }
     ];
 
-    let localView = 'latest';
+    let localView = 'trend';
     let drillYearView = '5y';
     let expandedUnits = {};
     let expandedPrograms = {};
@@ -807,12 +845,12 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 
 
-<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0;">
-    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
-    <p style="color: #b376f6; font-size: 0.95rem; margin: 4px 0 0 0;">Agency Budget Detail </p>
+<div style="background: linear-gradient(135deg, var(--nxt-blue-violet) 0%, var(--nxt-dark) 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid var(--nxt-lavender); margin-bottom: 0;">
+    <h1 style="color: var(--color-primary-content); font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
+    <p style="color: var(--nxt-lavender); font-size: 0.95rem; margin: 4px 0 0 0;">Agency Budget Detail </p>
 </div>
 
-<a href="/budget-office" style="display:inline-block; margin: 12px 0; color: #C8122C; font-size: 0.9rem; text-decoration: none;">← Back to Budget Office</a>
+<a href="/budget-office" style="display:inline-block; margin: 12px 0; color: var(--nxt-blue-violet); font-size: 0.9rem; text-decoration: none;">← Back to Budget Office</a>
 
 <div id="page-filters">
     <Details title="🔍 Filters" open=false>
@@ -832,11 +870,11 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 <FilterSidebar title="🔍 Filters" targetId="page-filters"/>
 
-<div style="display:flex; gap:0; margin: 16px 0 8px 0; border: 1px solid #D9DDE3; border-radius:6px; width:fit-content; overflow:hidden;">
+<div style="display:flex; gap:0; margin: 16px 0 8px 0; border: 1px solid var(--nxt-border); border-radius:6px; width:fit-content; overflow:hidden;">
     {#each [['latest','Latest Year'], ['trend','Trend Over Years']] as [val, label]}
         <button
             on:click={() => localView = val}
-            style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid #D9DDE3; background: ' + (viewMode === val ? '#C8122C' : 'white') + '; color: ' + (viewMode === val ? 'white' : '#231F20') + '; font-weight: ' + (viewMode === val ? 600 : 400)}
+            style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid var(--nxt-border); background: ' + (viewMode === val ? 'var(--nxt-blue-violet)' : 'var(--color-base-100)') + '; color: ' + (viewMode === val ? 'var(--color-primary-content)' : 'var(--nxt-text)') + '; font-weight: ' + (viewMode === val ? 600 : 400)}
         >{label}</button>
     {/each}
 </div>
@@ -865,7 +903,7 @@ order by unit_name, program_name, subprogram_name, fiscal_year
     {#each [['unit','Units'],['program','Programs'],['subprogram','Subprograms']] as [val, label]}
         <button
             on:click={() => paretoLevel = val}
-            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (paretoLevel === val ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (paretoLevel === val ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white') + '; color: ' + (paretoLevel === val ? '#C8122C' : '#231F20') + '; font-weight: ' + (paretoLevel === val ? 700 : 500)}
+            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (paretoLevel === val ? '2px solid var(--nxt-blue-violet)' : '1px solid var(--nxt-border)') + '; background: ' + (paretoLevel === val ? 'var(--nxt-pink)' : 'var(--color-base-100)') + '; color: ' + (paretoLevel === val ? 'var(--nxt-blue-violet)' : 'var(--nxt-text)') + '; font-weight: ' + (paretoLevel === val ? 700 : 500)}
         >{label}</button>
     {/each}
 </div>
@@ -1144,10 +1182,10 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 />
 
 {#if unitPivotRows?.length > 0}
-<div style="overflow-x:auto; border-radius:8px; border:1px solid #E5E7EB;">
+<div style="overflow-x:auto; border-radius:8px; border:1px solid var(--nxt-border); background:var(--nxt-surface);">
     <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
         <thead>
-            <tr style="background:#F9FAFB; border-bottom:2px solid #C8122C;">
+            <tr style="background:var(--nxt-pink); border-bottom:2px solid #C8122C;">
                 <th
                     on:click={() => setDrillSort('name')}
                     style="text-align:left; padding:10px 14px; font-weight:700; color:#231F20; min-width:280px; cursor:pointer; user-select:none;"
@@ -1166,7 +1204,7 @@ order by unit_name, program_name, subprogram_name, fiscal_year
             </tr>
         </thead>
         <tbody>
-            <tr style="background:#FFF7F0; border-bottom:1px solid #E5E7EB;">
+            <tr style="background:var(--nxt-pink); border-bottom:1px solid var(--nxt-border);">
                 <td style="padding:10px 14px; font-weight:700; color:#C8122C;">Total</td>
                 {#each drillViewYears as yr}
                     <td style="text-align:right; padding:10px 14px; font-weight:700; color:#C8122C;">{formatAmount(grandTotal['FY' + yr])}</td>
@@ -1175,8 +1213,8 @@ order by unit_name, program_name, subprogram_name, fiscal_year
             {#each filteredUnitRows as unit}
                 <tr
                     on:click={() => toggleUnit(unit.name)}
-                    style="border-bottom:1px solid #E5E7EB; cursor:pointer; background:white;"
-                    onmouseenter="this.style.background='#F9FAFB'"
+                    style="border-bottom:1px solid var(--nxt-border); cursor:pointer; background:var(--nxt-surface);"
+                    onmouseenter="this.style.background='var(--nxt-pink)'"
                     onmouseleave="this.style.background='white'"
                 >
                     <td style="padding:10px 14px; font-weight:600; color:#231F20;">
@@ -1205,7 +1243,7 @@ order by unit_name, program_name, subprogram_name, fiscal_year
                         </tr>
                         {#if expandedPrograms[unit.name + '||' + prog.name]}
                             {#each getFilteredSubprograms(unit.name, prog.name) as sub}
-                                <tr style="border-bottom:1px solid #F3F4F6; background:#F9FAFB;">
+                                <tr style="border-bottom:1px solid #F3F4F6; background:#f7f2fc;">
                                     <td style="padding:7px 14px 7px 60px; color:#6B7280; font-style:italic;">{sub.name}</td>
                                     {#each drillViewYears as yr}
                                         <td style="text-align:right; padding:7px 14px; color:#6B7280;">{formatAmount(sub['FY' + yr])}</td>

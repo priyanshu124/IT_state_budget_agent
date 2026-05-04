@@ -1,9 +1,16 @@
 plugins:
   components:
-    @evidence-dev/core-components: {}
+    '@evidence-dev/core-components': {}
   datasources:
-    @evidence-dev/duckdb: {}
-
+    '@evidence-dev/duckdb': {}
 appearance:
   default: light
-  switcher: true
+  switcher: false
+  theme:
+    colorPalette:
+      - 802cd7
+      - 6321a5
+      - b376f6
+      - 551c8e
+      - c9a8f0
+      - ede5f8

@@ -164,7 +164,7 @@ select distinct fund_type from mbtsa.subprogram_level where fund_type is not nul
 </script>
 
 <!-- Fixed control bar — measured and positioned via onMount -->
-<div bind:this={ctrlBarEl} style={ctrlBarFixed + 'background:white; box-shadow:0 2px 14px rgba(0,0,0,0.10); border-bottom:1px solid #E5E7EB; padding:8px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;'}>
+<div bind:this={ctrlBarEl} style={ctrlBarFixed + 'background:var(--nxt-surface); box-shadow:0 2px 14px rgba(99,33,165,0.08); border-bottom:1px solid var(--nxt-border); padding:8px 24px; display:flex; align-items:center; gap:16px; flex-wrap:wrap;'}>
 
   <!-- View By — dark/gold input group -->
   <div style="display:flex; align-items:stretch; border:2px solid #231F20; border-radius:8px; overflow:hidden;">
@@ -220,19 +220,19 @@ select distinct fund_type from mbtsa.subprogram_level where fund_type is not nul
   </div>
 
 {#if hasActiveFilters}
-<div bind:this={chipBarEl} style={chipBarFixed + 'background:#F9FAFB; border-bottom:1px solid #E5E7EB; padding:6px 24px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;'}>
+<div bind:this={chipBarEl} style={chipBarFixed + 'background:var(--nxt-pink); border-bottom:1px solid var(--nxt-border); padding:6px 24px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;'}>
     <span style="font-size:0.7rem; font-weight:700; color:#6B7280; text-transform:uppercase; margin-right:4px;">Active Filters:</span>
     {#if isRealFilter(selectedAgency)}
-        <span style="background:#FFF7F0; border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Agency: {selectedAgency}</span>
+        <span style="background:var(--nxt-surface); border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Agency: {selectedAgency}</span>
     {/if}
     {#if isRealFilter(selectedUnit)}
-        <span style="background:#FFF7F0; border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Unit: {selectedUnit}</span>
+        <span style="background:var(--nxt-surface); border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Unit: {selectedUnit}</span>
     {/if}
     {#if isRealFilter(selectedProgram)}
-        <span style="background:#FFF7F0; border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Program: {selectedProgram}</span>
+        <span style="background:var(--nxt-surface); border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Program: {selectedProgram}</span>
     {/if}
     {#if isRealFilter(selectedFund)}
-        <span style="background:#FFF7F0; border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Fund: {selectedFund}</span>
+        <span style="background:var(--nxt-surface); border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Fund: {selectedFund}</span>
     {/if}
 </div>
 {/if}
@@ -470,7 +470,7 @@ order by abs(change_amt) desc
         </div>
     </div>
 
-    <div style="border-radius:10px; padding:18px 20px; background:white; border:1.5px solid #E5E7EB; border-top:3px solid #231F20; display:flex; flex-direction:column; justify-content:space-between; min-height:110px;">
+    <div style="border-radius:10px; padding:18px 20px; background:var(--nxt-surface); border:1.5px solid var(--nxt-border); border-top:3px solid #231F20; display:flex; flex-direction:column; justify-content:space-between; min-height:110px;">
         <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.08em; color:#6B7280; text-transform:uppercase;">{levelLabel}s Changed &gt;{threshold}%</span>
         <div>
             <div style="display:flex; align-items:baseline; gap:10px;">
@@ -482,7 +482,7 @@ order by abs(change_amt) desc
         </div>
     </div>
 
-    <div style="border-radius:10px; padding:18px 20px; background:white; border:1.5px solid #E5E7EB; border-top:3px solid #0EA5E9; display:flex; flex-direction:column; justify-content:space-between; min-height:110px;">
+    <div style="border-radius:10px; padding:18px 20px; background:var(--nxt-surface); border:1.5px solid var(--nxt-border); border-top:3px solid #0EA5E9; display:flex; flex-direction:column; justify-content:space-between; min-height:110px;">
         <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.08em; color:#6B7280; text-transform:uppercase;">New {levelLabel}s</span>
         <div>
             <div style="font-size:1.8rem; font-weight:800; color:#0369A1;">+{npCount}</div>
@@ -490,7 +490,7 @@ order by abs(change_amt) desc
         </div>
     </div>
 
-    <div style="border-radius:10px; padding:18px 20px; background:white; border:1.5px solid #E5E7EB; border-top:3px solid #F59E0B; display:flex; flex-direction:column; justify-content:space-between; min-height:110px;">
+    <div style="border-radius:10px; padding:18px 20px; background:var(--nxt-surface); border:1.5px solid var(--nxt-border); border-top:3px solid #F59E0B; display:flex; flex-direction:column; justify-content:space-between; min-height:110px;">
         <span style="font-size:0.7rem; font-weight:700; letter-spacing:0.08em; color:#6B7280; text-transform:uppercase;">Eliminated {levelLabel}s</span>
         <div>
             <div style="font-size:1.8rem; font-weight:800; color:#B45309;">-{epCount}</div>

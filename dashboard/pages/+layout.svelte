@@ -13,7 +13,8 @@
 </script>
 
 <svelte:head>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="/custom.css"/>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 </svelte:head>
 
 <EvidenceDefaultLayout
@@ -25,11 +26,11 @@
     maxWidth="1200px"
 >
     <div slot="header">
-        <div style="background:#C8122C; height:3px; width:100%;"></div>
+        <div style="background:#ede5f8; height:3px; width:100%; border-bottom:2px solid #c9a8f0;"></div>
     </div>
     <slot slot="content" />
     <div slot="footer">
-        <p style="font-size: 0.7rem; color: #888; text-align: center; padding: 16px 0; border-top: 1px solid #E8E0D8; margin-top: 32px;">
+        <p style="font-size: 0.7rem; color: #6B7280; text-align: center; padding: 16px 0; border-top: 1px solid #e2d9f3; margin-top: 32px; font-family:'IBM Plex Sans',sans-serif;">
             State of Maryland · Department of Budget & Management · Data: FY2020–FY2027 · TBM v5.0.1
         </p>
     </div>
@@ -43,7 +44,7 @@
 
     /* Global KPI card styling for all Evidence BigValue components */
     :global(div.inline-block.font-sans.pt-2.pb-3.pl-0.mr-3.items-center.align-top) {
-        background: #FFFFFF !important;
+        background: transparent !important;
         border: 1px solid #E8E0D8 !important;
         border-left: 4px solid #C8122C !important;
         border-radius: 12px !important;
