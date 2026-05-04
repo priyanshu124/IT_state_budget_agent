@@ -56,7 +56,10 @@ latest as (
     where fiscal_year = (select max_fy from latest_year)
 ),
 prior as (
-    select sum(total_budget_amount) as prior_budget
+    select
+        sum(total_budget_amount) as prior_budget,
+        sum(case when lower(fund_type) like '%general%' then total_budget_amount else 0 end) as prior_general_fund,
+        sum(case when lower(fund_type) like '%federal%' then total_budget_amount else 0 end) as prior_federal_fund
     from mbtsa.agency_level
     where fiscal_year = (select prior_fy from prior_year)
 )
@@ -66,7 +69,10 @@ select
     l.federal_fund,
     l.agency_count,
     round(l.federal_fund * 100.0 / nullif(l.latest_budget, 0), 1) as federal_pct,
+    round(l.general_fund * 100.0 / nullif(l.latest_budget, 0), 1) as general_pct,
     round((l.latest_budget - p.prior_budget) * 100.0 / nullif(p.prior_budget, 0), 1) as yoy_pct,
+    round((l.general_fund - p.prior_general_fund) * 100.0 / nullif(p.prior_general_fund, 0), 1) as general_yoy_pct,
+    round((l.federal_fund - p.prior_federal_fund) * 100.0 / nullif(p.prior_federal_fund, 0), 1) as federal_yoy_pct,
     (select max_fy from latest_year) as latest_fy,
     (select prior_fy from prior_year) as prior_fy
 from latest l cross join prior p
@@ -168,31 +174,34 @@ cross join prior_year py
     </span>
 </div>
 
-<Grid cols=4>
-    <BigValue
-        data={full_budget_kpis}
-        value=latest_budget
-        fmt=usd2compactviz
-        title="Operating Budget"
-    />
-    <BigValue
-        data={full_budget_kpis}
-        value=general_fund
-        fmt=usd2compactviz
-        title="General Fund"
-    />
-    <BigValue
-        data={full_budget_kpis}
-        value=federal_fund
-        fmt=usd2compactviz
-        title="Federal Funds"
-    />
-    <BigValue
-        data={full_budget_kpis}
-        value=agency_count
-        title="State Agencies"
-    />
-</Grid>
+<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:8px; align-items:stretch;">
+    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #211030; border-radius:10px; background:#fff; padding:14px 16px;">
+        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">Operating Budget</div>
+        <div style="font-size:22px; font-weight:800; color:#211030;">{full_budget_kpis[0].latest_budget >= 1e9 ? '$' + (full_budget_kpis[0].latest_budget/1e9).toFixed(2) + 'B' : '$' + (full_budget_kpis[0].latest_budget/1e6).toFixed(1) + 'M'}</div>
+        <div style="font-size:10px; margin-top:4px; color:{full_budget_kpis[0].yoy_pct > 0 ? '#2EAD6B' : '#E24B4A'};">
+            {full_budget_kpis[0].yoy_pct > 0 ? '↑' : '↓'} {Math.abs(full_budget_kpis[0].yoy_pct)}% vs FY{full_budget_kpis[0].prior_fy}
+        </div>
+    </div>
+    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #3a1f5a; border-radius:10px; background:#fff; padding:14px 16px;">
+        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">General Fund</div>
+        <div style="font-size:22px; font-weight:800; color:#211030;">{full_budget_kpis[0].general_pct}%</div>
+        <div style="font-size:10px; margin-top:4px; color:{full_budget_kpis[0].general_yoy_pct > 0 ? '#2EAD6B' : '#E24B4A'};">
+            {full_budget_kpis[0].general_yoy_pct > 0 ? '↑' : '↓'} {Math.abs(full_budget_kpis[0].general_yoy_pct)}% vs FY{full_budget_kpis[0].prior_fy}
+        </div>
+    </div>
+    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #551c8e; border-radius:10px; background:#fff; padding:14px 16px;">
+        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">Federal Funds</div>
+        <div style="font-size:22px; font-weight:800; color:#211030;">{full_budget_kpis[0].federal_pct}%</div>
+        <div style="font-size:10px; margin-top:4px; color:{full_budget_kpis[0].federal_yoy_pct > 0 ? '#2EAD6B' : '#E24B4A'};">
+            {full_budget_kpis[0].federal_yoy_pct > 0 ? '↑' : '↓'} {Math.abs(full_budget_kpis[0].federal_yoy_pct)}% vs FY{full_budget_kpis[0].prior_fy}
+        </div>
+    </div>
+    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #6321a5; border-radius:10px; background:#fff; padding:14px 16px;">
+        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">State Agencies</div>
+        <div style="font-size:22px; font-weight:800; color:#211030;">{full_budget_kpis[0].agency_count}</div>
+        <div style="font-size:10px; margin-top:4px; color:#6B7280;">Active FY{full_budget_kpis[0].latest_fy}</div>
+    </div>
+</div>
 
 <div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#802cd7; text-transform:uppercase; letter-spacing:0.14em; font-weight:700; border-bottom:2px solid #802cd7; padding-bottom:5px; margin-bottom:12px; margin-top:20px;">
     IT Budget · FY{it_budget_kpis[0].latest_fy}
@@ -201,30 +210,27 @@ cross join prior_year py
     </span>
 </div>
 
-<Grid cols=4>
-    <BigValue
-        data={it_budget_kpis}
-        value=latest_it_spend
-        fmt=usd2compactviz
-        title="IT Spend"
-    />
-    <BigValue
-        data={it_budget_kpis}
-        value=it_pct_of_budget
-        fmt='0.00"%"'
-        title="IT as % of Budget"
-    />
-    <BigValue
-        data={it_budget_kpis}
-        value=it_agency_count
-        title="IT Agencies"
-    />
-    <BigValue
-        data={it_budget_kpis}
-        value=top_it_agency
-        title="Top IT Agency"
-    />
-</Grid>
+<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:8px; align-items:stretch;">
+    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #802cd7; border-radius:10px; background:#fff; padding:14px 16px;">
+        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">IT Spend</div>
+        <div style="font-size:22px; font-weight:800; color:#211030;">{it_budget_kpis[0].latest_it_spend >= 1e9 ? '$' + (it_budget_kpis[0].latest_it_spend/1e9).toFixed(2) + 'B' : '$' + (it_budget_kpis[0].latest_it_spend/1e6).toFixed(1) + 'M'}</div>
+        <div style="font-size:10px; margin-top:4px; color:{it_budget_kpis[0].yoy_pct > 0 ? '#2EAD6B' : '#E24B4A'};">
+            {it_budget_kpis[0].yoy_pct > 0 ? '↑' : '↓'} {Math.abs(it_budget_kpis[0].yoy_pct)}% vs prior year
+        </div>
+    </div>
+    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #6321a5; border-radius:10px; background:#fff; padding:14px 16px;">
+        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">IT as % of Budget</div>
+        <div style="font-size:22px; font-weight:800; color:#211030;">{it_budget_kpis[0].it_pct_of_budget}%</div>
+        <div style="font-size:10px; margin-top:4px; color:{it_budget_kpis[0].cagr_5y > 0 ? '#2EAD6B' : '#E24B4A'};">
+            {it_budget_kpis[0].cagr_5y > 0 ? '↑' : '↓'} {Math.abs(it_budget_kpis[0].cagr_5y)}% 5yr CAGR
+        </div>
+    </div>
+    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #551c8e; border-radius:10px; background:#fff; padding:14px 16px; overflow:hidden;">
+        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">Top IT Agency</div>
+        <div style="font-size:13px; font-weight:800; color:#211030; line-height:1.2;">{it_budget_kpis[0].top_it_agency}</div>
+        <div style="font-size:10px; margin-top:4px; color:#6B7280;">Highest IT spend FY{it_budget_kpis[0].latest_fy}</div>
+    </div>
+</div>
 
 ---
 
