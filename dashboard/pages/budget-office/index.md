@@ -3,9 +3,9 @@
 sidebar_position: 3
 ---
 
-<div style="background: linear-gradient(135deg, #C8122C 0%, #231F20 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #FFC838; margin-bottom: 0;">
-    <h1 style="color: white; font-family: Montserrat, sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ Budget Office View</h1>
-    <p style="color: #FFC838; font-size: 0.95rem; margin: 4px 0 0 0;">Statewide Budget Analysis</p>
+<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0;">
+    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ Budget Office View</h1>
+    <p style="color: #b376f6; font-size: 0.95rem; margin: 4px 0 0 0;">Statewide Budget Analysis</p>
 </div>
 
 ```sql g_fy

@@ -279,7 +279,7 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
         return `$${num.toFixed(2)}`;
     };
 
-    const towerChartTitleStyle = { fontSize: 14, fontWeight: 600, color: '#231F20' };
+    const towerChartTitleStyle = { fontSize: 14, fontWeight: 600, color: '#211030' };
     const getTowerChartGrid = () => ({
         top: '15%', right: '4%', bottom: '11%', left: '8%', containLabel: true
     });
@@ -422,12 +422,12 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
 
 </script>
 
-<div style="background: linear-gradient(135deg, #C8122C 0%, #231F20 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #FFC838; margin-bottom: 0;">
-    <h1 style="color: white; font-family: Montserrat, sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
-    <p style="color: #FFC838; font-size: 0.95rem; margin: 4px 0 0 0;">Agency IT Spend Detail · TBM v5.0.1 Classification</p>
+<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0;">
+    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
+    <p style="color: #b376f6; font-size: 0.95rem; margin: 4px 0 0 0;">Agency IT Spend Detail · TBM v5.0.1 Classification</p>
 </div>
 
-<a href="/technology" style="display:inline-block; margin: 12px 0; color: #C8122C; font-size: 0.9rem; text-decoration: none;">← Back to Technology View</a>
+<a href="/technology" style="display:inline-block; margin: 12px 0; color: #802cd7; font-size: 0.9rem; text-decoration: none;">← Back to Technology View</a>
 
 
 <Grid cols=1>
@@ -466,16 +466,16 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
                         data: trendResults.chartData,
                         label: {
                             show: true, position: 'top', distance: 5,
-                            color: '#231F20', fontSize: 11,
+                            color: '#211030', fontSize: 11,
                             formatter: (p) => usdCompact(p.value)
                         },
                         labelLayout: { hideOverlap: true },
-                        itemStyle: { color: '#FFC838' }, z: 1
+                        itemStyle: { color: '#b376f6' }, z: 1
                     },
                     {
                         type: 'line', smooth: true, name: 'Trend',
                         data: trendResults.trendPoints,
-                        lineStyle: { color: '#C8122C', width: 3 },
+                        lineStyle: { color: '#802cd7', width: 3 },
                         symbol: 'none', z: 2
                     }
                 ]
@@ -502,7 +502,7 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
                         type: 'bar',
                         data: yoy_detail.map((d) => Number(d.change_pct) || 0),
                         label: { show: true, position: 'top', formatter: (p) => `${(Number(p.value) || 0).toFixed(1)}%` },
-                        itemStyle: { color: (p) => ((Number(p.value) || 0) >= 0 ? '#2EAD6B' : '#C8122C') }
+                        itemStyle: { color: (p) => ((Number(p.value) || 0) >= 0 ? '#2EAD6B' : '#802cd7') }
                     }
                 ]
             }}
@@ -525,18 +525,18 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
         {#each top_towers_trend as t}
             <button
                 on:click={() => selectedTower = selectedTower === t.it_tower ? null : t.it_tower}
-                style={`border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ${selectedTower === t.it_tower ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)'}; background: ${selectedTower === t.it_tower ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white'}; box-shadow: ${selectedTower === t.it_tower ? '0 4px 10px rgba(200,20,44,0.08)' : 'none'}`}
+                style={`border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ${selectedTower === t.it_tower ? '2px solid #802cd7' : '1px solid rgba(36,41,46,0.06)'}; background: ${selectedTower === t.it_tower ? 'linear-gradient(90deg,#f3ecfd,#ede0fc)' : 'white'}; box-shadow: ${selectedTower === t.it_tower ? '0 4px 10px rgba(128,44,215,0.08)' : 'none'}`}
                 aria-pressed={selectedTower === t.it_tower}
             >
-                <span style={`width:10px; height:10px; border-radius:50%; background: ${t.it_tower === highlightedTowerNames[0] ? '#C8122C' : t.it_tower === highlightedTowerNames[1] ? '#FFC838' : t.it_tower === highlightedTowerNames[2] ? '#231F20' : '#C9CED6'}; display:inline-block;`}></span>
-                <span style={`color:${selectedTower === t.it_tower ? '#C8122C' : '#231F20'}; font-weight:${selectedTower === t.it_tower ? 700 : 500}`}>{t.it_tower}</span>
+                <span style={`width:10px; height:10px; border-radius:50%; background: ${t.it_tower === highlightedTowerNames[0] ? '#802cd7' : t.it_tower === highlightedTowerNames[1] ? '#b376f6' : t.it_tower === highlightedTowerNames[2] ? '#211030' : '#C9CED6'}; display:inline-block;`}></span>
+                <span style={`color:${selectedTower === t.it_tower ? '#802cd7' : '#211030'}; font-weight:${selectedTower === t.it_tower ? 700 : 500}`}>{t.it_tower}</span>
             </button>
         {/each}
     </div>
     <ECharts
         height="480px"
         config={{
-            title: { text: 'Top 10 towers over time', left: 'left', top: 0, textStyle: { fontSize: 14, fontWeight: 600, color: '#231F20' } },
+            title: { text: 'Top 10 towers over time', left: 'left', top: 0, textStyle: { fontSize: 14, fontWeight: 600, color: '#211030' } },
             tooltip: {
                 trigger: 'item',
                 formatter: function(param) {
@@ -570,7 +570,7 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
                         return Math.abs(n) >= 1e9 ? `$${(n/1e9).toFixed(0)}B` : `$${(n/1e6).toFixed(0)}M`;
                     }
                 },
-                splitLine: { lineStyle: { color: '#D9DDE3' } }
+                splitLine: { lineStyle: { color: '#e2d9f3' } }
             },
             series: top_towers_trend.map((tower) => {
                 const towerName = tower.it_tower;
@@ -580,9 +580,9 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
                 const isSelectedTower = selectedTower === towerName;
                 const isSelected = !hasTowerSelection || isSelectedTower;
                 const baseColor = isHighlighted
-                    ? (towerName === highlightedTowerNames[0] ? '#C8122C'
-                        : towerName === highlightedTowerNames[1] ? '#FFC838'
-                        : '#231F20')
+                    ? (towerName === highlightedTowerNames[0] ? '#802cd7'
+                        : towerName === highlightedTowerNames[1] ? '#b376f6'
+                        : '#211030')
                     : '#C9CED6';
                 return {
                     name: towerName,
@@ -643,7 +643,7 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
     {#each [['3y','Last 3 Years'],['5y','Last 5 Years'],['all','All Years']] as [val, label]}
         <button
             on:click={() => drillYearView = val}
-            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (drillYearView === val ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (drillYearView === val ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white') + '; color: ' + (drillYearView === val ? '#C8122C' : '#231F20') + '; font-weight: ' + (drillYearView === val ? 700 : 500)}
+            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (drillYearView === val ? '2px solid #802cd7' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (drillYearView === val ? 'linear-gradient(90deg,#f3ecfd,#ede0fc)' : 'white') + '; color: ' + (drillYearView === val ? '#802cd7' : '#211030') + '; font-weight: ' + (drillYearView === val ? 700 : 500)}
         >{label}</button>
     {/each}
 </div>
@@ -653,10 +653,10 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
     <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
         <!-- Header -->
         <thead>
-            <tr style="background:#F9FAFB; border-bottom:2px solid #C8122C;">
+            <tr style="background:#F9FAFB; border-bottom:2px solid #802cd7;">
                 <th
                     on:click={() => setDrillSort('name')}
-                    style="text-align:left; padding:10px 14px; font-weight:700; color:#231F20; min-width:280px; cursor:pointer; user-select:none;"
+                    style="text-align:left; padding:10px 14px; font-weight:700; color:#211030; min-width:280px; cursor:pointer; user-select:none;"
                 >
                     Program / Subprogram / Cost Pool
                     {#if drillSortCol === 'name'}{drillSortDir === -1 ? ' ↓' : ' ↑'}{/if}
@@ -664,7 +664,7 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
                 {#each drillViewYears as yr}
                     <th
                         on:click={() => setDrillSort('FY' + yr)}
-                        style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20; white-space:nowrap; cursor:pointer; user-select:none;"
+                        style="text-align:right; padding:10px 14px; font-weight:700; color:#211030; white-space:nowrap; cursor:pointer; user-select:none;"
                     >
                         FY{yr}{#if drillSortCol === 'FY' + yr}{drillSortDir === -1 ? ' ↓' : ' ↑'}{/if}
                     </th>
@@ -674,9 +674,9 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
         <tbody>
             <!-- Grand Total -->
             <tr style="background:#FFF7F0; border-bottom:1px solid #E5E7EB;">
-                <td style="padding:10px 14px; font-weight:700; color:#C8122C;">Total</td>
+                <td style="padding:10px 14px; font-weight:700; color:#802cd7;">Total</td>
                 {#each drillViewYears as yr}
-                    <td style="text-align:right; padding:10px 14px; font-weight:700; color:#C8122C;">{formatAmount(grandTotal['FY' + yr])}</td>
+                    <td style="text-align:right; padding:10px 14px; font-weight:700; color:#802cd7;">{formatAmount(grandTotal['FY' + yr])}</td>
                 {/each}
             </tr>
             <!-- Towers (level 1) -->
@@ -687,12 +687,12 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
                     onmouseenter="this.style.background='#F9FAFB'"
                     onmouseleave="this.style.background='white'"
                 >
-                    <td style="padding:10px 14px; font-weight:600; color:#231F20;">
-                        <span style="margin-right:8px; font-size:0.75rem; color:#C8122C;">{expandedPrograms[tower.name] ? '▼' : '▶'}</span>
+                    <td style="padding:10px 14px; font-weight:600; color:#211030;">
+                        <span style="margin-right:8px; font-size:0.75rem; color:#802cd7;">{expandedPrograms[tower.name] ? '▼' : '▶'}</span>
                         {tower.name}
                     </td>
                     {#each drillViewYears as yr}
-                        <td style="text-align:right; padding:10px 14px; font-weight:600; color:#231F20;">{formatAmount(tower['FY' + yr])}</td>
+                        <td style="text-align:right; padding:10px 14px; font-weight:600; color:#211030;">{formatAmount(tower['FY' + yr])}</td>
                     {/each}
                 </tr>
                 <!-- Programs (level 2) -->
@@ -740,9 +740,9 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
 
 {#if tower_breakdown_latest?.length > 0}
     <Grid cols=2>
-        <BarChart data={tower_breakdown_latest} x=it_tower y=spend swapXY=true sort=false yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="Spend by Tower — Latest Year" colorPalette={['#C8122C','#FFC838','#3B7DD8','#2EAD6B','#E67E22','#8E44AD','#1ABC9C','#E74C3C','#95A5A6','#34495E']}/>
+        <BarChart data={tower_breakdown_latest} x=it_tower y=spend swapXY=true sort=false yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="Spend by Tower — Latest Year" colorPalette={['#802cd7','#b376f6','#3B7DD8','#2EAD6B','#E67E22','#8E44AD','#1ABC9C','#E74C3C','#95A5A6','#34495E']}/>
         {#if subprogram_breakdown_latest?.length > 0}
-            <BarChart data={subprogram_breakdown_latest} x=subprogram_name y=spend swapXY=true sort=false yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="Spend by Subprogram — Latest Year" colorPalette={['#C8122C','#FFC838','#3B7DD8','#2EAD6B','#E67E22','#8E44AD','#1ABC9C']}/>
+            <BarChart data={subprogram_breakdown_latest} x=subprogram_name y=spend swapXY=true sort=false yFmt=usd2compactviz labels=true yLabelFmt=usd2compactviz title="Spend by Subprogram — Latest Year" colorPalette={['#802cd7','#b376f6','#3B7DD8','#2EAD6B','#E67E22','#8E44AD','#1ABC9C']}/>
         {:else}
             <Alert status=warning>No subprogram data available.</Alert>
         {/if}

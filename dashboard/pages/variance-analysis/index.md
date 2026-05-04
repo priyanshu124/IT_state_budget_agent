@@ -3,8 +3,8 @@ title:
 sidebar_position: 5
 ---
 
-<div style="background: linear-gradient(135deg, #C8122C 0%, #231F20 100%); padding: 24px 36px; border-radius: 12px; border-bottom: 4px solid #FFC838; margin-bottom: 0; margin-top: -8px;">
-    <h1 style="color: white; font-family: Montserrat, sans-serif; font-size: 1.6rem; font-weight: 700; margin: 6px 0 0 0;">📊 Variance Analysis</h1>
+<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 24px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0; margin-top: -8px;">
+    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.6rem; font-weight: 700; margin: 6px 0 0 0;">📊 Variance Analysis</h1>
     <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 4px 0 0 0;">Year-over-year change detection — compare any two years at any hierarchy level</p>
 </div>
 
@@ -54,16 +54,19 @@ select distinct fund_type from mbtsa.subprogram_level where fund_type is not nul
         // measure bar height after next tick so the element is rendered
         requestAnimationFrame(() => {
             if (ctrlBarEl) {
-                const extra = chipBarEl ? chipBarEl.offsetHeight + 8 : 8;
-                ctrlBarSpacerH = ctrlBarEl.offsetHeight + extra + 'px';
+                ctrlBarSpacerH = ctrlBarEl.offsetHeight + 'px';
             }
         });
     });
 
     const readInputValue = (entry, fallback = '%') => {
+        if (!entry) return fallback;
+        try {
+            const s = JSON.stringify(entry);
+            if (s.includes('an input has not been set') || s.includes('select null')) return fallback;
+        } catch(e) {}
         const candidates = [
-            entry?.rawValues?.[0]?.value, entry?.rawValue?.value,
-            entry?.value?.value, entry?.value, entry?.rawValue,
+            entry?.rawValues?.[0]?.value, entry?.rawValue?.value,            entry?.value?.value, entry?.value, entry?.rawValue,
             entry?.rawValues?.[0]?.label, entry?.label, entry?.rawValues?.[0]
         ];
         for (const candidate of candidates) {
@@ -83,10 +86,17 @@ select distinct fund_type from mbtsa.subprogram_level where fund_type is not nul
         return lower ? val.toLowerCase() : val;
     };
 
-    $: selectedAgency  = selectedValue($inputStore?.f_agency);
-    $: selectedUnit    = selectedValue($inputStore?.f_unit);
-    $: selectedProgram = selectedValue($inputStore?.f_program);
-    $: selectedFund    = selectedValue($inputStore?.f_fund);
+    $: selectedAgency  = (() => {
+        const val = selectedValue($inputStore?.f_agency);
+        if (!val || val === 'undefined') return '%';
+        return val;
+    })();
+    $: selectedUnit    = (() => { const v = selectedValue($inputStore?.f_unit);    return (!v || v === 'undefined') ? '%' : v; })();
+    $: selectedProgram = (() => { const v = selectedValue($inputStore?.f_program); return (!v || v === 'undefined') ? '%' : v; })();
+    $: selectedFund    = (() => { const v = selectedValue($inputStore?.f_fund);    return (!v || v === 'undefined') ? '%' : v; })();
+    const isRealFilter = (v) => v && v !== '%' && v !== 'undefined' && !v.includes('select null') && !v.includes('an input has not been set');
+
+    $: hasActiveFilters = isRealFilter(selectedAgency) || isRealFilter(selectedUnit) || isRealFilter(selectedProgram) || isRealFilter(selectedFund);
     $: selectedYearA   = selectedValue($inputStore?.f_year_a, false);
     $: selectedYearB   = selectedValue($inputStore?.f_year_b, false);
     $: selectedLevel   = readInputValue($inputStore?.f_level, 'agency');
@@ -109,7 +119,7 @@ select distinct fund_type from mbtsa.subprogram_level where fund_type is not nul
         : selectedLevel === 'subprogram' ? (subprogram_variance ?? [])
         : (agency_variance ?? []);
 
-    let threshold = 10;
+    let threshold = 10; // now controlled by slider
 
     const fmtMoney = (v, sign = false) => {
         const n = Number(v) || 0;
@@ -189,21 +199,39 @@ select distinct fund_type from mbtsa.subprogram_level where fund_type is not nul
     <Dropdown name=f_year_b data={g_fy_all} value=fy defaultValue="%"><DropdownOption value="%" valueLabel="Prior"/></Dropdown>
   </div>
 
+  <span style="color:#CBD5E1; font-size:0.8rem; font-weight:600; flex-shrink:0;">|</span>
+
+  <!-- Threshold slider -->
+  <div style="display:flex; align-items:center; gap:10px;">
+    <div style="background:#231F20; padding:4px 10px; border-radius:6px;">
+      <span style="color:#FFC838; font-size:0.68rem; font-weight:800; letter-spacing:0.08em; text-transform:uppercase; white-space:nowrap;">Threshold</span>
+    </div>
+    <input
+      type="range"
+      min="5"
+      max="100"
+      step="5"
+      bind:value={threshold}
+      style="width:120px; accent-color:#C8122C; cursor:pointer;"
+    />
+    <span style="font-size:0.85rem; font-weight:700; color:#231F20; min-width:36px;">{threshold}%</span>
   </div>
 
-{#if selectedAgency !== '%' || selectedUnit !== '%' || selectedProgram !== '%' || selectedFund !== '%'}
+  </div>
+
+{#if hasActiveFilters}
 <div bind:this={chipBarEl} style={chipBarFixed + 'background:#F9FAFB; border-bottom:1px solid #E5E7EB; padding:6px 24px; display:flex; flex-wrap:wrap; gap:6px; align-items:center;'}>
     <span style="font-size:0.7rem; font-weight:700; color:#6B7280; text-transform:uppercase; margin-right:4px;">Active Filters:</span>
-    {#if selectedAgency !== '%'}
+    {#if isRealFilter(selectedAgency)}
         <span style="background:#FFF7F0; border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Agency: {selectedAgency}</span>
     {/if}
-    {#if selectedUnit !== '%'}
+    {#if isRealFilter(selectedUnit)}
         <span style="background:#FFF7F0; border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Unit: {selectedUnit}</span>
     {/if}
-    {#if selectedProgram !== '%'}
+    {#if isRealFilter(selectedProgram)}
         <span style="background:#FFF7F0; border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Program: {selectedProgram}</span>
     {/if}
-    {#if selectedFund !== '%'}
+    {#if isRealFilter(selectedFund)}
         <span style="background:#FFF7F0; border:1px solid #C8122C; border-radius:20px; padding:3px 10px; font-size:0.75rem; color:#C8122C; font-weight:600; white-space:nowrap;">Fund: {selectedFund}</span>
     {/if}
 </div>
@@ -256,80 +284,84 @@ select
 
 ```sql agency_variance
 with a as (
-    select agency_name, sum(total_budget_amount) as spend_a
+    select agency_code, agency_name, sum(total_budget_amount) as spend_a
     from mbtsa.subprogram_level
     where fiscal_year = (select year_a from ${selected_years})
-      and lower(coalesce(agency_name,'')) like '${selectedAgency}'
-      and lower(coalesce(fund_type,''))   like '${selectedFund}'
-    group by agency_name
+            and lower(coalesce(agency_name,'')) like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(fund_type,''))   like case when '${selectedFund}' like '(select%' then '%' else '${selectedFund}' end
+    group by agency_code, agency_name
 ),
 b as (
-    select agency_name, sum(total_budget_amount) as spend_b
+    select agency_code, agency_name, sum(total_budget_amount) as spend_b
     from mbtsa.subprogram_level
     where fiscal_year = (select year_b from ${selected_years})
-      and lower(coalesce(agency_name,'')) like '${selectedAgency}'
-      and lower(coalesce(fund_type,''))   like '${selectedFund}'
-    group by agency_name
+            and lower(coalesce(agency_name,'')) like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(fund_type,''))   like case when '${selectedFund}' like '(select%' then '%' else '${selectedFund}' end
+    group by agency_code, agency_name
 )
 select
+    coalesce(a.agency_code, b.agency_code) as agency_code,
     coalesce(a.agency_name, b.agency_name) as agency_name,
     coalesce(a.spend_a, 0)                 as latest_year,
     coalesce(b.spend_b, 0)                 as prior_year,
     coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt,
     round((coalesce(a.spend_a,0) - coalesce(b.spend_b,0)) * 100.0 / nullif(b.spend_b, 0), 1) as change_pct
-from a full outer join b using (agency_name)
+from a full outer join b using (agency_code, agency_name)
 order by abs(change_amt) desc
 ```
 
 ```sql unit_variance
 with a as (
-    select unit_name, sum(total_budget_amount) as spend_a
+    select agency_code, agency_name, unit_name, sum(total_budget_amount) as spend_a
     from mbtsa.subprogram_level
     where fiscal_year = (select year_a from ${selected_years})
-      and lower(coalesce(agency_name,'')) like '${selectedAgency}'
-      and lower(coalesce(unit_name,''))   like '${selectedUnit}'
-      and lower(coalesce(fund_type,''))   like '${selectedFund}'
-    group by unit_name
+            and lower(coalesce(agency_name,'')) like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(unit_name,''))   like case when '${selectedUnit}' like '(select%' then '%' else '${selectedUnit}' end
+            and lower(coalesce(fund_type,''))   like case when '${selectedFund}' like '(select%' then '%' else '${selectedFund}' end
+    group by agency_code, agency_name, unit_name
 ),
 b as (
-    select unit_name, sum(total_budget_amount) as spend_b
+    select agency_code, agency_name, unit_name, sum(total_budget_amount) as spend_b
     from mbtsa.subprogram_level
     where fiscal_year = (select year_b from ${selected_years})
-      and lower(coalesce(agency_name,'')) like '${selectedAgency}'
-      and lower(coalesce(unit_name,''))   like '${selectedUnit}'
-      and lower(coalesce(fund_type,''))   like '${selectedFund}'
-    group by unit_name
+            and lower(coalesce(agency_name,'')) like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(unit_name,''))   like case when '${selectedUnit}' like '(select%' then '%' else '${selectedUnit}' end
+            and lower(coalesce(fund_type,''))   like case when '${selectedFund}' like '(select%' then '%' else '${selectedFund}' end
+    group by agency_code, agency_name, unit_name
 )
 select
+    coalesce(a.agency_code, b.agency_code) as agency_code,
+    coalesce(a.agency_name, b.agency_name) as agency_name,
     coalesce(a.unit_name, b.unit_name) as unit_name,
     coalesce(a.spend_a, 0)             as latest_year,
     coalesce(b.spend_b, 0)             as prior_year,
     coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt,
     round((coalesce(a.spend_a,0) - coalesce(b.spend_b,0)) * 100.0 / nullif(b.spend_b, 0), 1) as change_pct
-from a full outer join b using (unit_name)
+from a full outer join b using (agency_code, agency_name, unit_name)
 order by abs(change_amt) desc
 ```
 
 ```sql program_variance
 with a as (
-    select agency_name, unit_name, program_name, sum(total_budget_amount) as spend_a
+    select agency_code, agency_name, unit_name, program_name, sum(total_budget_amount) as spend_a
     from mbtsa.subprogram_level
     where fiscal_year = (select year_a from ${selected_years})
-      and lower(coalesce(agency_name,''))  like '${selectedAgency}'
-      and lower(coalesce(unit_name,''))    like '${selectedUnit}'
-      and lower(coalesce(fund_type,''))    like '${selectedFund}'
-    group by agency_name, unit_name, program_name
+            and lower(coalesce(agency_name,''))  like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(unit_name,''))    like case when '${selectedUnit}' like '(select%' then '%' else '${selectedUnit}' end
+            and lower(coalesce(fund_type,''))    like case when '${selectedFund}' like '(select%' then '%' else '${selectedFund}' end
+    group by agency_code, agency_name, unit_name, program_name
 ),
 b as (
-    select agency_name, unit_name, program_name, sum(total_budget_amount) as spend_b
+    select agency_code, agency_name, unit_name, program_name, sum(total_budget_amount) as spend_b
     from mbtsa.subprogram_level
     where fiscal_year = (select year_b from ${selected_years})
-      and lower(coalesce(agency_name,''))  like '${selectedAgency}'
-      and lower(coalesce(unit_name,''))    like '${selectedUnit}'
-      and lower(coalesce(fund_type,''))    like '${selectedFund}'
-    group by agency_name, unit_name, program_name
+            and lower(coalesce(agency_name,''))  like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(unit_name,''))    like case when '${selectedUnit}' like '(select%' then '%' else '${selectedUnit}' end
+            and lower(coalesce(fund_type,''))    like case when '${selectedFund}' like '(select%' then '%' else '${selectedFund}' end
+    group by agency_code, agency_name, unit_name, program_name
 )
 select
+    coalesce(a.agency_code,  b.agency_code)  as agency_code,
     coalesce(a.agency_name,  b.agency_name)  as agency_name,
     coalesce(a.unit_name,    b.unit_name)    as unit_name,
     coalesce(a.program_name, b.program_name) as program_name,
@@ -337,32 +369,33 @@ select
     coalesce(b.spend_b, 0)                   as prior_year,
     coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt,
     round((coalesce(a.spend_a,0) - coalesce(b.spend_b,0)) * 100.0 / nullif(b.spend_b, 0), 1) as change_pct
-from a full outer join b using (agency_name, unit_name, program_name)
+from a full outer join b using (agency_code, agency_name, unit_name, program_name)
 order by abs(change_amt) desc
 ```
 
 ```sql subprogram_variance
 with a as (
-    select agency_name, unit_name, program_name, subprogram_name, sum(total_budget_amount) as spend_a
+    select agency_code, agency_name, unit_name, program_name, subprogram_name, sum(total_budget_amount) as spend_a
     from mbtsa.subprogram_level
     where fiscal_year = (select year_a from ${selected_years})
-      and lower(coalesce(agency_name,''))  like '${selectedAgency}'
-      and lower(coalesce(unit_name,''))    like '${selectedUnit}'
-      and lower(coalesce(program_name,'')) like '${selectedProgram}'
-      and lower(coalesce(fund_type,''))    like '${selectedFund}'
-    group by agency_name, unit_name, program_name, subprogram_name
+            and lower(coalesce(agency_name,''))  like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(unit_name,''))    like case when '${selectedUnit}' like '(select%' then '%' else '${selectedUnit}' end
+            and lower(coalesce(program_name,'')) like case when '${selectedProgram}' like '(select%' then '%' else '${selectedProgram}' end
+            and lower(coalesce(fund_type,''))    like case when '${selectedFund}' like '(select%' then '%' else '${selectedFund}' end
+    group by agency_code, agency_name, unit_name, program_name, subprogram_name
 ),
 b as (
-    select agency_name, unit_name, program_name, subprogram_name, sum(total_budget_amount) as spend_b
+    select agency_code, agency_name, unit_name, program_name, subprogram_name, sum(total_budget_amount) as spend_b
     from mbtsa.subprogram_level
     where fiscal_year = (select year_b from ${selected_years})
-      and lower(coalesce(agency_name,''))  like '${selectedAgency}'
-      and lower(coalesce(unit_name,''))    like '${selectedUnit}'
-      and lower(coalesce(program_name,'')) like '${selectedProgram}'
-      and lower(coalesce(fund_type,''))    like '${selectedFund}'
-    group by agency_name, unit_name, program_name, subprogram_name
+            and lower(coalesce(agency_name,''))  like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(unit_name,''))    like case when '${selectedUnit}' like '(select%' then '%' else '${selectedUnit}' end
+            and lower(coalesce(program_name,'')) like case when '${selectedProgram}' like '(select%' then '%' else '${selectedProgram}' end
+            and lower(coalesce(fund_type,''))    like case when '${selectedFund}' like '(select%' then '%' else '${selectedFund}' end
+    group by agency_code, agency_name, unit_name, program_name, subprogram_name
 )
 select
+    coalesce(a.agency_code,     b.agency_code)     as agency_code,
     coalesce(a.agency_name,     b.agency_name)     as agency_name,
     coalesce(a.unit_name,       b.unit_name)       as unit_name,
     coalesce(a.program_name,    b.program_name)    as program_name,
@@ -371,7 +404,7 @@ select
     coalesce(b.spend_b, 0)                         as prior_year,
     coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt,
     round((coalesce(a.spend_a,0) - coalesce(b.spend_b,0)) * 100.0 / nullif(b.spend_b, 0), 1) as change_pct
-from a full outer join b using (agency_name, unit_name, program_name, subprogram_name)
+from a full outer join b using (agency_code, agency_name, unit_name, program_name, subprogram_name)
 order by abs(change_amt) desc
 ```
 ```sql new_programs
@@ -401,20 +434,20 @@ with a as (
     select fund_type, sum(total_budget_amount) as spend_a
     from mbtsa.subprogram_level
     where fiscal_year = (select year_a from ${selected_years})
-      and lower(coalesce(agency_name,''))  like '${selectedAgency}'
-      and lower(coalesce(unit_name,''))    like '${selectedUnit}'
-      and lower(coalesce(program_name,'')) like '${selectedProgram}'
-      and fund_type is not null
+            and lower(coalesce(agency_name,''))  like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(unit_name,''))    like case when '${selectedUnit}' like '(select%' then '%' else '${selectedUnit}' end
+            and lower(coalesce(program_name,'')) like case when '${selectedProgram}' like '(select%' then '%' else '${selectedProgram}' end
+            and fund_type is not null
     group by fund_type
 ),
 b as (
     select fund_type, sum(total_budget_amount) as spend_b
     from mbtsa.subprogram_level
     where fiscal_year = (select year_b from ${selected_years})
-      and lower(coalesce(agency_name,''))  like '${selectedAgency}'
-      and lower(coalesce(unit_name,''))    like '${selectedUnit}'
-      and lower(coalesce(program_name,'')) like '${selectedProgram}'
-      and fund_type is not null
+            and lower(coalesce(agency_name,''))  like case when '${selectedAgency}' like '(select%' then '%' else '${selectedAgency}' end
+            and lower(coalesce(unit_name,''))    like case when '${selectedUnit}' like '(select%' then '%' else '${selectedUnit}' end
+            and lower(coalesce(program_name,'')) like case when '${selectedProgram}' like '(select%' then '%' else '${selectedProgram}' end
+            and fund_type is not null
     group by fund_type
 )
 select
@@ -482,24 +515,33 @@ order by abs(change_amt) desc
 
 
 
-<Grid cols=2>
 <div>
-<p style="font-weight:700; color:#2EAD6B; margin-bottom:8px;">🟢 New Programs in FY{yearALabel}</p>
-<DataTable data={new_programs} rows=10>
-    <Column id=agency_name  title="Agency"/>
-    <Column id=program_name title="Program"/>
-    <Column id=budget       title="Budget" fmt=usd2compactviz/>
+
+<p style="font-weight:700; color:#2EAD6B; margin-bottom:8px;">🟢 New {levelLabel}s in FY{yearALabel}</p>
+{#if activeVariance.filter(r => Number(r.prior_year) === 0 && Number(r.latest_year) > 0).length > 0}
+<DataTable data={activeVariance.filter(r => Number(r.prior_year) === 0 && Number(r.latest_year) > 0 && !activeVariance.some(x => x[activeLabelField] === r[activeLabelField] && Number(x.latest_year) === 0 && Number(x.prior_year) > 0)).slice(0,10)} rows=10>
+svelte    <Column id=agency_code title="Code"/>
+    <Column id=agency_name title="Agency"/>
+    <Column id={activeLabelField} title={levelLabel}/>
+    <Column id=latest_year title="Budget" fmt=usd2compactviz/>
 </DataTable>
+{:else}
+<p style="color:#6B7280; font-size:0.875rem; padding:12px 0;">No new {levelLabel.toLowerCase()}s in FY{yearALabel}</p>
+{/if}
 </div>
-<div>
-<p style="font-weight:700; color:#C8122C; margin-bottom:8px;">🔴 Eliminated Programs in FY{yearALabel}</p>
-<DataTable data={eliminated_programs} rows=10>
-    <Column id=agency_name  title="Agency"/>
-    <Column id=program_name title="Program"/>
-    <Column id=budget       title="Last Budget" fmt=usd2compactviz/>
+<div style="margin-top:16px;">
+<p style="font-weight:700; color:#C8122C; margin-bottom:8px;">🔴 Eliminated {levelLabel}s from FY{yearBLabel}</p>
+{#if activeVariance.filter(r => Number(r.latest_year) === 0 && Number(r.prior_year) > 0).length > 0}
+<DataTable data={activeVariance.filter(r => Number(r.latest_year) === 0 && Number(r.prior_year) > 0 && !activeVariance.some(x => x[activeLabelField] === r[activeLabelField] && Number(x.prior_year) === 0 && Number(x.latest_year) > 0)).slice(0,10)} rows=10>
+svelte    <Column id=agency_code title="Code"/>
+    <Column id=agency_name title="Agency"/>
+    <Column id={activeLabelField} title={levelLabel}/>
+    <Column id=prior_year title="Last Budget" fmt=usd2compactviz/>
 </DataTable>
+{:else}
+<p style="color:#6B7280; font-size:0.875rem; padding:12px 0;">No eliminated {levelLabel.toLowerCase()}s from FY{yearBLabel}</p>
+{/if}
 </div>
-</Grid>
 
 ---
 

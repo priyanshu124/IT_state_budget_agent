@@ -807,9 +807,9 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 
 
-<div style="background: linear-gradient(135deg, #C8122C 0%, #231F20 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #FFC838; margin-bottom: 0;">
-    <h1 style="color: white; font-family: Montserrat, sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
-    <p style="color: #FFC838; font-size: 0.95rem; margin: 4px 0 0 0;">Agency Budget Detail </p>
+<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0;">
+    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
+    <p style="color: #b376f6; font-size: 0.95rem; margin: 4px 0 0 0;">Agency Budget Detail </p>
 </div>
 
 <a href="/budget-office" style="display:inline-block; margin: 12px 0; color: #C8122C; font-size: 0.9rem; text-decoration: none;">← Back to Budget Office</a>

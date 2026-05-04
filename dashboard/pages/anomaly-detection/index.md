@@ -3,8 +3,8 @@ title: Anomaly Detection
 sidebar_position: 6
 ---
 
-<div style="background: linear-gradient(135deg, #C8122C 0%, #231F20 100%); padding: 24px 36px; border-radius: 12px; border-bottom: 4px solid #FFC838; margin-bottom: 0;">
-    <h1 style="color: white; font-family: Montserrat, sans-serif; font-size: 1.6rem; font-weight: 700; margin: 6px 0 0 0;">🔍 Anomaly Detection</h1>
+<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 24px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0;">
+    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.6rem; font-weight: 700; margin: 6px 0 0 0;">🔍 Anomaly Detection</h1>
     <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 4px 0 0 0;">Unusual spending patterns — deviations from historical agency averages</p>
 </div>
 
