@@ -37,18 +37,18 @@
     const fmtPct = (v, showSign = true) => (v == null ? '-' : (showSign && Number(v) > 0 ? '+' : '') + String(v) + '%');
 
     const conditionalStyle = (val) => {
-        if (val == null) return { background: 'transparent', color: '#6B7280' };
+        if (val == null) return { background: 'transparent', color: 'var(--nxt-muted)' };
         const n = Number(val);
         const color = n >= 0 ? '#1A7340' : '#C8122C';
         let bg = 'transparent';
-        if (n >= 15) bg = 'rgba(46,173,107,0.20)';
-        else if (n >= 8) bg = 'rgba(46,173,107,0.12)';
-        else if (n >= 3) bg = 'rgba(46,173,107,0.06)';
-        else if (n >= 0) bg = 'rgba(46,173,107,0.03)';
-        else if (n >= -3) bg = 'rgba(200,18,44,0.04)';
-        else if (n >= -8) bg = 'rgba(200,18,44,0.08)';
-        else if (n >= -15) bg = 'rgba(200,18,44,0.14)';
-        else bg = 'rgba(200,18,44,0.22)';
+        if (n >= 15) bg = 'rgba(46,173,107,0.16)';
+        else if (n >= 8) bg = 'rgba(46,173,107,0.10)';
+        else if (n >= 3) bg = 'rgba(46,173,107,0.05)';
+        else if (n >= 0) bg = 'rgba(46,173,107,0.025)';
+        else if (n >= -3) bg = 'rgba(200,18,44,0.035)';
+        else if (n >= -8) bg = 'rgba(200,18,44,0.065)';
+        else if (n >= -15) bg = 'rgba(200,18,44,0.11)';
+        else bg = 'rgba(200,18,44,0.17)';
         return { background: bg, color };
     };
 
@@ -70,14 +70,14 @@
 
 {#if search}
     <div style="margin-bottom:12px;">
-        <input bind:value={tableSearch} placeholder="Search..." style="border:1px solid #D9DDE3; border-radius:8px; padding:8px 12px; width:320px;" />
+        <input bind:value={tableSearch} placeholder="Search..." style="border:1px solid var(--nxt-border); border-radius:8px; padding:8px 12px; width:320px; background:var(--nxt-surface); color:var(--nxt-text);" />
     </div>
 {/if}
 
-<div style="overflow-x:auto; border-radius:8px; border:1px solid #E5E7EB;">
+<div style="overflow-x:auto; border-radius:8px; border:1px solid var(--nxt-border); background:var(--nxt-surface);">
     <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
         <thead>
-            <tr style="background:#F9FAFB; border-bottom:2px solid #C8122C;">
+            <tr style="background:var(--nxt-pink); border-bottom:2px solid #C8122C;">
                 {#each columns as col}
                     <th
                         on:click={() => col.sortable !== false && setSort(col.id)}
@@ -92,7 +92,7 @@
         </thead>
         <tbody>
             {#if totalRow}
-                <tr style="background:#FFF7F0; border-bottom:1px solid #E5E7EB;">
+                <tr style="background:var(--nxt-pink); border-bottom:1px solid var(--nxt-border);">
                     {#each columns as col}
                         <td style="padding:10px 14px; font-weight:700; color:#C8122C; text-align:{col.align ?? 'right'};">
                             {#if col.id === columns[0].id}{totalRow.label ?? 'Total'}{:else if col.fmt === 'money'}{fmtMoney(totalRow[col.id])}{:else if col.fmt === 'pct'}{fmtPct(totalRow[col.id], col.conditional)}{/if}
@@ -104,9 +104,9 @@
             {#each displayed as row, i}
                 <tr
                     on:click={() => linkField ? goto(row[linkField]) : null}
-                    style={'border-bottom:1px solid #F3F4F6; cursor:pointer; background:' + (i % 2 === 0 ? 'white' : '#FAFAFA') + ';'}
-                    onmouseenter="this.style.background='#FFF7F0'"
-                    onmouseleave={'this.style.background=' + (i % 2 === 0 ? "'white'" : "'#FAFAFA'") + ''}
+                    style={'border-bottom:1px solid #F3F4F6; cursor:pointer; background:' + (i % 2 === 0 ? 'var(--nxt-surface)' : '#f7f2fc') + ';'}
+                    onmouseenter="this.style.background='var(--nxt-pink)'"
+                    onmouseleave={'this.style.background=' + (i % 2 === 0 ? "'var(--nxt-surface)'" : "'#f7f2fc'") + ''}
                 >
                     {#each columns as col}
                         <td style={'padding:9px 14px; text-align:' + (col.align ?? 'right') + '; ' + (col.bold ? 'font-weight:600;' : '') + ' color:#231F20'}>

@@ -422,12 +422,12 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
 
 </script>
 
-<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0;">
-    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
-    <p style="color: #b376f6; font-size: 0.95rem; margin: 4px 0 0 0;">Agency IT Spend Detail · TBM v5.0.1 Classification</p>
+<div style="background: linear-gradient(135deg, var(--nxt-blue-violet) 0%, var(--nxt-dark) 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid var(--nxt-lavender); margin-bottom: 0;">
+    <h1 style="color: var(--color-primary-content); font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
+    <p style="color: var(--nxt-lavender); font-size: 0.95rem; margin: 4px 0 0 0;">Agency IT Spend Detail · TBM v5.0.1 Classification</p>
 </div>
 
-<a href="/technology" style="display:inline-block; margin: 12px 0; color: #802cd7; font-size: 0.9rem; text-decoration: none;">← Back to Technology View</a>
+<a href="/technology" style="display:inline-block; margin: 12px 0; color: var(--nxt-blue-violet); font-size: 0.9rem; text-decoration: none;">← Back to Technology View</a>
 
 
 <Grid cols=1>
@@ -525,11 +525,11 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
         {#each top_towers_trend as t}
             <button
                 on:click={() => selectedTower = selectedTower === t.it_tower ? null : t.it_tower}
-                style={`border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ${selectedTower === t.it_tower ? '2px solid #802cd7' : '1px solid rgba(36,41,46,0.06)'}; background: ${selectedTower === t.it_tower ? 'linear-gradient(90deg,#f3ecfd,#ede0fc)' : 'white'}; box-shadow: ${selectedTower === t.it_tower ? '0 4px 10px rgba(128,44,215,0.08)' : 'none'}`}
+                style={`border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ${selectedTower === t.it_tower ? '2px solid var(--nxt-blue-violet)' : '1px solid var(--nxt-border)'}; background: ${selectedTower === t.it_tower ? 'var(--nxt-pink)' : 'var(--color-base-100)'}; box-shadow: ${selectedTower === t.it_tower ? '0 4px 10px rgba(128,44,215,0.08)' : 'none'}`}
                 aria-pressed={selectedTower === t.it_tower}
             >
-                <span style={`width:10px; height:10px; border-radius:50%; background: ${t.it_tower === highlightedTowerNames[0] ? '#802cd7' : t.it_tower === highlightedTowerNames[1] ? '#b376f6' : t.it_tower === highlightedTowerNames[2] ? '#211030' : '#C9CED6'}; display:inline-block;`}></span>
-                <span style={`color:${selectedTower === t.it_tower ? '#802cd7' : '#211030'}; font-weight:${selectedTower === t.it_tower ? 700 : 500}`}>{t.it_tower}</span>
+                <span style={`width:10px; height:10px; border-radius:50%; background: ${t.it_tower === highlightedTowerNames[0] ? 'var(--nxt-blue-violet)' : t.it_tower === highlightedTowerNames[1] ? 'var(--nxt-lavender)' : t.it_tower === highlightedTowerNames[2] ? 'var(--nxt-dark)' : 'var(--nxt-border)'}; display:inline-block;`}></span>
+                <span style={`color:${selectedTower === t.it_tower ? 'var(--nxt-blue-violet)' : 'var(--nxt-text)'}; font-weight:${selectedTower === t.it_tower ? 700 : 500}`}>{t.it_tower}</span>
             </button>
         {/each}
     </div>
@@ -649,11 +649,11 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
 </div>
 
 {#if towerPivotRows?.length > 0}
-<div style="overflow-x:auto; border-radius:8px; border:1px solid #E5E7EB;">
+<div style="overflow-x:auto; border-radius:8px; border:1px solid var(--nxt-border); background:var(--nxt-surface);">
     <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
         <!-- Header -->
         <thead>
-            <tr style="background:#F9FAFB; border-bottom:2px solid #802cd7;">
+            <tr style="background:var(--nxt-pink); border-bottom:2px solid #802cd7;">
                 <th
                     on:click={() => setDrillSort('name')}
                     style="text-align:left; padding:10px 14px; font-weight:700; color:#211030; min-width:280px; cursor:pointer; user-select:none;"
@@ -673,7 +673,7 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
         </thead>
         <tbody>
             <!-- Grand Total -->
-            <tr style="background:#FFF7F0; border-bottom:1px solid #E5E7EB;">
+            <tr style="background:var(--nxt-pink); border-bottom:1px solid var(--nxt-border);">
                 <td style="padding:10px 14px; font-weight:700; color:#802cd7;">Total</td>
                 {#each drillViewYears as yr}
                     <td style="text-align:right; padding:10px 14px; font-weight:700; color:#802cd7;">{formatAmount(grandTotal['FY' + yr])}</td>
@@ -683,8 +683,8 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
             {#each sortedTowerPivotRows as tower}
                 <tr
                     on:click={() => toggleProgram(tower.name)}
-                    style="border-bottom:1px solid #E5E7EB; cursor:pointer; background:white;"
-                    onmouseenter="this.style.background='#F9FAFB'"
+                    style="border-bottom:1px solid var(--nxt-border); cursor:pointer; background:var(--nxt-surface);"
+                    onmouseenter="this.style.background='var(--nxt-pink)'"
                     onmouseleave="this.style.background='white'"
                 >
                     <td style="padding:10px 14px; font-weight:600; color:#211030;">
@@ -715,7 +715,7 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
                         <!-- Subprograms (level 3) -->
                         {#if expandedTowers[tower.name + '||' + prog.name]}
                             {#each getSortedSubprograms(tower.name, prog.name) as sub}
-                                <tr style="border-bottom:1px solid #F3F4F6; background:#F9FAFB;">
+                                <tr style="border-bottom:1px solid #F3F4F6; background:#f7f2fc;">
                                     <td style="padding:7px 14px 7px 60px; color:#6B7280; font-style:italic;">{sub.name}</td>
                                     {#each drillViewYears as yr}
                                         <td style="text-align:right; padding:7px 14px; color:#6B7280;">{formatAmount(sub['FY' + yr])}</td>

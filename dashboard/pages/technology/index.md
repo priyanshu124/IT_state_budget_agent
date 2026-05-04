@@ -3,9 +3,9 @@ title: Technology
 sidebar_position: 4
 ---
 
-<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0;">
-    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.7rem; font-weight: 700; margin: 0;">💻 Technology View</h1>
-    <p style="color: #b376f6; font-size: 0.95rem; margin: 4px 0 0 0;">IT Spending Analysis · TBM v5.0.1 Classification</p>
+<div style="background: linear-gradient(135deg, var(--nxt-blue-violet) 0%, var(--nxt-dark) 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid var(--nxt-lavender); margin-bottom: 0;">
+    <h1 style="color: var(--color-primary-content); font-size: 1.7rem; font-weight: 700; margin: 0;">💻 Technology View</h1>
+    <p style="color: var(--nxt-lavender); font-size: 0.95rem; margin: 4px 0 0 0;">IT Spending Analysis · TBM v5.0.1 Classification</p>
 </div>
 
 ```sql g_fy

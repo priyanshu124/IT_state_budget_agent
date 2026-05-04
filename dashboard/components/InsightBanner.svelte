@@ -2,7 +2,7 @@
     export let insight = '';
     export let icon = '📊';
     export let color = '#C8122C';
-    export let bg = '#FFF7F0';
+    export let bg = 'var(--nxt-pink)';
 </script>
 
 {#if insight}
