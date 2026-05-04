@@ -3,16 +3,16 @@
 sidebar_position: 3
 ---
 
-<div style="background: linear-gradient(135deg, var(--nxt-blue-violet) 0%, var(--nxt-dark) 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid var(--nxt-lavender); margin-bottom: 0; display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;">
+<div style="background: linear-gradient(135deg, #ede5f8 0%, #d4bef0 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #802cd7; margin-bottom: 0; display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;">
     <div>
-        <h1 style="color: var(--color-primary-content); font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ Budget Office View</h1>
-        <p style="color: var(--nxt-lavender); font-size: 0.95rem; margin: 4px 0 0 0;">Statewide Budget Analysis</p>
+        <h1 style="color: #211030; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ Budget Office View</h1>
+        <p style="color: #6321a5; font-size: 0.95rem; margin: 4px 0 0 0;">Statewide Budget Analysis</p>
     </div>
-    <div style="display:flex; border: 1px solid rgba(255,255,255,0.18); border-radius:6px; width:fit-content; overflow:hidden; background:rgba(255,255,255,0.08);">
+    <div style="display:flex; border: 1px solid #c9a8f0; border-radius:6px; width:fit-content; overflow:hidden; background:rgba(255,255,255,0.5);">
         {#each [['latest','Latest Year'],['trend','Trend Over Years']] as [val, label]}
             <button
                 on:click={() => localView = val}
-                style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid rgba(255,255,255,0.18); background: ' + (localView === val ? 'var(--color-primary-content)' : 'transparent') + '; color: ' + (localView === val ? 'var(--nxt-dark)' : 'var(--color-primary-content)') + '; font-weight: ' + (localView === val ? 700 : 500)}
+                style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid #c9a8f0; background: ' + (localView === val ? '#802cd7' : 'rgba(255,255,255,0.6)') + '; color: ' + (localView === val ? '#ffffff' : '#211030') + '; font-weight: ' + (localView === val ? 700 : 500)}
             >{label}</button>
         {/each}
     </div>

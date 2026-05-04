@@ -422,9 +422,9 @@ order by program_name, subprogram_name, cost_pool, fiscal_year
 
 </script>
 
-<div style="background: linear-gradient(135deg, var(--nxt-blue-violet) 0%, var(--nxt-dark) 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid var(--nxt-lavender); margin-bottom: 0;">
-    <h1 style="color: var(--color-primary-content); font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
-    <p style="color: var(--nxt-lavender); font-size: 0.95rem; margin: 4px 0 0 0;">Agency IT Spend Detail · TBM v5.0.1 Classification</p>
+<div style="background: linear-gradient(135deg, #ede5f8 0%, #d4bef0 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #802cd7; margin-bottom: 0;">
+    <h1 style="color: #211030; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
+    <p style="color: #6321a5; font-size: 0.95rem; margin: 4px 0 0 0;">Agency IT Spend Detail · TBM v5.0.1 Classification</p>
 </div>
 
 <a href="/technology" style="display:inline-block; margin: 12px 0; color: var(--nxt-blue-violet); font-size: 0.9rem; text-decoration: none;">← Back to Technology View</a>
