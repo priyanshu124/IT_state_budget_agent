@@ -1,4 +1,5 @@
 <script>
+    import { goto } from '$app/navigation';
     export let data = [];
     export let columns = [];
     export let linkField = null;
@@ -102,7 +103,7 @@
 
             {#each displayed as row, i}
                 <tr
-                    on:click={() => linkField ? window.location.href = row[linkField] : null}
+                    on:click={() => linkField ? goto(row[linkField]) : null}
                     style={'border-bottom:1px solid #F3F4F6; cursor:pointer; background:' + (i % 2 === 0 ? 'white' : '#FAFAFA') + ';'}
                     onmouseenter="this.style.background='#FFF7F0'"
                     onmouseleave={'this.style.background=' + (i % 2 === 0 ? "'white'" : "'#FAFAFA'") + ''}

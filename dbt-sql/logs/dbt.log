@@ -24864,3 +24864,696 @@ drop table if exists "mbtsa_work"."main_marts"."fct_subprogram_level__dbt_backup
 [0m00:52:34.018960 [debug] [MainThread]: Command `dbt run` succeeded at 00:52:34.018960 after 1.78 seconds
 [0m00:52:34.018960 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027CFE62F470>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027CFD6B3140>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000027CFD6B2510>]}
 [0m00:52:34.018960 [debug] [MainThread]: Flushing usage events
+[0m09:20:23.129077 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CB4BBF20>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CE15DE50>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CE15DEE0>]}
+
+
+============================== 09:20:23.134444 | f91c0106-e44e-4bea-b2e9-c391171aa533 ==============================
+[0m09:20:23.134444 [info ] [MainThread]: Running with dbt=1.8.9
+[0m09:20:23.134444 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'fail_fast': 'False', 'debug': 'False', 'log_path': 'D:\\projects\\IT_state_budget_agent\\dbt-sql\\logs', 'version_check': 'True', 'profiles_dir': 'D:\\projects\\IT_state_budget_agent\\dbt-sql', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'introspect': 'True', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'invocation_command': 'dbt run --select fct_cost_pool_level', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m09:20:23.503851 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'f91c0106-e44e-4bea-b2e9-c391171aa533', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CF378920>]}
+[0m09:20:23.534916 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'f91c0106-e44e-4bea-b2e9-c391171aa533', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CE2F5010>]}
+[0m09:20:23.553918 [info ] [MainThread]: Registered adapter: duckdb=1.8.4
+[0m09:20:23.810152 [debug] [MainThread]: checksum: 132857a23e9d07220246854f7763165174ce9b737cfc7867629ace4294e520b1, vars: {}, profile: , target: , version: 1.8.9
+[0m09:20:25.354468 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 1 files added, 0 files changed.
+[0m09:20:25.355469 [debug] [MainThread]: Partial parsing: added file: mbtsa://models\marts\fct_cost_pool_level.sql
+[0m09:20:25.509191 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.mbtsa.intermediate
+[0m09:20:25.519210 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'f91c0106-e44e-4bea-b2e9-c391171aa533', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CFB37B00>]}
+[0m09:20:25.612934 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'f91c0106-e44e-4bea-b2e9-c391171aa533', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CF6DED80>]}
+[0m09:20:25.612934 [info ] [MainThread]: Found 13 models, 33 data tests, 1 source, 5 metrics, 735 macros, 1 semantic model
+[0m09:20:25.612934 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'f91c0106-e44e-4bea-b2e9-c391171aa533', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CFB379B0>]}
+[0m09:20:25.614931 [info ] [MainThread]: 
+[0m09:20:25.615252 [debug] [MainThread]: Acquiring new duckdb connection 'master'
+[0m09:20:25.616210 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work'
+[0m09:20:27.377968 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work"
+[0m09:20:27.377968 [debug] [ThreadPool]: On list_mbtsa_work: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m09:20:27.377968 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m09:20:27.402504 [debug] [ThreadPool]: SQL status: OK in 0.029 seconds
+[0m09:20:27.402504 [debug] [ThreadPool]: On list_mbtsa_work: Close
+[0m09:20:27.402504 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_mbtsa_work, now create_mbtsa_work_main_marts)
+[0m09:20:27.402504 [debug] [ThreadPool]: Creating schema "database: "mbtsa_work"
+schema: "main_marts"
+"
+[0m09:20:27.402504 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m09:20:27.402504 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main_marts"} */
+
+    
+        select type from duckdb_databases()
+        where database_name='mbtsa_work'
+        and type='sqlite'
+    
+  
+[0m09:20:27.402504 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m09:20:27.428921 [debug] [ThreadPool]: SQL status: OK in 0.012 seconds
+[0m09:20:27.429921 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m09:20:27.430921 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: BEGIN
+[0m09:20:27.430921 [debug] [ThreadPool]: SQL status: OK in 0.000 seconds
+[0m09:20:27.430921 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m09:20:27.430921 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main_marts"} */
+
+    
+    
+        create schema if not exists "mbtsa_work"."main_marts"
+    
+[0m09:20:27.430921 [debug] [ThreadPool]: SQL status: OK in 0.000 seconds
+[0m09:20:27.431921 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: COMMIT
+[0m09:20:27.431921 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m09:20:27.431921 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: COMMIT
+[0m09:20:27.431921 [debug] [ThreadPool]: SQL status: OK in 0.000 seconds
+[0m09:20:27.431921 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: Close
+[0m09:20:27.439105 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work_main_marts'
+[0m09:20:27.440110 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work_main'
+[0m09:20:27.444109 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_marts"
+[0m09:20:27.444109 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work_main_staging'
+[0m09:20:27.445109 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main"
+[0m09:20:27.445109 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: BEGIN
+[0m09:20:27.446109 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_staging"
+[0m09:20:27.446109 [debug] [ThreadPool]: On list_mbtsa_work_main: BEGIN
+[0m09:20:27.446109 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m09:20:27.447109 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: BEGIN
+[0m09:20:27.447109 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m09:20:27.447109 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m09:20:27.459369 [debug] [ThreadPool]: SQL status: OK in 0.013 seconds
+[0m09:20:27.460370 [debug] [ThreadPool]: SQL status: OK in 0.013 seconds
+[0m09:20:27.460370 [debug] [ThreadPool]: SQL status: OK in 0.013 seconds
+[0m09:20:27.460370 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_marts"
+[0m09:20:27.460370 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main"
+[0m09:20:27.460370 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_staging"
+[0m09:20:27.461370 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work_main_marts"} */
+select
+      'mbtsa_work' as database,
+      table_name as name,
+      table_schema as schema,
+      CASE table_type
+        WHEN 'BASE TABLE' THEN 'table'
+        WHEN 'VIEW' THEN 'view'
+        WHEN 'LOCAL TEMPORARY' THEN 'table'
+        END as type
+    from system.information_schema.tables
+    where table_schema = 'main_marts'
+    and table_catalog = 'mbtsa_work'
+  
+[0m09:20:27.461370 [debug] [ThreadPool]: On list_mbtsa_work_main: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work_main"} */
+select
+      'mbtsa_work' as database,
+      table_name as name,
+      table_schema as schema,
+      CASE table_type
+        WHEN 'BASE TABLE' THEN 'table'
+        WHEN 'VIEW' THEN 'view'
+        WHEN 'LOCAL TEMPORARY' THEN 'table'
+        END as type
+    from system.information_schema.tables
+    where table_schema = 'main'
+    and table_catalog = 'mbtsa_work'
+  
+[0m09:20:27.461370 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work_main_staging"} */
+select
+      'mbtsa_work' as database,
+      table_name as name,
+      table_schema as schema,
+      CASE table_type
+        WHEN 'BASE TABLE' THEN 'table'
+        WHEN 'VIEW' THEN 'view'
+        WHEN 'LOCAL TEMPORARY' THEN 'table'
+        END as type
+    from system.information_schema.tables
+    where table_schema = 'main_staging'
+    and table_catalog = 'mbtsa_work'
+  
+[0m09:20:27.473121 [debug] [ThreadPool]: SQL status: OK in 0.011 seconds
+[0m09:20:27.473121 [debug] [ThreadPool]: SQL status: OK in 0.012 seconds
+[0m09:20:27.474119 [debug] [ThreadPool]: On list_mbtsa_work_main: ROLLBACK
+[0m09:20:27.474119 [debug] [ThreadPool]: SQL status: OK in 0.013 seconds
+[0m09:20:27.475118 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: ROLLBACK
+[0m09:20:27.476118 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: ROLLBACK
+[0m09:20:27.486755 [debug] [ThreadPool]: Failed to rollback 'list_mbtsa_work_main'
+[0m09:20:27.487754 [debug] [ThreadPool]: Failed to rollback 'list_mbtsa_work_main_staging'
+[0m09:20:27.487754 [debug] [ThreadPool]: On list_mbtsa_work_main: Close
+[0m09:20:27.487754 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: Close
+[0m09:20:27.488752 [debug] [ThreadPool]: Failed to rollback 'list_mbtsa_work_main_marts'
+[0m09:20:27.488752 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: Close
+[0m09:20:27.494752 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'f91c0106-e44e-4bea-b2e9-c391171aa533', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CBB6BB60>]}
+[0m09:20:27.494752 [debug] [MainThread]: Using duckdb connection "master"
+[0m09:20:27.495752 [debug] [MainThread]: On master: BEGIN
+[0m09:20:27.495752 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m09:20:27.502608 [debug] [MainThread]: SQL status: OK in 0.012 seconds
+[0m09:20:27.502608 [debug] [MainThread]: On master: COMMIT
+[0m09:20:27.502608 [debug] [MainThread]: Using duckdb connection "master"
+[0m09:20:27.502608 [debug] [MainThread]: On master: COMMIT
+[0m09:20:27.502608 [debug] [MainThread]: SQL status: OK in 0.000 seconds
+[0m09:20:27.502608 [debug] [MainThread]: On master: Close
+[0m09:20:27.502608 [info ] [MainThread]: Concurrency: 4 threads (target='dev')
+[0m09:20:27.502608 [info ] [MainThread]: 
+[0m09:20:27.502608 [debug] [Thread-1 (]: Began running node model.mbtsa.fct_cost_pool_level
+[0m09:20:27.502608 [info ] [Thread-1 (]: 1 of 1 START sql table model main_marts.fct_cost_pool_level .................... [RUN]
+[0m09:20:27.502608 [debug] [Thread-1 (]: Acquiring new duckdb connection 'model.mbtsa.fct_cost_pool_level'
+[0m09:20:27.502608 [debug] [Thread-1 (]: Began compiling node model.mbtsa.fct_cost_pool_level
+[0m09:20:27.521553 [debug] [Thread-1 (]: Writing injected SQL for node "model.mbtsa.fct_cost_pool_level"
+[0m09:20:27.522559 [debug] [Thread-1 (]: Began executing node model.mbtsa.fct_cost_pool_level
+[0m09:20:27.540556 [debug] [Thread-1 (]: Writing runtime sql for node "model.mbtsa.fct_cost_pool_level"
+[0m09:20:27.541560 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m09:20:27.541560 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: BEGIN
+[0m09:20:27.541560 [debug] [Thread-1 (]: Opening a new connection, currently in state init
+[0m09:20:27.553058 [debug] [Thread-1 (]: SQL status: OK in 0.012 seconds
+[0m09:20:27.553058 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m09:20:27.553058 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_cost_pool_level"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_cost_pool_level__dbt_tmp"
+  
+    as (
+      /*
+    fct_subprogram_level
+    ====================
+    Subprogram-level budget aggregation for dashboard reporting.
+
+    Grain: one row per fiscal_year x fund_type x agency_code x agency_name x unit_code x unit_name x program_code x program_name x subprogram_code x subprogram_name.
+    Measure: total budget amount at that grain.
+*/
+
+with base as (
+	select
+		*
+	from "mbtsa_work"."main_marts"."fct_it_spend"
+	where amount is not null
+),
+
+final as (
+	select
+		fiscal_year,
+		fund_type,
+		agency_code,
+		agency_name,
+		unit_code,
+		unit_name,
+		program_code,
+		program_name,
+		subprogram_code,
+		subprogram_name,
+		organization_code,
+		organization_sub_code,
+        organization_code,
+        organization_sub_code,
+        is_it,
+        it_designation,
+        it_tower,
+        it_sub_tower,
+        it_cost_pool,
+		sum(amount) as total_budget_amount
+	from base
+	group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+)
+
+select *
+from final
+order by fiscal_year desc,organization_code, organization_sub_code
+    );
+  
+  
+[0m09:20:27.553058 [debug] [Thread-1 (]: DuckDB adapter: Error running SQL: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_cost_pool_level"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_cost_pool_level__dbt_tmp"
+  
+    as (
+      /*
+    fct_subprogram_level
+    ====================
+    Subprogram-level budget aggregation for dashboard reporting.
+
+    Grain: one row per fiscal_year x fund_type x agency_code x agency_name x unit_code x unit_name x program_code x program_name x subprogram_code x subprogram_name.
+    Measure: total budget amount at that grain.
+*/
+
+with base as (
+	select
+		*
+	from "mbtsa_work"."main_marts"."fct_it_spend"
+	where amount is not null
+),
+
+final as (
+	select
+		fiscal_year,
+		fund_type,
+		agency_code,
+		agency_name,
+		unit_code,
+		unit_name,
+		program_code,
+		program_name,
+		subprogram_code,
+		subprogram_name,
+		organization_code,
+		organization_sub_code,
+        organization_code,
+        organization_sub_code,
+        is_it,
+        it_designation,
+        it_tower,
+        it_sub_tower,
+        it_cost_pool,
+		sum(amount) as total_budget_amount
+	from base
+	group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+)
+
+select *
+from final
+order by fiscal_year desc,organization_code, organization_sub_code
+    );
+  
+  
+[0m09:20:27.553058 [debug] [Thread-1 (]: DuckDB adapter: Rolling back transaction.
+[0m09:20:27.557230 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: ROLLBACK
+[0m09:20:27.636114 [debug] [Thread-1 (]: Failed to rollback 'model.mbtsa.fct_cost_pool_level'
+[0m09:20:27.636114 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: Close
+[0m09:20:27.636114 [debug] [Thread-1 (]: Runtime Error in model fct_cost_pool_level (models\marts\fct_cost_pool_level.sql)
+  Binder Error: Referenced column "it_cost_pool" not found in FROM clause!
+  Candidate bindings: "cost_pool", "cost_sub_pool", "it_sub_tower", "unit_code", "it_amount"
+  
+  LINE 47:         it_cost_pool,
+                   ^
+[0m09:20:27.636114 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'f91c0106-e44e-4bea-b2e9-c391171aa533', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CD9EC560>]}
+[0m09:20:27.636114 [error] [Thread-1 (]: 1 of 1 ERROR creating sql table model main_marts.fct_cost_pool_level ........... [[31mERROR[0m in 0.13s]
+[0m09:20:27.636114 [debug] [Thread-1 (]: Finished running node model.mbtsa.fct_cost_pool_level
+[0m09:20:27.636114 [debug] [MainThread]: Using duckdb connection "master"
+[0m09:20:27.636114 [debug] [MainThread]: On master: BEGIN
+[0m09:20:27.636114 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m09:20:27.661888 [debug] [MainThread]: SQL status: OK in 0.012 seconds
+[0m09:20:27.661888 [debug] [MainThread]: On master: COMMIT
+[0m09:20:27.661888 [debug] [MainThread]: Using duckdb connection "master"
+[0m09:20:27.662889 [debug] [MainThread]: On master: COMMIT
+[0m09:20:27.662889 [debug] [MainThread]: SQL status: OK in 0.000 seconds
+[0m09:20:27.662889 [debug] [MainThread]: On master: Close
+[0m09:20:27.666887 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m09:20:27.666887 [debug] [MainThread]: Connection 'create_mbtsa_work_main_marts' was properly closed.
+[0m09:20:27.666887 [debug] [MainThread]: Connection 'list_mbtsa_work_main_marts' was properly closed.
+[0m09:20:27.667886 [debug] [MainThread]: Connection 'list_mbtsa_work_main' was properly closed.
+[0m09:20:27.667886 [debug] [MainThread]: Connection 'list_mbtsa_work_main_staging' was properly closed.
+[0m09:20:27.667886 [debug] [MainThread]: Connection 'model.mbtsa.fct_cost_pool_level' was properly closed.
+[0m09:20:27.667886 [info ] [MainThread]: 
+[0m09:20:27.667886 [info ] [MainThread]: Finished running 1 table model in 0 hours 0 minutes and 2.05 seconds (2.05s).
+[0m09:20:27.668888 [debug] [MainThread]: Command end result
+[0m09:20:27.756394 [info ] [MainThread]: 
+[0m09:20:27.757394 [info ] [MainThread]: [31mCompleted with 1 error and 0 warnings:[0m
+[0m09:20:27.757394 [info ] [MainThread]: 
+[0m09:20:27.758395 [error] [MainThread]:   Runtime Error in model fct_cost_pool_level (models\marts\fct_cost_pool_level.sql)
+  Binder Error: Referenced column "it_cost_pool" not found in FROM clause!
+  Candidate bindings: "cost_pool", "cost_sub_pool", "it_sub_tower", "unit_code", "it_amount"
+  
+  LINE 47:         it_cost_pool,
+                   ^
+[0m09:20:27.758395 [info ] [MainThread]: 
+[0m09:20:27.758395 [info ] [MainThread]: Done. PASS=0 WARN=0 ERROR=1 SKIP=0 TOTAL=1
+[0m09:20:27.759394 [debug] [MainThread]: Command `dbt run` failed at 09:20:27.759394 after 4.80 seconds
+[0m09:20:27.759394 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CFAE0500>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CD8FDA30>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000211CD8FE030>]}
+[0m09:20:27.759394 [debug] [MainThread]: Flushing usage events
+[0m09:21:02.214017 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566C44A0F0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566B878110>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566C234B00>]}
+
+
+============================== 09:21:02.217594 | 1ee81450-bc8d-4f38-adfd-65cdb9094fec ==============================
+[0m09:21:02.217594 [info ] [MainThread]: Running with dbt=1.8.9
+[0m09:21:02.217594 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'version_check': 'True', 'debug': 'False', 'log_path': 'D:\\projects\\IT_state_budget_agent\\dbt-sql\\logs', 'fail_fast': 'False', 'profiles_dir': 'D:\\projects\\IT_state_budget_agent\\dbt-sql', 'use_colors': 'True', 'use_experimental_parser': 'False', 'no_print': 'None', 'quiet': 'False', 'empty': 'False', 'log_format': 'default', 'introspect': 'True', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'invocation_command': 'dbt run --select fct_cost_pool_level', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m09:21:02.322869 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': '1ee81450-bc8d-4f38-adfd-65cdb9094fec', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566D6599D0>]}
+[0m09:21:02.352424 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': '1ee81450-bc8d-4f38-adfd-65cdb9094fec', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015668716420>]}
+[0m09:21:02.354424 [info ] [MainThread]: Registered adapter: duckdb=1.8.4
+[0m09:21:02.464431 [debug] [MainThread]: checksum: 132857a23e9d07220246854f7763165174ce9b737cfc7867629ace4294e520b1, vars: {}, profile: , target: , version: 1.8.9
+[0m09:21:02.577274 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 1 files changed.
+[0m09:21:02.578274 [debug] [MainThread]: Partial parsing: updated file: mbtsa://models\marts\fct_cost_pool_level.sql
+[0m09:21:02.719161 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.mbtsa.intermediate
+[0m09:21:02.727187 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': '1ee81450-bc8d-4f38-adfd-65cdb9094fec', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566DE1BBC0>]}
+[0m09:21:02.811342 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': '1ee81450-bc8d-4f38-adfd-65cdb9094fec', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566DA00EC0>]}
+[0m09:21:02.811342 [info ] [MainThread]: Found 13 models, 33 data tests, 1 source, 5 metrics, 735 macros, 1 semantic model
+[0m09:21:02.812346 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '1ee81450-bc8d-4f38-adfd-65cdb9094fec', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566B346750>]}
+[0m09:21:02.813342 [info ] [MainThread]: 
+[0m09:21:02.814663 [debug] [MainThread]: Acquiring new duckdb connection 'master'
+[0m09:21:02.815705 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work'
+[0m09:21:02.845615 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work"
+[0m09:21:02.845615 [debug] [ThreadPool]: On list_mbtsa_work: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m09:21:02.846614 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m09:21:02.863136 [debug] [ThreadPool]: SQL status: OK in 0.016 seconds
+[0m09:21:02.864136 [debug] [ThreadPool]: On list_mbtsa_work: Close
+[0m09:21:02.867196 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_mbtsa_work, now create_mbtsa_work_main_marts)
+[0m09:21:02.868197 [debug] [ThreadPool]: Creating schema "database: "mbtsa_work"
+schema: "main_marts"
+"
+[0m09:21:02.872195 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m09:21:02.872195 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main_marts"} */
+
+    
+        select type from duckdb_databases()
+        where database_name='mbtsa_work'
+        and type='sqlite'
+    
+  
+[0m09:21:02.872195 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m09:21:02.885199 [debug] [ThreadPool]: SQL status: OK in 0.013 seconds
+[0m09:21:02.886197 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m09:21:02.887195 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: BEGIN
+[0m09:21:02.887195 [debug] [ThreadPool]: SQL status: OK in 0.000 seconds
+[0m09:21:02.887195 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m09:21:02.887195 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main_marts"} */
+
+    
+    
+        create schema if not exists "mbtsa_work"."main_marts"
+    
+[0m09:21:02.887195 [debug] [ThreadPool]: SQL status: OK in 0.000 seconds
+[0m09:21:02.888198 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: COMMIT
+[0m09:21:02.888198 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m09:21:02.888198 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: COMMIT
+[0m09:21:02.888198 [debug] [ThreadPool]: SQL status: OK in 0.000 seconds
+[0m09:21:02.888198 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: Close
+[0m09:21:02.895197 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work_main_staging'
+[0m09:21:02.900200 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_staging"
+[0m09:21:02.900200 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work_main'
+[0m09:21:02.901197 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: BEGIN
+[0m09:21:02.902438 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main"
+[0m09:21:02.903439 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work_main_marts'
+[0m09:21:02.903439 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m09:21:02.903439 [debug] [ThreadPool]: On list_mbtsa_work_main: BEGIN
+[0m09:21:02.904437 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_marts"
+[0m09:21:02.904437 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m09:21:02.905440 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: BEGIN
+[0m09:21:02.905440 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m09:21:02.917449 [debug] [ThreadPool]: SQL status: OK in 0.014 seconds
+[0m09:21:02.917449 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_staging"
+[0m09:21:02.917449 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work_main_staging"} */
+select
+      'mbtsa_work' as database,
+      table_name as name,
+      table_schema as schema,
+      CASE table_type
+        WHEN 'BASE TABLE' THEN 'table'
+        WHEN 'VIEW' THEN 'view'
+        WHEN 'LOCAL TEMPORARY' THEN 'table'
+        END as type
+    from system.information_schema.tables
+    where table_schema = 'main_staging'
+    and table_catalog = 'mbtsa_work'
+  
+[0m09:21:02.917449 [debug] [ThreadPool]: SQL status: OK in 0.013 seconds
+[0m09:21:02.917449 [debug] [ThreadPool]: SQL status: OK in 0.012 seconds
+[0m09:21:02.918452 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main"
+[0m09:21:02.918452 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_marts"
+[0m09:21:02.918452 [debug] [ThreadPool]: On list_mbtsa_work_main: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work_main"} */
+select
+      'mbtsa_work' as database,
+      table_name as name,
+      table_schema as schema,
+      CASE table_type
+        WHEN 'BASE TABLE' THEN 'table'
+        WHEN 'VIEW' THEN 'view'
+        WHEN 'LOCAL TEMPORARY' THEN 'table'
+        END as type
+    from system.information_schema.tables
+    where table_schema = 'main'
+    and table_catalog = 'mbtsa_work'
+  
+[0m09:21:02.918452 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work_main_marts"} */
+select
+      'mbtsa_work' as database,
+      table_name as name,
+      table_schema as schema,
+      CASE table_type
+        WHEN 'BASE TABLE' THEN 'table'
+        WHEN 'VIEW' THEN 'view'
+        WHEN 'LOCAL TEMPORARY' THEN 'table'
+        END as type
+    from system.information_schema.tables
+    where table_schema = 'main_marts'
+    and table_catalog = 'mbtsa_work'
+  
+[0m09:21:02.929130 [debug] [ThreadPool]: SQL status: OK in 0.010 seconds
+[0m09:21:02.929130 [debug] [ThreadPool]: SQL status: OK in 0.011 seconds
+[0m09:21:02.929130 [debug] [ThreadPool]: SQL status: OK in 0.010 seconds
+[0m09:21:02.930131 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: ROLLBACK
+[0m09:21:02.931129 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: ROLLBACK
+[0m09:21:02.931129 [debug] [ThreadPool]: On list_mbtsa_work_main: ROLLBACK
+[0m09:21:02.933129 [debug] [ThreadPool]: Failed to rollback 'list_mbtsa_work_main_marts'
+[0m09:21:02.933129 [debug] [ThreadPool]: Failed to rollback 'list_mbtsa_work_main_staging'
+[0m09:21:02.933129 [debug] [ThreadPool]: Failed to rollback 'list_mbtsa_work_main'
+[0m09:21:02.933129 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: Close
+[0m09:21:02.933129 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: Close
+[0m09:21:02.934632 [debug] [ThreadPool]: On list_mbtsa_work_main: Close
+[0m09:21:02.939747 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': '1ee81450-bc8d-4f38-adfd-65cdb9094fec', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566DD2C710>]}
+[0m09:21:02.939747 [debug] [MainThread]: Using duckdb connection "master"
+[0m09:21:02.939747 [debug] [MainThread]: On master: BEGIN
+[0m09:21:02.939747 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m09:21:02.952287 [debug] [MainThread]: SQL status: OK in 0.012 seconds
+[0m09:21:02.953286 [debug] [MainThread]: On master: COMMIT
+[0m09:21:02.953286 [debug] [MainThread]: Using duckdb connection "master"
+[0m09:21:02.953286 [debug] [MainThread]: On master: COMMIT
+[0m09:21:02.953286 [debug] [MainThread]: SQL status: OK in 0.000 seconds
+[0m09:21:02.953286 [debug] [MainThread]: On master: Close
+[0m09:21:02.957284 [info ] [MainThread]: Concurrency: 4 threads (target='dev')
+[0m09:21:02.957284 [info ] [MainThread]: 
+[0m09:21:02.960164 [debug] [Thread-1 (]: Began running node model.mbtsa.fct_cost_pool_level
+[0m09:21:02.960164 [info ] [Thread-1 (]: 1 of 1 START sql table model main_marts.fct_cost_pool_level .................... [RUN]
+[0m09:21:02.961168 [debug] [Thread-1 (]: Acquiring new duckdb connection 'model.mbtsa.fct_cost_pool_level'
+[0m09:21:02.961168 [debug] [Thread-1 (]: Began compiling node model.mbtsa.fct_cost_pool_level
+[0m09:21:02.965170 [debug] [Thread-1 (]: Writing injected SQL for node "model.mbtsa.fct_cost_pool_level"
+[0m09:21:02.966171 [debug] [Thread-1 (]: Began executing node model.mbtsa.fct_cost_pool_level
+[0m09:21:02.984681 [debug] [Thread-1 (]: Writing runtime sql for node "model.mbtsa.fct_cost_pool_level"
+[0m09:21:02.985730 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m09:21:02.985730 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: BEGIN
+[0m09:21:02.985730 [debug] [Thread-1 (]: Opening a new connection, currently in state init
+[0m09:21:02.999084 [debug] [Thread-1 (]: SQL status: OK in 0.013 seconds
+[0m09:21:02.999084 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m09:21:02.999084 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_cost_pool_level"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_cost_pool_level__dbt_tmp"
+  
+    as (
+      /*
+    fct_subprogram_level
+    ====================
+    Subprogram-level budget aggregation for dashboard reporting.
+
+    Grain: one row per fiscal_year x fund_type x agency_code x agency_name x unit_code x unit_name x program_code x program_name x subprogram_code x subprogram_name.
+    Measure: total budget amount at that grain.
+*/
+
+with base as (
+	select
+		*
+	from "mbtsa_work"."main_marts"."fct_it_spend"
+	where amount is not null
+),
+
+final as (
+	select
+		fiscal_year,
+		fund_type,
+		agency_code,
+		agency_name,
+		unit_code,
+		unit_name,
+		program_code,
+		program_name,
+		subprogram_code,
+		subprogram_name,
+		organization_code,
+		organization_sub_code,
+        organization_code,
+        organization_sub_code,
+        is_it,
+        it_designation,
+        it_tower,
+        it_sub_tower,
+        cost_pool,
+		sum(amount) as total_budget_amount
+	from base
+	group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+)
+
+select *
+from final
+order by fiscal_year desc,organization_code, organization_sub_code
+    );
+  
+  
+[0m09:21:03.457336 [debug] [Thread-1 (]: SQL status: OK in 0.457 seconds
+[0m09:21:03.461336 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m09:21:03.461336 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_cost_pool_level"} */
+alter table "mbtsa_work"."main_marts"."fct_cost_pool_level__dbt_tmp" rename to "fct_cost_pool_level"
+[0m09:21:03.462336 [debug] [Thread-1 (]: SQL status: OK in 0.000 seconds
+[0m09:21:03.472950 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: COMMIT
+[0m09:21:03.472950 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m09:21:03.472950 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: COMMIT
+[0m09:21:03.497360 [debug] [Thread-1 (]: SQL status: OK in 0.024 seconds
+[0m09:21:03.501365 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m09:21:03.501365 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_cost_pool_level"} */
+drop table if exists "mbtsa_work"."main_marts"."fct_cost_pool_level__dbt_backup" cascade
+[0m09:21:03.502269 [debug] [Thread-1 (]: SQL status: OK in 0.000 seconds
+[0m09:21:03.503448 [debug] [Thread-1 (]: On model.mbtsa.fct_cost_pool_level: Close
+[0m09:21:03.512466 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': '1ee81450-bc8d-4f38-adfd-65cdb9094fec', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x0000015669DDA210>]}
+[0m09:21:03.512466 [info ] [Thread-1 (]: 1 of 1 OK created sql table model main_marts.fct_cost_pool_level ............... [[32mOK[0m in 0.55s]
+[0m09:21:03.513466 [debug] [Thread-1 (]: Finished running node model.mbtsa.fct_cost_pool_level
+[0m09:21:03.514466 [debug] [MainThread]: Using duckdb connection "master"
+[0m09:21:03.514466 [debug] [MainThread]: On master: BEGIN
+[0m09:21:03.515466 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m09:21:03.530067 [debug] [MainThread]: SQL status: OK in 0.015 seconds
+[0m09:21:03.531061 [debug] [MainThread]: On master: COMMIT
+[0m09:21:03.531061 [debug] [MainThread]: Using duckdb connection "master"
+[0m09:21:03.531061 [debug] [MainThread]: On master: COMMIT
+[0m09:21:03.531061 [debug] [MainThread]: SQL status: OK in 0.000 seconds
+[0m09:21:03.532063 [debug] [MainThread]: On master: Close
+[0m09:21:03.535453 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m09:21:03.536073 [debug] [MainThread]: Connection 'create_mbtsa_work_main_marts' was properly closed.
+[0m09:21:03.536073 [debug] [MainThread]: Connection 'list_mbtsa_work_main_staging' was properly closed.
+[0m09:21:03.536073 [debug] [MainThread]: Connection 'list_mbtsa_work_main' was properly closed.
+[0m09:21:03.536073 [debug] [MainThread]: Connection 'list_mbtsa_work_main_marts' was properly closed.
+[0m09:21:03.536073 [debug] [MainThread]: Connection 'model.mbtsa.fct_cost_pool_level' was properly closed.
+[0m09:21:03.536073 [info ] [MainThread]: 
+[0m09:21:03.537083 [info ] [MainThread]: Finished running 1 table model in 0 hours 0 minutes and 0.72 seconds (0.72s).
+[0m09:21:03.537083 [debug] [MainThread]: Command end result
+[0m09:21:03.631366 [info ] [MainThread]: 
+[0m09:21:03.631366 [info ] [MainThread]: [32mCompleted successfully[0m
+[0m09:21:03.631366 [info ] [MainThread]: 
+[0m09:21:03.632366 [info ] [MainThread]: Done. PASS=1 WARN=0 ERROR=0 SKIP=0 TOTAL=1
+[0m09:21:03.632366 [debug] [MainThread]: Command `dbt run` succeeded at 09:21:03.632366 after 1.51 seconds
+[0m09:21:03.632366 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000156693157F0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566DE3B890>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001566BDA46B0>]}
+[0m09:21:03.633368 [debug] [MainThread]: Flushing usage events
+[0m18:22:59.044974 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182D6E836E0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182DA1C6EA0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182D9F319A0>]}
+
+
+============================== 18:22:59.078258 | a454ddf5-67ef-4201-a154-b020662dd82c ==============================
+[0m18:22:59.078258 [info ] [MainThread]: Running with dbt=1.8.9
+[0m18:22:59.078258 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'log_cache_events': 'False', 'write_json': 'True', 'partial_parse': 'True', 'cache_selected_only': 'False', 'warn_error': 'None', 'fail_fast': 'False', 'version_check': 'True', 'log_path': 'D:\\projects\\IT_state_budget_agent\\dbt-sql\\logs', 'profiles_dir': 'D:\\projects\\IT_state_budget_agent\\dbt-sql', 'debug': 'False', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'log_format': 'default', 'introspect': 'True', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'target_path': 'None', 'invocation_command': 'dbt run', 'send_anonymous_usage_stats': 'True'}
+[0m18:23:00.249598 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'a454ddf5-67ef-4201-a154-b020662dd82c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182DAFA4E30>]}
+[0m18:23:00.354392 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'a454ddf5-67ef-4201-a154-b020662dd82c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182DC059160>]}
+[0m18:23:00.406429 [info ] [MainThread]: Registered adapter: duckdb=1.8.4
+[0m18:23:01.285161 [debug] [MainThread]: checksum: 132857a23e9d07220246854f7763165174ce9b737cfc7867629ace4294e520b1, vars: {}, profile: , target: , version: 1.8.9
+[0m18:23:06.232838 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 1 files changed.
+[0m18:23:06.232838 [debug] [MainThread]: Partial parsing: updated file: mbtsa://models\staging\stg_budget_line_items.sql
+[0m18:23:06.866708 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.mbtsa.intermediate
+[0m18:23:06.892481 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'a454ddf5-67ef-4201-a154-b020662dd82c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182DC805880>]}
+[0m18:23:07.266124 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'a454ddf5-67ef-4201-a154-b020662dd82c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182DAA9C7D0>]}
+[0m18:23:07.266124 [info ] [MainThread]: Found 13 models, 33 data tests, 1 source, 5 metrics, 735 macros, 1 semantic model
+[0m18:23:07.275157 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'a454ddf5-67ef-4201-a154-b020662dd82c', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182D9D0A420>]}
+[0m18:23:07.281430 [info ] [MainThread]: 
+[0m18:23:07.283569 [debug] [MainThread]: Acquiring new duckdb connection 'master'
+[0m18:23:07.298910 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work'
+[0m18:23:07.304043 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work'
+[0m18:23:07.309867 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work'
+[0m18:23:14.606634 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work"
+[0m18:23:14.609812 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work"
+[0m18:23:14.609812 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work"
+[0m18:23:14.609812 [debug] [ThreadPool]: On list_mbtsa_work: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m18:23:14.609812 [debug] [ThreadPool]: On list_mbtsa_work: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m18:23:14.609812 [debug] [ThreadPool]: On list_mbtsa_work: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m18:23:14.609812 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m18:23:14.609812 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m18:23:14.609812 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m18:23:14.886821 [debug] [ThreadPool]: DuckDB adapter: Error running SQL: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m18:23:14.890538 [debug] [ThreadPool]: DuckDB adapter: Rolling back transaction.
+[0m18:23:15.126325 [debug] [ThreadPool]: DuckDB adapter: Error running SQL: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m18:23:15.131404 [debug] [ThreadPool]: DuckDB adapter: Rolling back transaction.
+[0m18:23:15.384204 [debug] [ThreadPool]: DuckDB adapter: Error running SQL: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m18:23:15.384204 [debug] [ThreadPool]: DuckDB adapter: Rolling back transaction.
+[0m18:23:15.384204 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m18:23:15.391963 [debug] [MainThread]: Connection 'list_mbtsa_work' was properly closed.
+[0m18:23:15.392277 [debug] [MainThread]: Connection 'list_mbtsa_work' was properly closed.
+[0m18:23:15.392900 [debug] [MainThread]: Connection 'list_mbtsa_work' was properly closed.
+[0m18:23:15.392900 [info ] [MainThread]: 
+[0m18:23:15.393986 [info ] [MainThread]: Finished running  in 0 hours 0 minutes and 8.11 seconds (8.11s).
+[0m18:23:15.395107 [error] [MainThread]: Encountered an error:
+Runtime Error
+  IO Error: File is already open in 
+  C:\Users\Priyanshu\AppData\Local\DBeaver\dbeaver.exe (PID 34372)
+[0m18:23:15.395107 [debug] [MainThread]: Command `dbt run` failed at 18:23:15.395107 after 16.93 seconds
+[0m18:23:15.395107 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182DAC146E0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182DC7FBBF0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000182DC8F0B30>]}
+[0m18:23:15.395107 [debug] [MainThread]: Flushing usage events
