@@ -88,6 +88,12 @@ def dedup_subprograms(df: pl.DataFrame) -> pl.DataFrame:
     result = (
         df.select(working_cols)
         .with_columns(
+            pl.when(pl.col(SUBPROGRAM_KEY).is_null())
+            .then(pl.col("organization_code"))
+            .otherwise(pl.col(SUBPROGRAM_KEY))
+            .alias(SUBPROGRAM_KEY)
+        )
+        .with_columns(
             pl.col(fiscal_year_col).cast(pl.Int32, strict=False).alias("_fy_sort")
         )
         .sort(by=["_fy_sort"], descending=[True], nulls_last=True)
@@ -140,9 +146,16 @@ def dedup_cost_pools(df: pl.DataFrame) -> pl.DataFrame:
         .with_columns(
             pl.col(fiscal_year_col).cast(pl.Int32, strict=False).alias("_fy_sort")
         )
+        # Fallback: use object_code when comptroller_subobject_code is NULL
+        .with_columns(
+            pl.when(pl.col(COST_POOL_KEY).is_null())
+            .then(pl.col("object_code"))
+            .otherwise(pl.col(COST_POOL_KEY))
+            .alias("_dedup_key")
+        )
         .sort(by=["_fy_sort"], descending=[True], nulls_last=True)
-        .unique(subset=[COST_POOL_KEY], keep="first")
-        .drop(["_fy_sort", fiscal_year_col])
+        .unique(subset=["_dedup_key"], keep="first")
+        .drop(["_fy_sort", "_dedup_key", fiscal_year_col])
     )
 
     # Keep CSV row order deterministic for downstream joins/reviews.
