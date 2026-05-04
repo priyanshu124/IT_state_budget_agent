@@ -106,6 +106,21 @@ def main() -> None:
     subprograms = subprograms.with_columns(pl.col(SUBPROGRAM_KEY).cast(pl.Utf8))
     subobjects = subobjects.with_columns(pl.col(COST_POOL_KEY).cast(pl.Utf8))
 
+    # Keep organization_sub_code aligned with organization_code when the sub-code is null.
+    # This preserves R30-style rows through the final join and keeps the join key stable.
+    budget = budget.with_columns(
+        pl.when(pl.col(SUBPROGRAM_KEY).is_null())
+        .then(pl.col("organization_code"))
+        .otherwise(pl.col(SUBPROGRAM_KEY))
+        .alias(SUBPROGRAM_KEY)
+    )
+    subprograms = subprograms.with_columns(
+        pl.when(pl.col(SUBPROGRAM_KEY).is_null())
+        .then(pl.col("organization_code"))
+        .otherwise(pl.col(SUBPROGRAM_KEY))
+        .alias(SUBPROGRAM_KEY)
+    )
+
     # Pad comptroller_subobject_code to 4 characters on both sides before join
     budget = budget.with_columns(
         pl.col(COST_POOL_KEY).cast(pl.Utf8).str.pad_start(4, "0").alias(COST_POOL_KEY)

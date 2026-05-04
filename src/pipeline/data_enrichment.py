@@ -127,23 +127,34 @@ def reattach_subprogram_classifications(
     # Left join keeps all original rows and only adds tower columns where codes match.
     result = original_df.join(classifications_tower_only, on=SUBPROGRAM_KEY, how="left")
 
-    # If classifier marked row as NOT_IT, clear IT classification fields.
+    # If classifier marked row as NOT_IT or no tower-classification row matched,
+    # clear IT classification fields.
     if "tower" in result.columns:
+        no_match_expr = pl.col("tower").is_null()
         not_it_expr = pl.col("tower").cast(pl.Utf8, strict=False).str.to_uppercase() == "NOT_IT"
+        clear_it_expr = no_match_expr | not_it_expr
         exprs: list[pl.Expr] = []
 
         if "is_it" in result.columns:
             exprs.append(
-                pl.when(not_it_expr)
+                pl.when(clear_it_expr)
                 .then(pl.lit(False))
                 .otherwise(pl.col("is_it"))
                 .alias("is_it")
             )
 
+        if "shadow_it_reason" in result.columns:
+            exprs.append(
+                pl.when(clear_it_expr)
+                .then(pl.lit(None).cast(pl.Utf8))
+                .otherwise(pl.col("shadow_it_reason"))
+                .alias("shadow_it_reason")
+            )
+
         for col in ["it_designation", "tower", "sub_tower", "confidence"]:
             if col in result.columns:
                 exprs.append(
-                    pl.when(not_it_expr)
+                    pl.when(clear_it_expr)
                     .then(pl.lit(None).cast(result.schema[col]))
                     .otherwise(pl.col(col))
                     .alias(col)
