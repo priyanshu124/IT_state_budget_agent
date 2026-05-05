@@ -1,6 +1,6 @@
 ---
 # title: Budget Office
-sidebar_position: 3
+sidebar_position: 1
 ---
 
 <div style="background: linear-gradient(135deg, #ede5f8 0%, #d4bef0 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #802cd7; margin-bottom: 0; display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;">
@@ -163,6 +163,62 @@ select
         0
     ) as change_pct
 from ${yearly_rollup}
+order by fiscal_year
+```
+
+```sql fiscal_overview_cagr
+with base as (
+    select
+        fiscal_year,
+        total_budget,
+        first_value(total_budget) over (order by fiscal_year) as base_budget,
+        first_value(fiscal_year) over (order by fiscal_year) as base_year,
+        last_value(fiscal_year) over (order by fiscal_year rows between unbounded preceding and unbounded following) as max_year,
+        last_value(total_budget) over (order by fiscal_year rows between unbounded preceding and unbounded following) as final_budget,
+        row_number() over (order by fiscal_year) - 1 as yr_idx,
+        count(*) over () - 1 as total_years
+    from ${yearly_rollup}
+),
+cagr_calc as (
+    select
+        fiscal_year,
+        total_budget,
+        base_budget,
+        base_year,
+        max_year,
+        final_budget,
+        yr_idx,
+        total_years,
+        round(
+            case when total_years > 0 and base_budget > 0 and final_budget > 0
+                then (power(final_budget / base_budget, 1.0 / total_years) - 1.0) * 100.0
+                else null
+            end, 2
+        ) as cagr_pct
+    from base
+)
+select
+    fiscal_year,
+    total_budget,
+    round(base_budget * power(1.0 + cagr_pct / 100.0, yr_idx), 2) as cagr_trend,
+    -- CPI-based inflation multipliers anchored to first year in data
+    -- Using US CPI annual averages; first year in data = multiplier 1.000
+    round(base_budget * case fiscal_year
+        when 2017 then 1.000
+        when 2018 then 1.021
+        when 2019 then 1.041
+        when 2020 then 1.056
+        when 2021 then 1.116
+        when 2022 then 1.196
+        when 2023 then 1.245
+        when 2024 then 1.271
+        when 2025 then 1.292
+        when 2026 then 1.313
+        when 2027 then 1.334
+        else 1.0
+    end, 2) as inflation_baseline,
+    cagr_pct
+from cagr_calc
 order by fiscal_year
 ```
 
@@ -546,6 +602,7 @@ order by l.latest_budget desc
     $: selectedAgency = selectedValue($inputStore?.f_agency);
     $: viewMode = localView;
     $: trendResults = calculateTrendResults(yearly, 'total_budget');
+    $: cagrPct = fiscal_overview_cagr?.[0]?.cagr_pct != null ? Number(fiscal_overview_cagr[0].cagr_pct).toFixed(1) : null;
     $: fundTrendYears = [...new Set(fund_trend.map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
     $: fundSeriesTotals = fund_trend.reduce((acc, row) => {
         const key = row.fund_type ?? 'Unknown';
@@ -712,170 +769,27 @@ order by l.latest_budget desc
 
 ## Fiscal Overview
 
-{#if yearly?.length > 0 && yoy_detail?.length > 0}
-    <Grid cols=2>
-        <ECharts
-            height={chartHeight}
-            config={{
-                title: { text: 'Total budget by fiscal year', left: 'left', top: 0, textStyle: chartTitleStyle },
-                grid: getChartGrid(),
-                tooltip: {
-                    trigger: 'axis',
-                    formatter: (params) => {
-                        if (!params || params.length === 0) return '';
-                        const values = params.map(p => {
-                            if (p.seriesType === 'bar') return `${p.marker} Budget: ${usdCompact(p.value)}`;
-                            return `${p.marker} Trend: ${usdCompact(p.value)}`;
-                        });
-                        return `<b>${params[0].axisValue}</b><br/>${values.join('<br/>')}`;
-                    }
-                },
-                xAxis: { type: 'category', data: yearly.map((d) => String(d.fiscal_year)) },
-                yAxis: { type: 'value', axisLabel: { formatter: (v) => usdCompact(v) } },
-                series: [
-                    {
-                        type: 'bar', barMaxWidth: 36,
-                        data: trendResults.chartData,
-                        label: {
-                            show: true, position: 'top', distance: 5,
-                            color: '#231F20', fontSize: 11,
-                            formatter: (p) => usdCompact(p.value)
-                        },
-                        labelLayout: { hideOverlap: true },
-                        itemStyle: { color: '#FFC838' }, z: 1
-                    },
-                    {
-                        type: 'line', smooth: true, name: 'Trend',
-                        data: trendResults.trendPoints,
-                        lineStyle: { color: '#C8122C', width: 3 },
-                        symbol: 'none', z: 2
-                    }
-                ]
-            }}
-        />
-        <ECharts
-            height={chartHeight}
-            config={{
-                title: { text: 'Year-over-year budget change', left: 'left', top: 0, textStyle: chartTitleStyle },
-                grid: getChartGrid(),
-                tooltip: {
-                    trigger: 'axis',
-                    formatter: (params) => {
-                        if (!params || params.length === 0) return '';
-                        const p = params[0];
-                        const v = Number(p.value) || 0;
-                        return `<b>${p.axisValue}</b><br/>YoY: ${v.toFixed(1)}%`;
-                    }
-                },
-                xAxis: { type: 'category', data: yoy_detail.map((d) => String(d.fiscal_year)) },
-                yAxis: { type: 'value', axisLabel: { formatter: (v) => `${Number(v).toFixed(0)}%` } },
-                series: [
-                    {
-                        type: 'bar',
-                        data: yoy_detail.map((d) => Number(d.change_pct) || 0),
-                        label: { show: true, position: 'top', formatter: (p) => `${(Number(p.value) || 0).toFixed(1)}%` },
-                        itemStyle: { color: (p) => ((Number(p.value) || 0) >= 0 ? '#2EAD6B' : '#C8122C') }
-                    }
-                ]
-            }}
-        />
-    </Grid>
-{:else if yearly?.length > 0}
-    <Alert status=warning>Fiscal overview data is incomplete for this filter selection.</Alert>
-{:else}
-    <Alert status=warning>No fiscal-year budget data available for this filter selection.</Alert>
-{/if}
-
+<TrendOverview
+    {yearly}
+    yoyDetail={yoy_detail}
+    fiscalOverviewCagr={fiscal_overview_cagr}
+    {cagrPct}
+    {chartHeight}
+/>
 ---
 
 ## Fund Composition Over Time
 
 {#if fund_trend?.length > 0}
-    <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 8px 0 14px 0;">
-        {#each fundSeriesNames as name}
-            <button
-                on:click={() => toggleFundSeries(name)}
-                title={fundTypeDescriptions[name] ?? name}
-                style={'border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ' + (selectedFundSeries === name ? '2px solid #C8122C' : '1px solid var(--nxt-border)') + '; background: ' + (selectedFundSeries === name ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'var(--nxt-surface)') + '; box-shadow: ' + (selectedFundSeries === name ? '0 4px 10px rgba(200,20,44,0.08)' : '0 1px 0 rgba(99,33,165,0.03)')}
-                aria-pressed={selectedFundSeries === name}
-            >
-                <span style={'width:10px; height:10px; border-radius:50%; background: ' + (fund_trend.find(function(d) { return d.fund_type === name; })?.fund_color ?? '#4C4743') + '; display:inline-block;'}></span>
-                <span style={'color:' + (selectedFundSeries === name ? '#C8122C' : '#231F20') + '; font-weight:' + (selectedFundSeries === name ? 700 : 500)}>{name}</span>
-            </button>
-        {/each}
-    </div>
-    <ECharts
-        height="420px"
-        config={{
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: { type: 'shadow' },
-                formatter: function(params) {
-                    if (!params || params.length === 0) return '';
-                    const axisValue = params[0].axisValue;
-                    const rows = params.slice().sort(function(left, right) {
-                        const leftTotal = fundSeriesTotals[left.seriesName] || 0;
-                        const rightTotal = fundSeriesTotals[right.seriesName] || 0;
-                        return rightTotal - leftTotal;
-                    }).map(function(p) {
-                        const v = Number(p.value) || 0;
-                        const yearTotal = fund_trend
-                            .filter(function(d) { return String(d.fiscal_year) === String(axisValue); })
-                            .reduce(function(sum, d) { return sum + (d.spend || 0); }, 0);
-                        const pct = yearTotal > 0 ? ((v / yearTotal) * 100).toFixed(1) : '0.0';
-                        const fmt = Math.abs(v) >= 1e9
-                            ? '$' + (v/1e9).toFixed(2) + 'B'
-                            : Math.abs(v) >= 1e6
-                                ? '$' + (v/1e6).toFixed(1) + 'M'
-                                : '$' + Math.round(v).toLocaleString();
-                        return p.marker + ' ' + p.seriesName + ': ' + fmt + ' (' + pct + '%)';
-                    });
-                    return '<b>' + axisValue + '</b><br/>' + rows.join('<br/>');
-                }
-            },
-            grid: { left: 64, right: 24, top: 20, bottom: 40 },
-            xAxis: { type: 'category', boundaryGap: false, data: fundTrendYears },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    formatter: function(v) {
-                        const n = Number(v) || 0;
-                        return Math.abs(n) >= 1e9 ? '$' + (n/1e9).toFixed(0) + 'B' : '$' + (n/1e6).toFixed(0) + 'M';
-                    }
-                },
-                splitLine: { lineStyle: { color: '#D9DDE3' } }
-            },
-            series: Array.from(fundSeriesNames, function(name) {
-                const fundColor = fund_trend.find(function(d) { return d.fund_type === name; })?.fund_color ?? '#4C4743';
-                const hasSelection = Boolean(selectedFundSeries);
-                const isSelected = !hasSelection || selectedFundSeries === name;
-                return {
-                    name: name,
-                    type: 'line',
-                    stack: 'total',
-                    smooth: false,
-                    symbol: 'circle',
-                    symbolSize: 30,
-                    showSymbol: true,
-                    lineStyle: { width: 0 },
-                    itemStyle: { opacity: 0 },
-                    areaStyle: { color: fundColor, opacity: isSelected ? 0.85 : 0.06 },
-                    emphasis: { focus: 'series' },
-                    blur: { areaStyle: { opacity: 0.06 }, lineStyle: { opacity: 0.06 } },
-                    data: fundTrendYears.map(function(y) {
-                        const row = fund_trend.find(function(d) {
-                            return String(d.fiscal_year) === y && d.fund_type === name;
-                        });
-                        return row ? row.spend : 0;
-                    })
-                };
-            })
-        }}
+    <FundCompositionTrend
+        fundTrend={fund_trend}
+        {fundTrendYears}
+        {fundSeriesNames}
+        {fundSeriesTotals}
     />
 {:else}
     <Alert status=warning>No fund trend data available for this filter selection.</Alert>
 {/if}
-
 ---
 
 ## Top Agencies by Budget — Trend Over Time

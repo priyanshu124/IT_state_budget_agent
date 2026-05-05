@@ -1,35 +1,15 @@
 ---
-title: Home
-sidebar_position: 1
+title: Budget Office
+sidebar_link: false
 ---
 
 <script>
-    if (typeof window !== 'undefined') {
-        const startTicker = () => {
-        const ticker = document.getElementById('mbtsa-ticker');
-        if (!ticker) return;
-
-        let pos = 0;
-        const speed = 0.4;
-        const half = ticker.scrollWidth / 2;
-
-        function animate() {
-            pos -= speed;
-            if (Math.abs(pos) >= half) pos = 0;
-            ticker.style.transform = `translateX(${pos}px)`;
-            requestAnimationFrame(animate);
-        }
-
-            requestAnimationFrame(animate);
-        };
-
-        if (document.readyState === 'complete') {
-            startTicker();
-        } else {
-            window.addEventListener('load', startTicker, { once: true });
-        }
+    if (typeof window !== 'undefined' && window.location.pathname === '/') {
+        window.location.replace('/budget-office');
     }
 </script>
+
+Redirecting to [Budget Office](/budget-office)...
 
 ```sql fy_range
 select

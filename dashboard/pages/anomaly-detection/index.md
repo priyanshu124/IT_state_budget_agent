@@ -1,6 +1,6 @@
 ---
 title: Anomaly Detection
-sidebar_position: 6
+sidebar_position: 5
 ---
 
 <div style="background: linear-gradient(135deg, #ede5f8 0%, #d4bef0 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #802cd7; margin-bottom: 0;">
