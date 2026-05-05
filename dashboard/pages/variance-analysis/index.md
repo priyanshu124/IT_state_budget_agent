@@ -1,11 +1,11 @@
 ---
 title: 
-sidebar_position: 5
+sidebar_position: 4
 ---
 
-<div style="background: linear-gradient(135deg, #802cd7 0%, #211030 100%); padding: 24px 36px; border-radius: 12px; border-bottom: 4px solid #b376f6; margin-bottom: 0; margin-top: -8px;">
-    <h1 style="color: white; font-family: 'DM Sans', sans-serif; font-size: 1.6rem; font-weight: 700; margin: 6px 0 0 0;">📊 Variance Analysis</h1>
-    <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin: 4px 0 0 0;">Year-over-year change detection — compare any two years at any hierarchy level</p>
+<div style="background: linear-gradient(135deg, #ede5f8 0%, #d4bef0 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #802cd7; margin-bottom: 0; margin-top: -8px;">
+    <h1 style="color: #211030; font-size: 1.7rem; font-weight: 700; margin: 0;">📊 Variance Analysis</h1>
+    <p style="color: #6321a5; font-size: 0.95rem; margin: 4px 0 0 0;">Year-over-year change detection — compare any two years at any hierarchy level</p>
 </div>
 
 ```sql g_agency

@@ -21,7 +21,7 @@
     {data}
     title="MBTSA"
     logo="/maryland-logo.png"
-    homePageName="Home"
+    homePageName="Budget Office"
     neverShowQueries={true}
     maxWidth="1200px"
 >

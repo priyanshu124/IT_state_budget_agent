@@ -1,5 +1,5 @@
 ---
-title: Agency Detail
+title:
 prerender: false
 ---
 
@@ -123,6 +123,60 @@ select
         0
     ) as change_pct
 from ${yearly_rollup}
+order by fiscal_year
+```
+
+```sql fiscal_overview_cagr
+with base as (
+    select
+        fiscal_year,
+        total_budget,
+        first_value(total_budget) over (order by fiscal_year) as base_budget,
+        first_value(fiscal_year) over (order by fiscal_year) as base_year,
+        last_value(fiscal_year) over (order by fiscal_year rows between unbounded preceding and unbounded following) as max_year,
+        last_value(total_budget) over (order by fiscal_year rows between unbounded preceding and unbounded following) as final_budget,
+        row_number() over (order by fiscal_year) - 1 as yr_idx,
+        count(*) over () - 1 as total_years
+    from ${yearly_rollup}
+),
+cagr_calc as (
+    select
+        fiscal_year,
+        total_budget,
+        base_budget,
+        base_year,
+        max_year,
+        final_budget,
+        yr_idx,
+        total_years,
+        round(
+            case when total_years > 0 and base_budget > 0 and final_budget > 0
+                then (power(final_budget / base_budget, 1.0 / total_years) - 1.0) * 100.0
+                else null
+            end, 2
+        ) as cagr_pct
+    from base
+)
+select
+    fiscal_year,
+    total_budget,
+    round(base_budget * power(1.0 + cagr_pct / 100.0, yr_idx), 2) as cagr_trend,
+    round(base_budget * case fiscal_year
+        when 2017 then 1.000
+        when 2018 then 1.021
+        when 2019 then 1.041
+        when 2020 then 1.056
+        when 2021 then 1.116
+        when 2022 then 1.196
+        when 2023 then 1.245
+        when 2024 then 1.271
+        when 2025 then 1.292
+        when 2026 then 1.313
+        when 2027 then 1.334
+        else 1.0
+    end, 2) as inflation_baseline,
+    cagr_pct
+from cagr_calc
 order by fiscal_year
 ```
 
@@ -632,6 +686,7 @@ order by unit_name, program_name, subprogram_name, fiscal_year
     $: selectedUnit = selectedValue($inputStore?.f_unit);
     $: selectedProgram = selectedValue($inputStore?.f_program);
     $: selectedFund = selectedValue($inputStore?.f_fund);
+    $: cagrPct = fiscal_overview_cagr?.[0]?.cagr_pct != null ? Number(fiscal_overview_cagr[0].cagr_pct).toFixed(1) : null;
 
     $: fundTableColumns = [
         { id: 'fund_type', title: 'Fund Type', align: 'left' },
@@ -648,14 +703,9 @@ order by unit_name, program_name, subprogram_name, fiscal_year
     let expandedPrograms = {};
     let drillSortCol = null;
     let drillSortDir = -1;
-    let selectedFundSeries = null;
     let drillSearchTerm = '';
 
     
-
-    const toggleFundSeries = (name) => {
-        selectedFundSeries = selectedFundSeries === name ? null : name;
-    };
 
     const setDrillSort = (col) => {
         if (drillSortCol === col) {
@@ -708,6 +758,12 @@ order by unit_name, program_name, subprogram_name, fiscal_year
         const rb = fund_trend.find(d => d.fund_type === b)?.fund_rank ?? 99;
         return ra - rb;
     });
+    $: fundSeriesTotals = fundSeriesNames.reduce((acc, name) => {
+        acc[name] = (fund_trend ?? [])
+            .filter(d => d.fund_type === name)
+            .reduce((sum, d) => sum + (Number(d.spend) || 0), 0);
+        return acc;
+    }, {});
 
     $: drillYears = [...new Set((pivot_units ?? []).map(d => d.fiscal_year))].sort((a, b) => a - b);
     $: drillViewYears = (() => {
@@ -759,6 +815,10 @@ order by unit_name, program_name, subprogram_name, fiscal_year
             return drillSortDir * ((b[drillSortCol] || 0) - (a[drillSortCol] || 0));
         })
         : unitPivotRows;
+
+    $: cagrPct = fiscal_overview_cagr?.[0]?.cagr_pct != null ? Number(fiscal_overview_cagr[0].cagr_pct).toFixed(1) : null;
+
+    $: trendResults = calculateTrendResults(yearly_rollup);
 
     
 
@@ -845,9 +905,19 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 
 
-<div style="background: linear-gradient(135deg, var(--nxt-blue-violet) 0%, var(--nxt-dark) 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid var(--nxt-lavender); margin-bottom: 0;">
-    <h1 style="color: var(--color-primary-content); font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
-    <p style="color: var(--nxt-lavender); font-size: 0.95rem; margin: 4px 0 0 0;">Agency Budget Detail </p>
+<div style="background: linear-gradient(135deg, #ede5f8 0%, #d4bef0 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #802cd7; margin-bottom: 0; display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;">
+    <div>
+        <h1 style="color: #211030; font-size: 1.7rem; font-weight: 700; margin: 0;">🏛️ {params.agency}</h1>
+        <p style="color: #6321a5; font-size: 0.95rem; margin: 4px 0 0 0;">Agency Budget Detail </p>
+    </div>
+    <div style="display:flex; border: 1px solid #c9a8f0; border-radius:6px; width:fit-content; overflow:hidden; background:rgba(255,255,255,0.5);">
+        {#each [['latest','Latest Year'],['trend','Trend Over Years']] as [val, label]}
+            <button
+                on:click={() => localView = val}
+                style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid #c9a8f0; background: ' + (localView === val ? '#802cd7' : 'rgba(255,255,255,0.6)') + '; color: ' + (localView === val ? '#ffffff' : '#211030') + '; font-weight: ' + (localView === val ? 700 : 500)}
+            >{label}</button>
+        {/each}
+    </div>
 </div>
 
 <a href="/budget-office" style="display:inline-block; margin: 12px 0; color: var(--nxt-blue-violet); font-size: 0.9rem; text-decoration: none;">← Back to Budget Office</a>
@@ -870,15 +940,6 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 <FilterSidebar title="🔍 Filters" targetId="page-filters"/>
 
-<div style="display:flex; gap:0; margin: 16px 0 8px 0; border: 1px solid var(--nxt-border); border-radius:6px; width:fit-content; overflow:hidden;">
-    {#each [['latest','Latest Year'], ['trend','Trend Over Years']] as [val, label]}
-        <button
-            on:click={() => localView = val}
-            style={'padding:7px 18px; font-size:0.875rem; cursor:pointer; border:none; border-right: 1px solid var(--nxt-border); background: ' + (viewMode === val ? 'var(--nxt-blue-violet)' : 'var(--color-base-100)') + '; color: ' + (viewMode === val ? 'var(--color-primary-content)' : 'var(--nxt-text)') + '; font-weight: ' + (viewMode === val ? 600 : 400)}
-        >{label}</button>
-    {/each}
-</div>
-
 {#if viewMode == 'latest'}
 
 <p style="font-size:1.1rem; font-weight:700; color:#231F20; margin: 16px 0 16px 0;">Latest Year FY{overview?.[0]?.max_year_label ?? ''}</p>
@@ -899,23 +960,19 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 {#if viewMode == 'latest'}
 
 
-<div style="display:flex; gap:8px; margin: 8px 0 14px 0;">
-    {#each [['unit','Units'],['program','Programs'],['subprogram','Subprograms']] as [val, label]}
-        <button
-            on:click={() => paretoLevel = val}
-            style={'border-radius:14px; padding:6px 14px; font-size:0.9rem; cursor:pointer; border: ' + (paretoLevel === val ? '2px solid var(--nxt-blue-violet)' : '1px solid var(--nxt-border)') + '; background: ' + (paretoLevel === val ? 'var(--nxt-pink)' : 'var(--color-base-100)') + '; color: ' + (paretoLevel === val ? 'var(--nxt-blue-violet)' : 'var(--nxt-text)') + '; font-weight: ' + (paretoLevel === val ? 700 : 500)}
-        >{label}</button>
-    {/each}
+## Budget drilldown
+
+<div style="margin: 8px 0 14px 0; color: #6B7280; font-size: 0.9rem;">
+    Click a unit to drill into programs, then click a program to drill into subprograms.
 </div>
 
-## {paretoTitle}
-
-
-{#if paretoData?.length > 0}
-    <ParetoInsight data={paretoData} entityLabel={paretoLevel + 's'}/>
+{#if pivot_units?.length > 0}
     <ParetoBarChart
-        data={paretoData}
         title=""
+        drillable={true}
+        drillUnitData={pivot_units}
+        drillProgramData={pivot_programs}
+        drillSubprogramData={pivot_subprograms}
         barField="spend"
         labelField="label"
         pctField="pct_of_total"
@@ -999,77 +1056,13 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 ## Fiscal Overview
 
-{#if yearly_rollup?.length > 0 && yoy_detail?.length > 0}
-    <Grid cols=2>
-        <ECharts
-            height="320px"
-            config={{
-                title: { text: 'Total budget by fiscal year', left: 'left', top: 0, textStyle: chartTitleStyle },
-                grid: getChartGrid(),
-                tooltip: {
-                    trigger: 'axis',
-                    formatter: (params) => {
-                        if (!params || params.length === 0) return '';
-                        const values = params.map(p => {
-                            if (p.seriesType === 'bar') return `${p.marker} Budget: ${usdCompact(p.value)}`;
-                            return `${p.marker} Trend: ${usdCompact(p.value)}`;
-                        });
-                        return `<b>${params[0].axisValue}</b><br/>${values.join('<br/>')}`;
-                    }
-                },
-                xAxis: { type: 'category', data: yearly_rollup.map((d) => String(d.fiscal_year)) },
-                yAxis: { type: 'value', axisLabel: { formatter: (v) => usdCompact(v) } },
-                series: [
-                    {
-                        type: 'bar', barMaxWidth: 36,
-                        data: trendResults.chartData,
-                        label: {
-                            show: true, position: 'top', distance: 5,
-                            color: '#231F20', fontSize: 11,
-                            formatter: (p) => usdCompact(p.value)
-                        },
-                        labelLayout: { hideOverlap: true },
-                        itemStyle: { color: '#FFC838' }, z: 1
-                    },
-                    {
-                        type: 'line', smooth: true, name: 'Trend',
-                        data: trendResults.trendPoints,
-                        lineStyle: { color: '#C8122C', width: 3 },
-                        symbol: 'none', z: 2
-                    }
-                ]
-            }}
-        />
-        <ECharts
-            height="320px"
-            config={{
-                title: { text: 'Year-over-year budget change', left: 'left', top: 0, textStyle: chartTitleStyle },
-                grid: getChartGrid(),
-                tooltip: {
-                    trigger: 'axis',
-                    formatter: (params) => {
-                        if (!params || params.length === 0) return '';
-                        const p = params[0];
-                        const v = Number(p.value) || 0;
-                        return `<b>${p.axisValue}</b><br/>YoY: ${v.toFixed(1)}%`;
-                    }
-                },
-                xAxis: { type: 'category', data: yoy_detail.map((d) => String(d.fiscal_year)) },
-                yAxis: { type: 'value', axisLabel: { formatter: (v) => `${Number(v).toFixed(0)}%` } },
-                series: [
-                    {
-                        type: 'bar',
-                        data: yoy_detail.map((d) => Number(d.change_pct) || 0),
-                        label: { show: true, position: 'top', formatter: (p) => `${(Number(p.value) || 0).toFixed(1)}%` },
-                        itemStyle: { color: (p) => ((Number(p.value) || 0) >= 0 ? '#2EAD6B' : '#C8122C') }
-                    }
-                ]
-            }}
-        />
-    </Grid>
-{:else}
-    <Alert status=warning>No fiscal year data available for this agency.</Alert>
-{/if}
+<TrendOverview
+    yearly={yearly_rollup}
+    yoyDetail={yoy_detail}
+    fiscalOverviewCagr={fiscal_overview_cagr}
+    {cagrPct}
+    chartHeight="320px"
+/>
 
 ---
 
@@ -1078,85 +1071,11 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 ## Fund Composition Over Time
 
 {#if fund_trend?.length > 0}
-    <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 8px 0 14px 0;">
-        {#each fundSeriesNames as name}
-            <button
-                on:click={() => toggleFundSeries(name)}
-                style={'border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ' + (selectedFundSeries === name ? '2px solid #C8122C' : '1px solid rgba(36,41,46,0.06)') + '; background: ' + (selectedFundSeries === name ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'white') + '; box-shadow: ' + (selectedFundSeries === name ? '0 4px 10px rgba(200,20,44,0.08)' : 'none')}
-                aria-pressed={selectedFundSeries === name}
-            >
-                <span style={'width:10px; height:10px; border-radius:50%; background: ' + (fund_trend.find(function(d) { return d.fund_type === name; })?.fund_color ?? '#4C4743') + '; display:inline-block;'}></span>
-                <span style={'color:' + (selectedFundSeries === name ? '#C8122C' : '#231F20') + '; font-weight:' + (selectedFundSeries === name ? 700 : 500)}>{name}</span>
-            </button>
-        {/each}
-    </div>
-    <ECharts
-        height="420px"
-        config={{
-            tooltip: {
-                trigger: 'item',
-                formatter: function(param) {
-                    if (!param) return '';
-                    const hoveredFund = param.seriesName;
-                    const rows = fundTrendYears.slice()
-                        .sort(function(a, b) { return Number(b) - Number(a); })
-                        .map(function(year) {
-                            const row = fund_trend.find(function(d) {
-                                return String(d.fiscal_year) === year && d.fund_type === hoveredFund;
-                            });
-                            const v = row ? row.spend : 0;
-                            const yearTotal = fund_trend
-                                .filter(function(d) { return String(d.fiscal_year) === year; })
-                                .reduce(function(sum, d) { return sum + (d.spend || 0); }, 0);
-                            const pct = yearTotal > 0 ? ((v / yearTotal) * 100).toFixed(1) : '0.0';
-                            const fmt = Math.abs(v) >= 1e9
-                                ? '$' + (v/1e9).toFixed(2) + 'B'
-                                : Math.abs(v) >= 1e6
-                                    ? '$' + (v/1e6).toFixed(1) + 'M'
-                                    : '$' + Math.round(v).toLocaleString();
-                            return year + ': ' + fmt + ' (' + pct + '%)';
-                        });
-                    return '<b>' + hoveredFund + '</b><br/>' + rows.join('<br/>');
-                }
-            },
-            grid: { left: 64, right: 24, top: 20, bottom: 40 },
-            xAxis: { type: 'category', boundaryGap: false, data: fundTrendYears },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    formatter: function(v) {
-                        const n = Number(v) || 0;
-                        return Math.abs(n) >= 1e9 ? '$' + (n/1e9).toFixed(0) + 'B' : '$' + (n/1e6).toFixed(0) + 'M';
-                    }
-                },
-                splitLine: { lineStyle: { color: '#D9DDE3' } }
-            },
-            series: Array.from(fundSeriesNames, function(name) {
-                const fundColor = fund_trend.find(function(d) { return d.fund_type === name; })?.fund_color ?? '#4C4743';
-                const hasSelection = Boolean(selectedFundSeries);
-                const isSelected = !hasSelection || selectedFundSeries === name;
-                return {
-                    name: name,
-                    type: 'line',
-                    stack: 'total',
-                    smooth: false,
-                    symbol: 'circle',
-                    symbolSize: 30,
-                    showSymbol: true,
-                    lineStyle: { width: 0 },
-                    itemStyle: { opacity: 0 },
-                    areaStyle: { color: fundColor, opacity: isSelected ? 0.85 : 0.06 },
-                    emphasis: { focus: 'series' },
-                    blur: { areaStyle: { opacity: 0.06 }, lineStyle: { opacity: 0.06 } },
-                    data: fundTrendYears.map(function(y) {
-                        const row = fund_trend.find(function(d) {
-                            return String(d.fiscal_year) === y && d.fund_type === name;
-                        });
-                        return row ? row.spend : 0;
-                    })
-                };
-            })
-        }}
+    <FundCompositionTrend
+        fundTrend={fund_trend}
+        {fundTrendYears}
+        {fundSeriesNames}
+        {fundSeriesTotals}
     />
 {:else}
     <Alert status=warning>No fund trend data available for this agency.</Alert>
