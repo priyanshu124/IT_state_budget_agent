@@ -30,3 +30,28 @@ sources:
             description: "TBM resource tower (from tower classifier agent)"
           - name: cost_pool
             description: "TBM cost pool (from cost pool mapper agent)"
+      - name: fte_line_items
+        description: >
+          Raw FTE headcount data loaded from the FTE pipeline.
+          Each row is a headcount observation for a fiscal year and organizational hierarchy.
+        columns:
+          - name: fiscal_year
+            description: "Fiscal year (e.g. 2027)"
+            tests: [not_null]
+          - name: fte_count
+            description: "Headcount measure for the row"
+            tests: [not_null]
+          - name: agency_code
+            description: "Agency code from the source file"
+          - name: unit_code
+            description: "Unit code from the source file"
+          - name: program_code
+            description: "Program code from the source file"
+          - name: organization_code
+            description: "Organization code from the source file"
+          - name: agency_name
+            description: "Agency name from the source file"
+          - name: unit_name
+            description: "Unit name from the source file"
+          - name: program_name
+            description: "Program name from the source file"

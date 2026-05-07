@@ -132,7 +132,7 @@
                     smooth: false,
                     symbol: 'none',
                     lineStyle: { width: 0 },
-                    itemStyle: { opacity: 0 },
+                    itemStyle: { color, opacity: 0 },
                     areaStyle: { color, opacity: isSelected ? 0.85 : 0.06 },
                     emphasis: { focus: 'series' },
                     data: getSeriesData(name)
@@ -254,7 +254,7 @@
                         smooth: false,
                         symbol: 'none',
                         lineStyle: { width: 0 },
-                        itemStyle: { opacity: 0 },
+                        itemStyle: { color, opacity: 0 },
                         areaStyle: { color, opacity: isSelected ? 0.85 : 0.06 },
                         emphasis: { focus: 'series' },
                         markArea: i === 0 ? {

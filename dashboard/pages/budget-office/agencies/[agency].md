@@ -698,7 +698,7 @@ order by unit_name, program_name, subprogram_name, fiscal_year
     ];
 
     let localView = 'trend';
-    let drillYearView = '5y';
+    let drillYearView = '3y';
     let expandedUnits = {};
     let expandedPrograms = {};
     let drillSortCol = null;
@@ -771,6 +771,22 @@ order by unit_name, program_name, subprogram_name, fiscal_year
         if (drillYearView === '5y') return drillYears.slice(-5);
         return drillYears;
     })();
+
+    $: top_units_trend = Object.values(
+        (pivot_units ?? []).reduce((acc, row) => {
+            if (!acc[row.unit_name]) acc[row.unit_name] = { agency_name: row.unit_name, total_budget: 0 };
+            acc[row.unit_name].total_budget += (Number(row.spend) || 0);
+            return acc;
+        }, {})
+    ).sort((a, b) => b.total_budget - a.total_budget).slice(0, 10);
+
+    $: unit_trend_lines = (pivot_units ?? []).map(d => ({
+        fiscal_year: d.fiscal_year,
+        agency_name: d.unit_name,
+        spend: d.spend
+    }));
+
+    $: unitLineTrendYears = [...new Set((pivot_units ?? []).map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
 
 
     // Unit rows (level 1)
@@ -1066,8 +1082,6 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 
 ---
 
-
-
 ## Fund Composition Over Time
 
 {#if fund_trend?.length > 0}
@@ -1082,6 +1096,17 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 {/if}
 
 ---
+
+## Top Units by Budget Over Time
+<AgencyTrendChart
+    agencies={top_units_trend}
+    trendLines={unit_trend_lines}
+    years={unitLineTrendYears}
+    title="Top Units by Budget — Trend Over Time"
+    entityLabel="unit"
+    topN={5}
+    height="480px"
+/>
 
 ## Unit · Program · Subprogram Drill-Down
 
@@ -1101,81 +1126,14 @@ order by unit_name, program_name, subprogram_name, fiscal_year
 />
 
 {#if unitPivotRows?.length > 0}
-<div style="overflow-x:auto; border-radius:8px; border:1px solid var(--nxt-border); background:var(--nxt-surface);">
-    <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
-        <thead>
-            <tr style="background:var(--nxt-pink); border-bottom:2px solid #C8122C;">
-                <th
-                    on:click={() => setDrillSort('name')}
-                    style="text-align:left; padding:10px 14px; font-weight:700; color:#231F20; min-width:280px; cursor:pointer; user-select:none;"
-                >
-                    Unit / Program / Subprogram
-                    {#if drillSortCol === 'name'}{drillSortDir === -1 ? ' ↓' : ' ↑'}{/if}
-                </th>
-                {#each drillViewYears as yr}
-                    <th
-                        on:click={() => setDrillSort('FY' + yr)}
-                        style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20; white-space:nowrap; cursor:pointer; user-select:none;"
-                    >
-                        FY{yr}{#if drillSortCol === 'FY' + yr}{drillSortDir === -1 ? ' ↓' : ' ↑'}{/if}
-                    </th>
-                {/each}
-            </tr>
-        </thead>
-        <tbody>
-            <tr style="background:var(--nxt-pink); border-bottom:1px solid var(--nxt-border);">
-                <td style="padding:10px 14px; font-weight:700; color:#C8122C;">Total</td>
-                {#each drillViewYears as yr}
-                    <td style="text-align:right; padding:10px 14px; font-weight:700; color:#C8122C;">{formatAmount(grandTotal['FY' + yr])}</td>
-                {/each}
-            </tr>
-            {#each filteredUnitRows as unit}
-                <tr
-                    on:click={() => toggleUnit(unit.name)}
-                    style="border-bottom:1px solid var(--nxt-border); cursor:pointer; background:var(--nxt-surface);"
-                    onmouseenter="this.style.background='var(--nxt-pink)'"
-                    onmouseleave="this.style.background='white'"
-                >
-                    <td style="padding:10px 14px; font-weight:600; color:#231F20;">
-                        <span style="margin-right:8px; font-size:0.75rem; color:#C8122C;">{expandedUnits[unit.name] ? '▼' : '▶'}</span>
-                        {unit.name}
-                    </td>
-                    {#each drillViewYears as yr}
-                        <td style="text-align:right; padding:10px 14px; font-weight:600; color:#231F20;">{formatAmount(unit['FY' + yr])}</td>
-                    {/each}
-                </tr>
-                {#if expandedUnits[unit.name]}
-                    {#each getFilteredPrograms(unit.name) as prog}
-                        <tr
-                            on:click={() => toggleProgram(unit.name, prog.name)}
-                            style="border-bottom:1px solid #F3F4F6; cursor:pointer; background:#FAFAFA;"
-                            onmouseenter="this.style.background='#F3F4F6'"
-                            onmouseleave="this.style.background='#FAFAFA'"
-                        >
-                            <td style="padding:8px 14px 8px 36px; color:#374151;">
-                                <span style="margin-right:8px; font-size:0.75rem; color:#6B7280;">{expandedPrograms[unit.name + '||' + prog.name] ? '▼' : '▶'}</span>
-                                {prog.name}
-                            </td>
-                            {#each drillViewYears as yr}
-                                <td style="text-align:right; padding:8px 14px; color:#374151;">{formatAmount(prog['FY' + yr])}</td>
-                            {/each}
-                        </tr>
-                        {#if expandedPrograms[unit.name + '||' + prog.name]}
-                            {#each getFilteredSubprograms(unit.name, prog.name) as sub}
-                                <tr style="border-bottom:1px solid #F3F4F6; background:#f7f2fc;">
-                                    <td style="padding:7px 14px 7px 60px; color:#6B7280; font-style:italic;">{sub.name}</td>
-                                    {#each drillViewYears as yr}
-                                        <td style="text-align:right; padding:7px 14px; color:#6B7280;">{formatAmount(sub['FY' + yr])}</td>
-                                    {/each}
-                                </tr>
-                            {/each}
-                        {/if}
-                    {/each}
-                {/if}
-            {/each}
-        </tbody>
-    </table>
-</div>
+    <TrendPivotTable
+        {filteredUnitRows}
+        {drillViewYears}
+        drillYears={drillYears}
+        {grandTotal}
+        {getFilteredPrograms}
+        {getFilteredSubprograms}
+    />
 {:else}
     <Alert status=warning>No unit data available for this agency.</Alert>
 {/if}
