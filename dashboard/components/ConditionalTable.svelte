@@ -36,19 +36,36 @@
 
     const fmtPct = (v, showSign = true) => (v == null ? '-' : (showSign && Number(v) > 0 ? '+' : '') + String(v) + '%');
 
-    const conditionalStyle = (val) => {
+    const conditionalStyle = (val, fmt = 'pct') => {
         if (val == null) return { background: 'transparent', color: 'var(--nxt-muted)' };
         const n = Number(val);
         const color = n >= 0 ? '#1A7340' : '#C8122C';
         let bg = 'transparent';
-        if (n >= 15) bg = 'rgba(46,173,107,0.16)';
-        else if (n >= 8) bg = 'rgba(46,173,107,0.10)';
-        else if (n >= 3) bg = 'rgba(46,173,107,0.05)';
-        else if (n >= 0) bg = 'rgba(46,173,107,0.025)';
-        else if (n >= -3) bg = 'rgba(200,18,44,0.035)';
-        else if (n >= -8) bg = 'rgba(200,18,44,0.065)';
-        else if (n >= -15) bg = 'rgba(200,18,44,0.11)';
-        else bg = 'rgba(200,18,44,0.17)';
+        if (fmt === 'money') {
+            const abs = Math.abs(n);
+            if (n >= 0) {
+                if      (abs >= 1e9)  bg = 'rgba(46,173,107,0.16)';
+                else if (abs >= 5e8)  bg = 'rgba(46,173,107,0.10)';
+                else if (abs >= 1e8)  bg = 'rgba(46,173,107,0.05)';
+                else if (abs >= 1e7)  bg = 'rgba(46,173,107,0.03)';
+                else                  bg = 'rgba(46,173,107,0.015)';
+            } else {
+                if      (abs >= 1e9)  bg = 'rgba(200,18,44,0.17)';
+                else if (abs >= 5e8)  bg = 'rgba(200,18,44,0.11)';
+                else if (abs >= 1e8)  bg = 'rgba(200,18,44,0.065)';
+                else if (abs >= 1e7)  bg = 'rgba(200,18,44,0.04)';
+                else                  bg = 'rgba(200,18,44,0.02)';
+            }
+        } else {
+            if      (n >= 15)  bg = 'rgba(46,173,107,0.16)';
+            else if (n >= 8)   bg = 'rgba(46,173,107,0.10)';
+            else if (n >= 3)   bg = 'rgba(46,173,107,0.05)';
+            else if (n >= 0)   bg = 'rgba(46,173,107,0.025)';
+            else if (n >= -3)  bg = 'rgba(200,18,44,0.035)';
+            else if (n >= -8)  bg = 'rgba(200,18,44,0.065)';
+            else if (n >= -15) bg = 'rgba(200,18,44,0.11)';
+            else               bg = 'rgba(200,18,44,0.17)';
+        }
         return { background: bg, color };
     };
 
@@ -114,7 +131,7 @@
                                 <span style="color:#231F20; font-weight:500; text-align:left; display:inline-block;">{row[col.id]}</span>
                             {:else}
                                 {#if col.conditional}
-                                    {@const st = conditionalStyle(row[col.id])}
+                                    {@const st = conditionalStyle(row[col.id], col.fmt)}
                                     <span style={'display:inline-block; padding:6px 8px; border-radius:4px; background:' + st.background + '; color:' + st.color + '; font-weight:600; min-width:54px; text-align:right;'}>
                                         {col.fmt === 'money' ? fmtMoney(row[col.id]) : col.fmt === 'pct' ? fmtPct(row[col.id], true) : (row[col.id] == null ? '-' : row[col.id])}
                                     </span>

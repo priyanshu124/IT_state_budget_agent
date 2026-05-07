@@ -126,7 +126,8 @@ with points as (
 select
     total_budget,
     latest_budget,
-    round((latest_budget - prior_budget) * 100.0 / nullif(prior_budget, 0), 1) as yoy_pct,
+    latest_budget - coalesce(prior_budget, 0) as dollar_change,
+    round((latest_budget - coalesce(prior_budget, 0)) * 100.0 / nullif(prior_budget, 0), 1) as yoy_pct,
     round(
         case
             when budget_5y_ago > 0 and latest_budget > 0
@@ -431,7 +432,8 @@ select
     l.agency_name,
     '/budget-office/agencies/' || replace(l.agency_name, ' ', '%20') as agency_link,
     l.latest_budget,
-    round((l.latest_budget - p.prior_budget) * 100.0 / nullif(p.prior_budget, 0), 1) as yoy_change_pct,
+    l.latest_budget - coalesce(p.prior_budget, 0) as dollar_change,
+    round((l.latest_budget - coalesce(p.prior_budget, 0)) * 100.0 / nullif(p.prior_budget, 0), 1) as yoy_change_pct,
     round(
         case when h5.budget_5y_ago > 0 and l.latest_budget > 0
             then (power(l.latest_budget / h5.budget_5y_ago, 1.0/5.0) - 1.0) * 100.0
@@ -548,7 +550,7 @@ order by l.latest_budget desc
     };
 
     let localView = 'trend';
-    let pivotYearView = '5y';
+    let pivotYearView = '3y';
     let searchTerm = '';
     let selectedFundSeries = null;
     let selectedAgencyLine = null;
@@ -562,18 +564,17 @@ order by l.latest_budget desc
         { id: 'agency_name', title: 'Agency', align: 'left' },
         { id: 'latest_budget', title: `Latest Year (${overview?.[0]?.max_year_label ?? 'N/A'})`, fmt: 'money', sortable: true },
         { id: 'latest_year_pct', title: '% of Total', fmt: 'pct', sortable: true },
-        { id: 'yoy_change_pct', title: 'YoY Change', fmt: 'pct', conditional: true, sortable: true },
-        { id: 'cagr_5y_pct', title: '5-Year CAGR', fmt: 'pct', conditional: true, sortable: true },
-        { id: 'cagr_10y_pct', title: '10-Year CAGR', fmt: 'pct', conditional: true, sortable: true }
+        { id: 'dollar_change', title: 'YoY Change ($)', fmt: 'money', conditional: true, sortable: true },
+        { id: 'yoy_change_pct', title: 'YoY Change (%)', fmt: 'pct', conditional: true, sortable: true },
+
     ];
 
     $: fundTableColumns = [
         { id: 'fund_type', title: 'Fund Type', align: 'left' },
         { id: 'latest_budget', title: `Latest Year (${overview?.[0]?.max_year_label ?? 'N/A'})`, fmt: 'money', sortable: true },
         { id: 'latest_year_pct', title: '% of Total', fmt: 'pct', sortable: true },
-        { id: 'yoy_change_pct', title: 'YoY Change', fmt: 'pct', conditional: true, sortable: true },
-        { id: 'cagr_5y_pct', title: '5-Year CAGR', fmt: 'pct', conditional: true, sortable: true },
-        { id: 'cagr_10y_pct', title: '10-Year CAGR', fmt: 'pct', conditional: true, sortable: true }
+        { id: 'dollar_change', title: 'YoY Change ($)', fmt: 'money', conditional: true, sortable: true },
+        { id: 'yoy_change_pct', title: 'YoY Change (%)', fmt: 'pct', conditional: true, sortable: true }
     ];
 
     const toggleAgencyLine = (name) => {
@@ -679,12 +680,21 @@ order by l.latest_budget desc
 
 {#if viewMode == 'latest'}
 
-<Grid cols=4>
-    <BigValue data={overview} value=latest_budget fmt=usd2compactviz title="Latest Year ({overview?.[0]?.max_year_label ?? 'N/A'})"/>
-    <BigValue data={overview} value=yoy_pct fmt='0.0"%"' title="YoY Change"/>
-    <BigValue data={overview} value=cagr_5y_pct fmt='0.0"%"' title="5-Year CAGR"/>
-    <BigValue data={overview} value=cagr_10y_pct fmt='0.0"%"' title="10-Year CAGR"/>
-</Grid>
+<div style="display:flex; justify-content:center; gap:16px; flex-wrap:wrap; margin:16px 0;">
+    <div style="background:var(--nxt-surface); border:1px solid var(--nxt-border); border-left:4px solid #C8122C; border-radius:8px; padding:16px 28px; min-width:200px; text-align:center;">
+        <div style="font-size:11px; font-weight:500; color:#6B7280; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">Latest Year ({overview?.[0]?.max_year_label ?? 'N/A'})</div>
+        <div style="font-size:1.8rem; font-weight:700; color:#231F20;">{(() => { const n = Number(overview?.[0]?.latest_budget)||0; const abs=Math.abs(n); if(abs>=1e9) return '$'+(abs/1e9).toFixed(2)+'B'; if(abs>=1e6) return '$'+(abs/1e6).toFixed(1)+'M'; return '$'+Math.round(abs).toLocaleString(); })()}</div>
+    </div>
+    <div style={'background:var(--nxt-surface); border:1px solid var(--nxt-border); border-left:4px solid ' + ((overview?.[0]?.yoy_pct ?? 0) >= 0 ? '#2EAD6B' : '#C8122C') + '; border-radius:8px; padding:16px 28px; min-width:200px; text-align:center;'}>
+        <div style="font-size:11px; font-weight:500; color:#6B7280; text-transform:uppercase; letter-spacing:.05em; margin-bottom:6px;">YoY Change</div>
+        <div style={'font-size:1.8rem; font-weight:700; color:' + ((overview?.[0]?.yoy_pct ?? 0) >= 0 ? '#1A7340' : '#C8122C')}>
+            {(() => { const n = Number(overview?.[0]?.dollar_change)||0; const abs=Math.abs(n); const sign=n>=0?'+':'-'; if(abs>=1e9) return sign+'$'+(abs/1e9).toFixed(2)+'B'; if(abs>=1e6) return sign+'$'+(abs/1e6).toFixed(1)+'M'; return sign+'$'+Math.round(abs).toLocaleString(); })()}
+        </div>
+        <div style={'font-size:0.95rem; font-weight:500; margin-top:2px; color:' + ((overview?.[0]?.yoy_pct ?? 0) >= 0 ? '#1A7340' : '#C8122C')}>
+            {overview?.[0]?.yoy_pct != null ? ((overview[0].yoy_pct >= 0 ? '+' : '') + overview[0].yoy_pct + '%') : '—'}
+        </div>
+    </div>
+</div>
 
 ---
 ## Top 10 agencies by budget — Latest Year
@@ -795,116 +805,14 @@ order by l.latest_budget desc
 ## Top Agencies by Budget — Trend Over Time
 
 {#if agency_trend_lines?.length > 0}
-    <div style="display:flex; flex-wrap:wrap; gap:8px; margin: 8px 0 14px 0;">
-        {#each top_agencies_trend as a}
-            <button
-                on:click={() => toggleAgencyLine(a.agency_name)}
-                style={`border-radius:14px; padding:6px 10px; font-size:0.9rem; display:inline-flex; align-items:center; gap:8px; cursor:pointer; border: ${selectedAgencyLine === a.agency_name ? '2px solid #C8122C' : '1px solid var(--nxt-border)'}; background: ${selectedAgencyLine === a.agency_name ? 'linear-gradient(90deg,#FFF7F7,#FFECEC)' : 'var(--nxt-surface)'}; box-shadow: ${selectedAgencyLine === a.agency_name ? '0 4px 10px rgba(200,20,44,0.08)' : '0 1px 0 rgba(99,33,165,0.03)'}`}
-                aria-pressed={selectedAgencyLine === a.agency_name}
-            >
-                <span style={`width:10px; height:10px; border-radius:50%; background: ${a.agency_name === highlightedAgencyNames[0] ? '#C8122C' : a.agency_name === highlightedAgencyNames[1] ? '#FFC838' : a.agency_name === highlightedAgencyNames[2] ? '#231F20' : '#C9CED6'}; display:inline-block;`}></span>
-                <span style={`color:${selectedAgencyLine === a.agency_name ? '#C8122C' : '#231F20'}; font-weight:${selectedAgencyLine === a.agency_name ? 700 : 500}`}>{a.agency_name}</span>
-            </button>
-        {/each}
-    </div>
-    <ECharts
+    <AgencyTrendChart
+        agencies={top_agencies_trend}
+        trendLines={agency_trend_lines}
+        years={agencyLineTrendYears}
+        title="Top Agencies by Budget — Trend Over Time"
+        entityLabel="agency"
+        topN={5}
         height="520px"
-        config={{
-            title: { text: 'Top 10 agencies over time', left: 'left', top: 0, textStyle: { fontSize: 14, fontWeight: 600, color: '#231F20' } },
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: { type: 'shadow' },
-                formatter: function(params) {
-                    if (!params || params.length === 0) return '';
-                    const axisValue = params[0].axisValue;
-                    const yearTotal = params.reduce(function(sum, p) {
-                        return sum + (Number(p.value) || 0);
-                    }, 0);
-                    const rows = params.slice().sort(function(left, right) {
-                        return (Number(right.value) || 0) - (Number(left.value) || 0);
-                    }).map(function(p) {
-                        const v = Number(p.value) || 0;
-                        const pct = yearTotal > 0 ? ((v / yearTotal) * 100).toFixed(1) : '0.0';
-                        const fmt = Math.abs(v) >= 1e9
-                            ? '$' + (v/1e9).toFixed(2) + 'B'
-                            : Math.abs(v) >= 1e6
-                                ? '$' + (v/1e6).toFixed(1) + 'M'
-                                : '$' + Math.round(v).toLocaleString();
-                        return p.marker + ' ' + p.seriesName + ': ' + fmt + ' (' + pct + '%)';
-                    });
-                    return '<b>' + axisValue + '</b><br/>' + rows.join('<br/>');
-                }
-            },
-            grid: { left: 56, right: 24, top: 86, bottom: 46 },
-            xAxis: { type: 'category', data: agencyLineTrendYears },
-            yAxis: {
-                type: 'value',
-                axisLabel: {
-                    formatter: (v) => {
-                        const n = Number(v) || 0;
-                        return Math.abs(n) >= 1e9 ? `$${(n/1e9).toFixed(0)}B` : `$${(n/1e6).toFixed(0)}M`;
-                    }
-                },
-                splitLine: { lineStyle: { color: '#D9DDE3' } }
-            },
-            series: top_agencies_trend.map((agency) => {
-                const agencyName = agency.agency_name;
-                const years = agencyLineTrendYears;
-                const isHighlighted = highlightedAgencyNames.includes(agencyName);
-                const hasSelection = Boolean(selectedAgencyLine);
-                const isSelectedAgency = selectedAgencyLine === agencyName;
-                const isSelected = !hasSelection || isSelectedAgency;
-                const baseColor = isHighlighted
-                    ? (agencyName === highlightedAgencyNames[0] ? '#C8122C'
-                        : agencyName === highlightedAgencyNames[1] ? '#FFC838'
-                        : '#231F20')
-                    : '#C9CED6';
-                return {
-                    name: agencyName,
-                    type: 'line',
-                    smooth: false,
-                    symbol: 'circle',
-                    symbolSize: hasSelection
-                        ? (isSelectedAgency ? (isHighlighted ? 12 : 11) : 4)
-                        : (isHighlighted ? 7 : 6),
-                    showSymbol: true,
-                    lineStyle: {
-                        color: baseColor,
-                        width: hasSelection
-                            ? (isSelectedAgency ? (isHighlighted ? 6 : 5) : 1)
-                            : (isHighlighted ? 3 : 2),
-                        opacity: isSelected ? 1 : 0.06
-                    },
-                    itemStyle: { color: baseColor, opacity: isSelected ? 1 : 0.06 },
-                    label: {
-                        show: isHighlighted,
-                        position: 'top',
-                        offset: [0, -10],
-                        backgroundColor: 'rgba(255,255,255,0.92)',
-                        padding: [2, 5],
-                        borderRadius: 3,
-                        lineHeight: 14,
-                        color: baseColor,
-                        fontWeight: isHighlighted ? 700 : 500,
-                        formatter: (params) => {
-                            const middleIndex = Math.floor(years.length / 2);
-                            return params.dataIndex === middleIndex ? agencyName : '';
-                        }
-                    },
-                    emphasis: {
-                        focus: 'series', scale: true,
-                        lineStyle: { color: isHighlighted ? baseColor : '#3B7DD8', width: 4, opacity: 1 },
-                        itemStyle: { color: isHighlighted ? baseColor : '#3B7DD8', opacity: 1 },
-                        label: { show: false }
-                    },
-                    blur: { lineStyle: { opacity: 0.06 }, itemStyle: { opacity: 0.06 } },
-                    data: years.map((y) => {
-                        const point = agency_trend_lines.find(d => String(d.fiscal_year) === y && d.agency_name === agencyName);
-                        return point ? point.spend : 0;
-                    })
-                };
-            })
-        }}
     />
 {:else}
     <Alert status=warning>No agency trend data available for this filter selection.</Alert>
