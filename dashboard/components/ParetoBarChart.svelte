@@ -1,6 +1,7 @@
 <script>
     import * as echarts from 'echarts';
     import { onDestroy, onMount } from 'svelte';
+    import ParetoInsight from './ParetoInsight.svelte';
 
     export let data = [];
     export let title = '';
@@ -123,13 +124,11 @@
                 ? `Top 10 subprograms in ${selectedProgram} by budget — Latest Year`
                 : 'Top 10 units by budget — Latest Year');
 
-    $: drillHint = !drillable
-        ? ''
-        : drillLevel === 'program'
-            ? 'Click a program to drill into its subprograms.'
-            : drillLevel === 'subprogram'
-                ? `Showing subprograms for ${selectedUnit}${selectedProgram ? ' / ' + selectedProgram : ''}.`
-                : 'Click a unit to drill into its programs.';
+    $: entityLabel = drillLevel === 'program'
+        ? 'programs'
+        : drillLevel === 'subprogram'
+            ? 'subprograms'
+            : 'units';
 
     function goBack() {
         if (!drillable) return;
@@ -141,7 +140,7 @@
         if (drillLevel === 'program') {
             drillLevel = 'unit';
             selectedUnit = '';
-        }
+        }e 
     }
 
     function getConfig() {
@@ -290,18 +289,18 @@
 {#if drillRows?.length > 0}
     {#if drillable}
         <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; margin: 0 0 10px 0; flex-wrap:wrap;">
-            <div style="color:#6B7280; font-size:0.9rem;">
-                {drillHint}
-            </div>
-            {#if drillLevel !== 'unit'}
-                <button
-                    type="button"
-                    on:click={goBack}
-                    style="border:1px solid #d6c1f5; background:linear-gradient(90deg,#f8f2ff,#ede0fc); color:#802cd7; border-radius:999px; padding:7px 14px; font-size:0.85rem; font-weight:700; cursor:pointer;"
+            <ParetoInsight data={drillRows} {entityLabel} />
+            <div>
+                {#if drillLevel !== 'unit'}
+                    <button
+                        type="button"
+                        on:click={goBack}
+                        style="border:1px solid #d6c1f5; background:linear-gradient(90deg,#f8f2ff,#ede0fc); color:#802cd7; border-radius:999px; padding:7px 14px; font-size:0.85rem; font-weight:700; cursor:pointer;"
                 >
                     Back
                 </button>
-            {/if}
+                {/if}
+            </div>
         </div>
     {/if}
     <div bind:this={chartContainer} style="width:100%; height:{height};"></div>

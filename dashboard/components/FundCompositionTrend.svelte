@@ -357,7 +357,7 @@
             <div style="background:#FFF8E1; border:0.5px solid #F59E0B; border-radius:8px; padding:10px 12px;">
                 <div style="font-size:10px; color:#92400E; margin-bottom:3px;">COVID peak injection</div>
                 <div style="font-size:13px; font-weight:600; color:#231F20;">{usd(covidPeak)}</div>
-                <div style="font-size:10px; color:#92400E; margin-top:2px;">FY2020–2022 · temporary · now unwound</div>
+                <div style="font-size:10px; color:#92400E; margin-top:2px;">FY2020–2022 · temporary</div>
             </div>
         {:else}
             <div style="background:var(--nxt-surface,#fff); border:0.5px solid var(--nxt-border,#E5E7EB); border-radius:8px; padding:10px 12px;">

@@ -135,17 +135,22 @@
     $: chartData = buildChartData(data || []);
 
     onMount(() => {
+        if (chartContainer) {
+            chart = echarts.init(chartContainer);
+            if (chartData.length > 0) chart.setOption(getConfig(chartData), true);
+        }
         const onResize = () => chart?.resize();
         window.addEventListener('resize', onResize);
         return () => window.removeEventListener('resize', onResize);
     });
 
-    $: if (chartContainer) {
-        if (!chart) {
-            chart = echarts.init(chartContainer);
-        }
+    // Explicitly read chartData and labelField so Svelte tracks both as dependencies.
+    // This fires whenever data changes (filter) or labelField changes (view toggle).
+    $: if (chart && (chartData, labelField)) {
         if (chartData.length > 0) {
             chart.setOption(getConfig(chartData), true);
+        } else {
+            chart.clear();
         }
     }
 </script>

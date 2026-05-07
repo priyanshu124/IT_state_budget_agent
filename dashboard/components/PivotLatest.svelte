@@ -149,9 +149,8 @@
                 <th style="text-align:left; padding:10px 14px; font-weight:700; color:#231F20; min-width:280px;">Unit / Program / Subprogram</th>
                 <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20; white-space:nowrap;">{latestYearTitle}</th>
                 <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20;">% of Total</th>
-                <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20;">YoY Change</th>
-                <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20;">5-Year CAGR</th>
-                <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20;">10-Year CAGR</th>
+                <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20;">YoY Change ($)</th>
+                <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20;">YoY Change (%)</th>
             </tr>
         </thead>
         <tbody>
@@ -169,9 +168,8 @@
                     </td>
                     <td style="text-align:right; padding:10px 14px; font-weight:600; color:#231F20;">{fmtMoney(unit.latest_budget)}</td>
                     <td style="text-align:right; padding:10px 14px; color:#6B7280;">{unit.latest_year_pct != null ? unit.latest_year_pct + '%' : '-'}</td>
+                    <td style="text-align:right; padding:10px 14px;"><span style={conditionalStyle(unit.yoy_change_pct)}>{fmtMoney(unit.dollar_change)}</span></td>
                     <td style="text-align:right; padding:10px 14px;"><span style={conditionalStyle(unit.yoy_change_pct)}>{fmtPct(unit.yoy_change_pct)}</span></td>
-                    <td style="text-align:right; padding:10px 14px;"><span style={conditionalStyle(unit.cagr_5y_pct)}>{fmtPct(unit.cagr_5y_pct)}</span></td>
-                    <td style="text-align:right; padding:10px 14px;"><span style={conditionalStyle(unit.cagr_10y_pct)}>{fmtPct(unit.cagr_10y_pct)}</span></td>
                 </tr>
 
                 {#if expandedUnits[unit.unit_name]}
@@ -189,9 +187,8 @@
                             </td>
                             <td style="text-align:right; padding:8px 14px; color:#374151;">{fmtMoney(prog.latest_budget)}</td>
                             <td style="text-align:right; padding:8px 14px; color:#6B7280;">{prog.latest_year_pct != null ? prog.latest_year_pct + '%' : '-'}</td>
+                            <td style="text-align:right; padding:8px 14px;"><span style={conditionalStyle(prog.yoy_change_pct)}>{fmtMoney(prog.dollar_change)}</span></td>
                             <td style="text-align:right; padding:8px 14px;"><span style={conditionalStyle(prog.yoy_change_pct)}>{fmtPct(prog.yoy_change_pct)}</span></td>
-                            <td style="text-align:right; padding:8px 14px;"><span style={conditionalStyle(prog.cagr_5y_pct)}>{fmtPct(prog.cagr_5y_pct)}</span></td>
-                            <td style="text-align:right; padding:8px 14px;"><span style={conditionalStyle(prog.cagr_10y_pct)}>{fmtPct(prog.cagr_10y_pct)}</span></td>
                         </tr>
 
                         {#if expandedPrograms[unit.unit_name + '||' + prog.program_name]}
@@ -200,9 +197,8 @@
                                     <td style="padding:7px 14px 7px 60px; color:#6B7280; font-style:italic;">{sub.subprogram_name}{@html sparkline(sub, pivotYears)}</td>
                                     <td style="text-align:right; padding:7px 14px; color:#6B7280;">{fmtMoney(sub.latest_budget)}</td>
                                     <td style="text-align:right; padding:7px 14px; color:#6B7280;">{sub.latest_year_pct != null ? sub.latest_year_pct + '%' : '-'}</td>
+                                    <td style="text-align:right; padding:7px 14px;"><span style={conditionalStyle(sub.yoy_change_pct)}>{fmtMoney(sub.dollar_change)}</span></td>
                                     <td style="text-align:right; padding:7px 14px;"><span style={conditionalStyle(sub.yoy_change_pct)}>{fmtPct(sub.yoy_change_pct)}</span></td>
-                                    <td style="text-align:right; padding:7px 14px;"><span style={conditionalStyle(sub.cagr_5y_pct)}>{fmtPct(sub.cagr_5y_pct)}</span></td>
-                                    <td style="text-align:right; padding:7px 14px;"><span style={conditionalStyle(sub.cagr_10y_pct)}>{fmtPct(sub.cagr_10y_pct)}</span></td>
                                 </tr>
                             {/each}
                         {/if}
