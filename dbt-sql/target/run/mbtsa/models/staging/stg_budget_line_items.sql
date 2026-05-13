@@ -64,8 +64,11 @@ staged as (
         TRIM(REGEXP_REPLACE(sub_tower, '\s+', ' ')) AS it_sub_tower,
         confidence as tower_confidence,
         -- === COST POOL CLASSIFICATION (from Agent 2) ===
-        TRIM(REGEXP_REPLACE(cost_pool, '\s+', ' ')) AS cost_pool,
-        TRIM(REGEXP_REPLACE(cost_sub_pool, '\s+', ' ')) AS cost_sub_pool
+        CASE
+            WHEN TRIM(REGEXP_REPLACE(object_code::varchar, '\\s+', ' ')) = '12' THEN 'Grants'
+            ELSE TRIM(REGEXP_REPLACE(cost_pool, '\\s+', ' '))
+        END AS cost_pool,
+        TRIM(REGEXP_REPLACE(cost_sub_pool, '\\s+', ' ')) AS cost_sub_pool
 
     from source
     where agency_code != 'R75'
