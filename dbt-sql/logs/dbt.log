@@ -30685,3 +30685,1763 @@ drop table if exists "mbtsa_work"."main_marts"."fct_fte_counts__dbt_backup" casc
 [0m16:36:43.588904 [debug] [MainThread]: Command `dbt run` succeeded at 16:36:43.588904 after 3.07 seconds
 [0m16:36:43.588904 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CEC6441670>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CEC6441730>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001CEC6BFBFB0>]}
 [0m16:36:43.590920 [debug] [MainThread]: Flushing usage events
+[0m12:33:25.159189 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000002749F148980>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A1C035F0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A1C01A00>]}
+
+
+============================== 12:33:25.167890 | c566743c-c563-4926-b940-361d367dc2d9 ==============================
+[0m12:33:25.167890 [info ] [MainThread]: Running with dbt=1.8.9
+[0m12:33:25.168839 [debug] [MainThread]: running dbt with arguments {'printer_width': '80', 'indirect_selection': 'eager', 'write_json': 'True', 'log_cache_events': 'False', 'partial_parse': 'True', 'cache_selected_only': 'False', 'profiles_dir': 'D:\\projects\\IT_state_budget_agent\\dbt-sql', 'debug': 'False', 'warn_error': 'None', 'log_path': 'D:\\projects\\IT_state_budget_agent\\dbt-sql\\logs', 'fail_fast': 'False', 'version_check': 'True', 'use_colors': 'True', 'use_experimental_parser': 'False', 'empty': 'False', 'quiet': 'False', 'no_print': 'None', 'warn_error_options': 'WarnErrorOptions(include=[], exclude=[])', 'introspect': 'True', 'log_format': 'default', 'invocation_command': 'dbt run', 'target_path': 'None', 'static_parser': 'True', 'send_anonymous_usage_stats': 'True'}
+[0m12:33:27.343489 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'project_id', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A1EAB8C0>]}
+[0m12:33:27.385170 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'adapter_info', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A1F49790>]}
+[0m12:33:27.393788 [info ] [MainThread]: Registered adapter: duckdb=1.8.4
+[0m12:33:27.659798 [debug] [MainThread]: checksum: 132857a23e9d07220246854f7763165174ce9b737cfc7867629ace4294e520b1, vars: {}, profile: , target: , version: 1.8.9
+[0m12:33:27.814909 [debug] [MainThread]: Partial parsing enabled: 0 files deleted, 0 files added, 1 files changed.
+[0m12:33:27.816915 [debug] [MainThread]: Partial parsing: updated file: mbtsa://models\staging\stg_budget_line_items.sql
+[0m12:33:28.092186 [warn ] [MainThread]: [[33mWARNING[0m]: Configuration paths exist in your dbt_project.yml file which do not apply to any resources.
+There are 1 unused configuration paths:
+- models.mbtsa.intermediate
+[0m12:33:28.105332 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'load_project', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A36DF5F0>]}
+[0m12:33:28.290393 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'resource_counts', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A35C7E60>]}
+[0m12:33:28.291865 [info ] [MainThread]: Found 15 models, 35 data tests, 2 sources, 5 metrics, 735 macros, 1 semantic model
+[0m12:33:28.291865 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A36DF650>]}
+[0m12:33:28.291865 [info ] [MainThread]: 
+[0m12:33:28.291865 [debug] [MainThread]: Acquiring new duckdb connection 'master'
+[0m12:33:28.302103 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work'
+[0m12:33:28.315650 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work'
+[0m12:33:28.318106 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work'
+[0m12:33:28.427050 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work"
+[0m12:33:28.427050 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work"
+[0m12:33:28.427050 [debug] [ThreadPool]: On list_mbtsa_work: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m12:33:28.427050 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work"
+[0m12:33:28.427050 [debug] [ThreadPool]: On list_mbtsa_work: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m12:33:28.427050 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m12:33:28.427050 [debug] [ThreadPool]: On list_mbtsa_work: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work"} */
+
+    
+    select schema_name
+    from system.information_schema.schemata
+    
+    where catalog_name = '"mbtsa_work"'
+    
+  
+  
+[0m12:33:28.427050 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m12:33:28.427050 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m12:33:28.485105 [debug] [ThreadPool]: SQL status: OK in 0.053 seconds
+[0m12:33:28.485105 [debug] [ThreadPool]: SQL status: OK in 0.053 seconds
+[0m12:33:28.485105 [debug] [ThreadPool]: SQL status: OK in 0.053 seconds
+[0m12:33:28.485105 [debug] [ThreadPool]: On list_mbtsa_work: Close
+[0m12:33:28.490705 [debug] [ThreadPool]: On list_mbtsa_work: Close
+[0m12:33:28.493221 [debug] [ThreadPool]: On list_mbtsa_work: Close
+[0m12:33:28.493221 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_mbtsa_work, now create_mbtsa_work_main)
+[0m12:33:28.501230 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_mbtsa_work, now create_mbtsa_work_main_staging)
+[0m12:33:28.493221 [debug] [ThreadPool]: Re-using an available connection from the pool (formerly list_mbtsa_work, now create_mbtsa_work_main_marts)
+[0m12:33:28.503802 [debug] [ThreadPool]: Creating schema "database: "mbtsa_work"
+schema: "main"
+"
+[0m12:33:28.503802 [debug] [ThreadPool]: Creating schema "database: "mbtsa_work"
+schema: "main_staging"
+"
+[0m12:33:28.503802 [debug] [ThreadPool]: Creating schema "database: "mbtsa_work"
+schema: "main_marts"
+"
+[0m12:33:28.511720 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main"
+[0m12:33:28.513769 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_staging"
+[0m12:33:28.513769 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m12:33:28.513769 [debug] [ThreadPool]: On create_mbtsa_work_main: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main"} */
+
+    
+        select type from duckdb_databases()
+        where database_name='mbtsa_work'
+        and type='sqlite'
+    
+  
+[0m12:33:28.513769 [debug] [ThreadPool]: On create_mbtsa_work_main_staging: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main_staging"} */
+
+    
+        select type from duckdb_databases()
+        where database_name='mbtsa_work'
+        and type='sqlite'
+    
+  
+[0m12:33:28.513769 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main_marts"} */
+
+    
+        select type from duckdb_databases()
+        where database_name='mbtsa_work'
+        and type='sqlite'
+    
+  
+[0m12:33:28.517290 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m12:33:28.518414 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m12:33:28.518414 [debug] [ThreadPool]: Opening a new connection, currently in state closed
+[0m12:33:28.536297 [debug] [ThreadPool]: SQL status: OK in 0.020 seconds
+[0m12:33:28.536297 [debug] [ThreadPool]: SQL status: OK in 0.022 seconds
+[0m12:33:28.536297 [debug] [ThreadPool]: SQL status: OK in 0.021 seconds
+[0m12:33:28.540733 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main"
+[0m12:33:28.541368 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_staging"
+[0m12:33:28.541368 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m12:33:28.543562 [debug] [ThreadPool]: On create_mbtsa_work_main: BEGIN
+[0m12:33:28.543562 [debug] [ThreadPool]: On create_mbtsa_work_main_staging: BEGIN
+[0m12:33:28.543562 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: BEGIN
+[0m12:33:28.543562 [debug] [ThreadPool]: SQL status: OK in 0.000 seconds
+[0m12:33:28.543562 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main"
+[0m12:33:28.543562 [debug] [ThreadPool]: On create_mbtsa_work_main: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main"} */
+
+    
+    
+        create schema if not exists "mbtsa_work"."main"
+    
+[0m12:33:28.543562 [debug] [ThreadPool]: SQL status: OK in 0.001 seconds
+[0m12:33:28.543562 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m12:33:28.543562 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main_marts"} */
+
+    
+    
+        create schema if not exists "mbtsa_work"."main_marts"
+    
+[0m12:33:28.543562 [debug] [ThreadPool]: SQL status: OK in 0.001 seconds
+[0m12:33:28.543562 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_staging"
+[0m12:33:28.543562 [debug] [ThreadPool]: On create_mbtsa_work_main_staging: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "create_mbtsa_work_main_staging"} */
+
+    
+    
+        create schema if not exists "mbtsa_work"."main_staging"
+    
+[0m12:33:28.546569 [debug] [ThreadPool]: SQL status: OK in 0.001 seconds
+[0m12:33:28.546569 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: COMMIT
+[0m12:33:28.546569 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_marts"
+[0m12:33:28.546569 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: COMMIT
+[0m12:33:28.546569 [debug] [ThreadPool]: SQL status: OK in 0.001 seconds
+[0m12:33:28.546569 [debug] [ThreadPool]: On create_mbtsa_work_main_staging: COMMIT
+[0m12:33:28.546569 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main_staging"
+[0m12:33:28.546569 [debug] [ThreadPool]: On create_mbtsa_work_main_staging: COMMIT
+[0m12:33:28.546569 [debug] [ThreadPool]: SQL status: OK in 0.001 seconds
+[0m12:33:28.546569 [debug] [ThreadPool]: SQL status: OK in 0.004 seconds
+[0m12:33:28.546569 [debug] [ThreadPool]: On create_mbtsa_work_main_marts: Close
+[0m12:33:28.549264 [debug] [ThreadPool]: On create_mbtsa_work_main: COMMIT
+[0m12:33:28.549264 [debug] [ThreadPool]: SQL status: OK in 0.001 seconds
+[0m12:33:28.550335 [debug] [ThreadPool]: Using duckdb connection "create_mbtsa_work_main"
+[0m12:33:28.550335 [debug] [ThreadPool]: On create_mbtsa_work_main_staging: Close
+[0m12:33:28.550335 [debug] [ThreadPool]: On create_mbtsa_work_main: COMMIT
+[0m12:33:28.550335 [debug] [ThreadPool]: SQL status: OK in 0.000 seconds
+[0m12:33:28.550335 [debug] [ThreadPool]: On create_mbtsa_work_main: Close
+[0m12:33:28.579028 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work_main'
+[0m12:33:28.579028 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main"
+[0m12:33:28.579028 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work_main_marts'
+[0m12:33:28.579028 [debug] [ThreadPool]: On list_mbtsa_work_main: BEGIN
+[0m12:33:28.592060 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m12:33:28.590817 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_marts"
+[0m12:33:28.592060 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: BEGIN
+[0m12:33:28.592060 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m12:33:28.590817 [debug] [ThreadPool]: Acquiring new duckdb connection 'list_mbtsa_work_main_staging'
+[0m12:33:28.595279 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_staging"
+[0m12:33:28.595279 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: BEGIN
+[0m12:33:28.595279 [debug] [ThreadPool]: Opening a new connection, currently in state init
+[0m12:33:28.611780 [debug] [ThreadPool]: SQL status: OK in 0.020 seconds
+[0m12:33:28.614038 [debug] [ThreadPool]: SQL status: OK in 0.022 seconds
+[0m12:33:28.614038 [debug] [ThreadPool]: SQL status: OK in 0.017 seconds
+[0m12:33:28.614038 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_marts"
+[0m12:33:28.614038 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main"
+[0m12:33:28.614038 [debug] [ThreadPool]: Using duckdb connection "list_mbtsa_work_main_staging"
+[0m12:33:28.614038 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work_main_marts"} */
+select
+      'mbtsa_work' as database,
+      table_name as name,
+      table_schema as schema,
+      CASE table_type
+        WHEN 'BASE TABLE' THEN 'table'
+        WHEN 'VIEW' THEN 'view'
+        WHEN 'LOCAL TEMPORARY' THEN 'table'
+        END as type
+    from system.information_schema.tables
+    where table_schema = 'main_marts'
+    and table_catalog = 'mbtsa_work'
+  
+[0m12:33:28.614038 [debug] [ThreadPool]: On list_mbtsa_work_main: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work_main"} */
+select
+      'mbtsa_work' as database,
+      table_name as name,
+      table_schema as schema,
+      CASE table_type
+        WHEN 'BASE TABLE' THEN 'table'
+        WHEN 'VIEW' THEN 'view'
+        WHEN 'LOCAL TEMPORARY' THEN 'table'
+        END as type
+    from system.information_schema.tables
+    where table_schema = 'main'
+    and table_catalog = 'mbtsa_work'
+  
+[0m12:33:28.614038 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "connection_name": "list_mbtsa_work_main_staging"} */
+select
+      'mbtsa_work' as database,
+      table_name as name,
+      table_schema as schema,
+      CASE table_type
+        WHEN 'BASE TABLE' THEN 'table'
+        WHEN 'VIEW' THEN 'view'
+        WHEN 'LOCAL TEMPORARY' THEN 'table'
+        END as type
+    from system.information_schema.tables
+    where table_schema = 'main_staging'
+    and table_catalog = 'mbtsa_work'
+  
+[0m12:33:28.630754 [debug] [ThreadPool]: SQL status: OK in 0.017 seconds
+[0m12:33:28.633817 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: ROLLBACK
+[0m12:33:28.633817 [debug] [ThreadPool]: SQL status: OK in 0.018 seconds
+[0m12:33:28.633817 [debug] [ThreadPool]: SQL status: OK in 0.019 seconds
+[0m12:33:28.633817 [debug] [ThreadPool]: On list_mbtsa_work_main: ROLLBACK
+[0m12:33:28.633817 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: ROLLBACK
+[0m12:33:28.636836 [debug] [ThreadPool]: Failed to rollback 'list_mbtsa_work_main_marts'
+[0m12:33:28.636836 [debug] [ThreadPool]: On list_mbtsa_work_main_marts: Close
+[0m12:33:28.638239 [debug] [ThreadPool]: Failed to rollback 'list_mbtsa_work_main'
+[0m12:33:28.638239 [debug] [ThreadPool]: On list_mbtsa_work_main: Close
+[0m12:33:28.638239 [debug] [ThreadPool]: Failed to rollback 'list_mbtsa_work_main_staging'
+[0m12:33:28.638239 [debug] [ThreadPool]: On list_mbtsa_work_main_staging: Close
+[0m12:33:28.646245 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'runnable_timing', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A35C6B40>]}
+[0m12:33:28.646245 [debug] [MainThread]: Using duckdb connection "master"
+[0m12:33:28.646245 [debug] [MainThread]: On master: BEGIN
+[0m12:33:28.651127 [debug] [MainThread]: Opening a new connection, currently in state init
+[0m12:33:28.668612 [debug] [MainThread]: SQL status: OK in 0.019 seconds
+[0m12:33:28.668612 [debug] [MainThread]: On master: COMMIT
+[0m12:33:28.668612 [debug] [MainThread]: Using duckdb connection "master"
+[0m12:33:28.668612 [debug] [MainThread]: On master: COMMIT
+[0m12:33:28.668612 [debug] [MainThread]: SQL status: OK in 0.000 seconds
+[0m12:33:28.668612 [debug] [MainThread]: On master: Close
+[0m12:33:28.675627 [info ] [MainThread]: Concurrency: 4 threads (target='dev')
+[0m12:33:28.675627 [info ] [MainThread]: 
+[0m12:33:28.720257 [debug] [Thread-1 (]: Began running node model.mbtsa.custom_metrics_calendar
+[0m12:33:28.723045 [debug] [Thread-2 (]: Began running node model.mbtsa.metricflow_time_spine
+[0m12:33:28.723045 [debug] [Thread-3 (]: Began running node model.mbtsa.stg_budget_line_items
+[0m12:33:28.724989 [debug] [Thread-4 (]: Began running node model.mbtsa.stg_fte_line_items
+[0m12:33:28.724146 [info ] [Thread-1 (]: 1 of 15 START sql table model main.custom_metrics_calendar ..................... [RUN]
+[0m12:33:28.727770 [info ] [Thread-2 (]: 2 of 15 START sql table model main.metricflow_time_spine ....................... [RUN]
+[0m12:33:28.727770 [info ] [Thread-3 (]: 3 of 15 START sql view model main_staging.stg_budget_line_items ................ [RUN]
+[0m12:33:28.729367 [debug] [Thread-1 (]: Acquiring new duckdb connection 'model.mbtsa.custom_metrics_calendar'
+[0m12:33:28.729367 [debug] [Thread-2 (]: Acquiring new duckdb connection 'model.mbtsa.metricflow_time_spine'
+[0m12:33:28.727770 [info ] [Thread-4 (]: 4 of 15 START sql view model main_staging.stg_fte_line_items ................... [RUN]
+[0m12:33:28.729367 [debug] [Thread-3 (]: Acquiring new duckdb connection 'model.mbtsa.stg_budget_line_items'
+[0m12:33:28.730768 [debug] [Thread-1 (]: Began compiling node model.mbtsa.custom_metrics_calendar
+[0m12:33:28.730768 [debug] [Thread-2 (]: Began compiling node model.mbtsa.metricflow_time_spine
+[0m12:33:28.730768 [debug] [Thread-4 (]: Acquiring new duckdb connection 'model.mbtsa.stg_fte_line_items'
+[0m12:33:28.827774 [debug] [Thread-4 (]: Began compiling node model.mbtsa.stg_fte_line_items
+[0m12:33:28.730768 [debug] [Thread-3 (]: Began compiling node model.mbtsa.stg_budget_line_items
+[0m12:33:28.827774 [debug] [Thread-2 (]: Writing injected SQL for node "model.mbtsa.metricflow_time_spine"
+[0m12:33:28.818856 [debug] [Thread-1 (]: Writing injected SQL for node "model.mbtsa.custom_metrics_calendar"
+[0m12:33:28.827774 [debug] [Thread-4 (]: Writing injected SQL for node "model.mbtsa.stg_fte_line_items"
+[0m12:33:28.834797 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.stg_budget_line_items"
+[0m12:33:28.834797 [debug] [Thread-3 (]: On model.mbtsa.stg_budget_line_items: BEGIN
+[0m12:33:28.834797 [debug] [Thread-3 (]: Opening a new connection, currently in state init
+[0m12:33:28.834797 [debug] [Thread-4 (]: Began executing node model.mbtsa.stg_fte_line_items
+[0m12:33:28.874673 [debug] [Thread-4 (]: Writing runtime sql for node "model.mbtsa.stg_fte_line_items"
+[0m12:33:28.875721 [debug] [Thread-3 (]: SQL status: OK in 0.036 seconds
+[0m12:33:28.875721 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.stg_budget_line_items"
+[0m12:33:28.875721 [debug] [Thread-3 (]: On model.mbtsa.stg_budget_line_items: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.stg_budget_line_items"} */
+
+      select
+          column_name,
+          data_type,
+          character_maximum_length,
+          numeric_precision,
+          numeric_scale
+
+      from system.information_schema.columns
+      where table_name = 'budget_line_items'
+      
+      and table_schema = 'main'
+      
+      
+      and table_catalog = 'mbtsa_work'
+      
+      order by ordinal_position
+
+  
+[0m12:33:28.875721 [debug] [Thread-2 (]: Began executing node model.mbtsa.metricflow_time_spine
+[0m12:33:28.875721 [debug] [Thread-1 (]: Began executing node model.mbtsa.custom_metrics_calendar
+[0m12:33:28.875721 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.stg_fte_line_items"
+[0m12:33:28.907993 [debug] [Thread-2 (]: Writing runtime sql for node "model.mbtsa.metricflow_time_spine"
+[0m12:33:28.909139 [debug] [Thread-1 (]: Writing runtime sql for node "model.mbtsa.custom_metrics_calendar"
+[0m12:33:28.909139 [debug] [Thread-4 (]: On model.mbtsa.stg_fte_line_items: BEGIN
+[0m12:33:28.909139 [debug] [Thread-3 (]: SQL status: OK in 0.036 seconds
+[0m12:33:28.909139 [debug] [Thread-4 (]: Opening a new connection, currently in state init
+[0m12:33:28.914668 [debug] [Thread-3 (]: Writing injected SQL for node "model.mbtsa.stg_budget_line_items"
+[0m12:33:28.914668 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.metricflow_time_spine"
+[0m12:33:28.914668 [debug] [Thread-4 (]: SQL status: OK in 0.008 seconds
+[0m12:33:28.914668 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.custom_metrics_calendar"
+[0m12:33:28.922740 [debug] [Thread-2 (]: On model.mbtsa.metricflow_time_spine: BEGIN
+[0m12:33:28.922740 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.stg_fte_line_items"
+[0m12:33:28.922740 [debug] [Thread-1 (]: On model.mbtsa.custom_metrics_calendar: BEGIN
+[0m12:33:28.922740 [debug] [Thread-2 (]: Opening a new connection, currently in state init
+[0m12:33:28.924696 [debug] [Thread-3 (]: Began executing node model.mbtsa.stg_budget_line_items
+[0m12:33:28.924696 [debug] [Thread-4 (]: On model.mbtsa.stg_fte_line_items: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.stg_fte_line_items"} */
+
+  
+  create view "mbtsa_work"."main_staging"."stg_fte_line_items__dbt_tmp" as (
+    /*
+    stg_fte_line_items
+    ===================
+    Clean, typed FTE headcount data from the raw FTE pipeline.
+
+    Grain: one row per fiscal_year × agency_code × unit_code × program_code × organization_code.
+*/
+
+with source as (
+    select *
+    from "mbtsa_work"."main"."fte_line_items"
+),
+
+staged as (
+    select
+        fiscal_year::int as fiscal_year,
+        trim(regexp_replace(cast(agency_code as varchar), '\s+', ' ')) as agency_code,
+        trim(regexp_replace(cast(agency_name as varchar), '\s+', ' ')) as agency_name,
+        trim(regexp_replace(cast(unit_code as varchar), '\s+', ' ')) as unit_code,
+        trim(regexp_replace(cast(unit_name as varchar), '\s+', ' ')) as unit_name,
+        trim(regexp_replace(cast(program_code as varchar), '\s+', ' ')) as program_code,
+        trim(regexp_replace(cast(program_name as varchar), '\s+', ' ')) as program_name,
+        trim(regexp_replace(cast(organization_code as varchar), '\s+', ' ')) as organization_code,
+        coalesce(fte_count::double, 0.0) as fte_count
+    from source
+)
+
+select *
+from staged
+  );
+
+[0m12:33:28.924696 [debug] [Thread-1 (]: Opening a new connection, currently in state init
+[0m12:33:28.926600 [debug] [Thread-3 (]: Writing runtime sql for node "model.mbtsa.stg_budget_line_items"
+[0m12:33:28.926600 [debug] [Thread-2 (]: SQL status: OK in 0.005 seconds
+[0m12:33:28.926600 [debug] [Thread-1 (]: SQL status: OK in 0.004 seconds
+[0m12:33:28.926600 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.metricflow_time_spine"
+[0m12:33:28.926600 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.custom_metrics_calendar"
+[0m12:33:28.926600 [debug] [Thread-4 (]: SQL status: OK in 0.002 seconds
+[0m12:33:28.930986 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.stg_budget_line_items"
+[0m12:33:28.930986 [debug] [Thread-2 (]: On model.mbtsa.metricflow_time_spine: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.metricflow_time_spine"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main"."metricflow_time_spine__dbt_tmp"
+  
+    as (
+      /*
+    metricflow_time_spine
+    =====================
+    Minimal time spine required by MetricFlow.
+    One row per day across the fiscal year range.
+    MetricFlow won't parse without this, even if
+    no metrics use a time dimension.
+*/
+
+
+
+with days as (
+    select
+        unnest(
+            generate_series(
+                date '2017-01-01',
+                date '2028-12-31',
+                interval '1 day'
+            )
+        ) as date_day
+)
+
+select
+    date_day::date as date_day
+from days
+    );
+  
+  
+[0m12:33:28.930986 [debug] [Thread-1 (]: On model.mbtsa.custom_metrics_calendar: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.custom_metrics_calendar"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main"."custom_metrics_calendar__dbt_tmp"
+  
+    as (
+      
+
+with days as (
+    select
+        cast(d as date) as date_day
+    from generate_series(
+        date '1990-01-01',
+        date '2030-01-01',
+        interval 1 day
+    ) as t(d)
+),
+
+final as (
+    select
+        date_day,
+        cast(date_trunc('week', date_day) as date) as date_week,
+        cast(date_trunc('month', date_day) as date) as date_month,
+        cast(date_trunc('quarter', date_day) as date) as date_quarter,
+        cast(date_trunc('year', date_day) as date) as date_year
+    from days
+)
+
+select * from final
+    );
+  
+  
+[0m12:33:28.941608 [debug] [Thread-3 (]: On model.mbtsa.stg_budget_line_items: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.stg_budget_line_items"} */
+
+  
+  create view "mbtsa_work"."main_staging"."stg_budget_line_items__dbt_tmp" as (
+    /*
+    stg_budget_line_items
+    =====================
+    Clean, typed, and renamed columns from raw budget data.
+    This is the single entry point for all budget data in the project.
+    
+    Grain: one row per fiscal_year × organization_sub_code × comptroller_subobject_code × fund_type × budget_type
+*/
+
+
+
+    
+    
+
+
+with source as (
+        select * from "mbtsa_work"."main"."budget_line_items"
+),
+
+staged as (
+    select
+        -- === KEYS ===
+        TRIM(REGEXP_REPLACE(organization_sub_code, '\s+', ' ')) AS organization_sub_code,
+        
+
+        -- === ORGANIZATIONAL HIERARCHY ===
+        fiscal_year::int                            as fiscal_year,
+        TRIM(REGEXP_REPLACE(organization_sub_code, '\s+', ' ')) AS organization_sub_code,
+        TRIM(REGEXP_REPLACE(organization_code, '\s+', ' ')) AS organization_code,
+        TRIM(REGEXP_REPLACE(agency_code, '\s+', ' ')) AS agency_code,
+        TRIM(REGEXP_REPLACE(agency_name, '\s+', ' ')) AS agency_name,
+        TRIM(REGEXP_REPLACE(unit_code, '\s+', ' ')) AS unit_code,
+        TRIM(REGEXP_REPLACE(unit_name, '\s+', ' ')) AS unit_name,
+        TRIM(REGEXP_REPLACE(program_code::varchar, '\s+', ' ')) AS program_code,
+        TRIM(REGEXP_REPLACE(program_name, '\s+', ' ')) AS program_name,
+        TRIM(REGEXP_REPLACE(subprogram_code, '\s+', ' ')) AS subprogram_code,
+        TRIM(REGEXP_REPLACE(subprogram_name, '\s+', ' ')) AS subprogram_name,
+        
+
+        -- === ACCOUNTING CODES ===
+        TRIM(REGEXP_REPLACE(object_code::varchar, '\s+', ' ')) AS object_code,
+        TRIM(REGEXP_REPLACE(object_name, '\s+', ' ')) AS object_name,
+        TRIM(REGEXP_REPLACE(comptroller_subobject_code::varchar, '\s+', ' ')) AS subobject_code,
+        TRIM(REGEXP_REPLACE(comptroller_subobject_name, '\s+', ' ')) AS subobject_name,
+        TRIM(REGEXP_REPLACE(agency_subobject_code::varchar, '\s+', ' ')) AS agency_subobject_code,
+        TRIM(REGEXP_REPLACE(agency_subobject_name, '\s+', ' ')) AS agency_subobject_name,
+
+        -- === BUDGET AMOUNTS ===
+        budget::bigint                              as amount,
+        TRIM(REGEXP_REPLACE(type, '\s+', ' ')) AS budget_type,
+        TRIM(REGEXP_REPLACE(fund_type_name, '\s+', ' ')) AS fund_type,
+
+        -- === BUDGET CATEGORY ===
+        TRIM(REGEXP_REPLACE(category::varchar, '\s+', ' ')) AS category_code,
+        TRIM(REGEXP_REPLACE(category_title, '\s+', ' ')) AS category_name,
+
+        -- === IT CLASSIFICATION (from pipeline) ===
+        is_it,
+        TRIM(REGEXP_REPLACE(it_designation, '\s+', ' ')) AS it_designation,
+        TRIM(REGEXP_REPLACE(tower, '\s+', ' ')) AS it_tower,
+        TRIM(REGEXP_REPLACE(sub_tower, '\s+', ' ')) AS it_sub_tower,
+        confidence as tower_confidence,
+        -- === COST POOL CLASSIFICATION (from Agent 2) ===
+        CASE
+            WHEN TRIM(REGEXP_REPLACE(object_code::varchar, '\\s+', ' ')) = '12' THEN 'Grants'
+            ELSE TRIM(REGEXP_REPLACE(cost_pool, '\\s+', ' '))
+        END AS cost_pool,
+        TRIM(REGEXP_REPLACE(cost_sub_pool, '\\s+', ' ')) AS cost_sub_pool
+
+    from source
+    where agency_code != 'R75'
+)
+
+select * from staged
+  );
+
+[0m12:33:28.941608 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.stg_fte_line_items"
+[0m12:33:28.946710 [debug] [Thread-2 (]: SQL status: OK in 0.004 seconds
+[0m12:33:28.946710 [debug] [Thread-4 (]: On model.mbtsa.stg_fte_line_items: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.stg_fte_line_items"} */
+alter view "mbtsa_work"."main_staging"."stg_fte_line_items" rename to "stg_fte_line_items__dbt_backup"
+[0m12:33:28.950724 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.metricflow_time_spine"
+[0m12:33:28.950724 [debug] [Thread-2 (]: On model.mbtsa.metricflow_time_spine: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.metricflow_time_spine"} */
+alter table "mbtsa_work"."main"."metricflow_time_spine" rename to "metricflow_time_spine__dbt_backup"
+[0m12:33:28.950724 [debug] [Thread-1 (]: SQL status: OK in 0.008 seconds
+[0m12:33:28.950724 [debug] [Thread-3 (]: SQL status: OK in 0.006 seconds
+[0m12:33:28.953820 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.custom_metrics_calendar"
+[0m12:33:28.956700 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.stg_budget_line_items"
+[0m12:33:28.956700 [debug] [Thread-4 (]: SQL status: OK in 0.005 seconds
+[0m12:33:28.956700 [debug] [Thread-2 (]: SQL status: OK in 0.005 seconds
+[0m12:33:28.956700 [debug] [Thread-1 (]: On model.mbtsa.custom_metrics_calendar: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.custom_metrics_calendar"} */
+alter table "mbtsa_work"."main"."custom_metrics_calendar" rename to "custom_metrics_calendar__dbt_backup"
+[0m12:33:28.957712 [debug] [Thread-3 (]: On model.mbtsa.stg_budget_line_items: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.stg_budget_line_items"} */
+alter view "mbtsa_work"."main_staging"."stg_budget_line_items" rename to "stg_budget_line_items__dbt_backup"
+[0m12:33:28.960633 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.stg_fte_line_items"
+[0m12:33:28.962682 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.metricflow_time_spine"
+[0m12:33:28.962682 [debug] [Thread-4 (]: On model.mbtsa.stg_fte_line_items: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.stg_fte_line_items"} */
+alter view "mbtsa_work"."main_staging"."stg_fte_line_items__dbt_tmp" rename to "stg_fte_line_items"
+[0m12:33:28.962682 [debug] [Thread-3 (]: SQL status: OK in 0.001 seconds
+[0m12:33:28.964789 [debug] [Thread-1 (]: SQL status: OK in 0.001 seconds
+[0m12:33:28.964789 [debug] [Thread-2 (]: On model.mbtsa.metricflow_time_spine: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.metricflow_time_spine"} */
+alter table "mbtsa_work"."main"."metricflow_time_spine__dbt_tmp" rename to "metricflow_time_spine"
+[0m12:33:28.967604 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.stg_budget_line_items"
+[0m12:33:28.967604 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.custom_metrics_calendar"
+[0m12:33:28.967604 [debug] [Thread-4 (]: SQL status: OK in 0.004 seconds
+[0m12:33:28.970796 [debug] [Thread-3 (]: On model.mbtsa.stg_budget_line_items: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.stg_budget_line_items"} */
+alter view "mbtsa_work"."main_staging"."stg_budget_line_items__dbt_tmp" rename to "stg_budget_line_items"
+[0m12:33:28.970796 [debug] [Thread-1 (]: On model.mbtsa.custom_metrics_calendar: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.custom_metrics_calendar"} */
+alter table "mbtsa_work"."main"."custom_metrics_calendar__dbt_tmp" rename to "custom_metrics_calendar"
+[0m12:33:28.978074 [debug] [Thread-4 (]: On model.mbtsa.stg_fte_line_items: COMMIT
+[0m12:33:28.978074 [debug] [Thread-2 (]: SQL status: OK in 0.013 seconds
+[0m12:33:28.978074 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.stg_fte_line_items"
+[0m12:33:28.978074 [debug] [Thread-3 (]: SQL status: OK in 0.001 seconds
+[0m12:33:28.986803 [debug] [Thread-4 (]: On model.mbtsa.stg_fte_line_items: COMMIT
+[0m12:33:28.990032 [debug] [Thread-2 (]: On model.mbtsa.metricflow_time_spine: COMMIT
+[0m12:33:28.990032 [debug] [Thread-1 (]: SQL status: OK in 0.005 seconds
+[0m12:33:28.991560 [debug] [Thread-3 (]: On model.mbtsa.stg_budget_line_items: COMMIT
+[0m12:33:28.992446 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.metricflow_time_spine"
+[0m12:33:28.993712 [debug] [Thread-1 (]: On model.mbtsa.custom_metrics_calendar: COMMIT
+[0m12:33:28.994720 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.stg_budget_line_items"
+[0m12:33:28.994720 [debug] [Thread-2 (]: On model.mbtsa.metricflow_time_spine: COMMIT
+[0m12:33:28.994720 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.custom_metrics_calendar"
+[0m12:33:28.994720 [debug] [Thread-3 (]: On model.mbtsa.stg_budget_line_items: COMMIT
+[0m12:33:28.996250 [debug] [Thread-1 (]: On model.mbtsa.custom_metrics_calendar: COMMIT
+[0m12:33:29.032993 [debug] [Thread-4 (]: SQL status: OK in 0.041 seconds
+[0m12:33:29.036537 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.stg_fte_line_items"
+[0m12:33:29.036537 [debug] [Thread-4 (]: On model.mbtsa.stg_fte_line_items: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.stg_fte_line_items"} */
+drop view if exists "mbtsa_work"."main_staging"."stg_fte_line_items__dbt_backup" cascade
+[0m12:33:29.036537 [debug] [Thread-1 (]: SQL status: OK in 0.041 seconds
+[0m12:33:29.036537 [debug] [Thread-3 (]: SQL status: OK in 0.042 seconds
+[0m12:33:29.036537 [debug] [Thread-2 (]: SQL status: OK in 0.043 seconds
+[0m12:33:29.036537 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.custom_metrics_calendar"
+[0m12:33:29.042576 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.stg_budget_line_items"
+[0m12:33:29.042576 [debug] [Thread-4 (]: SQL status: OK in 0.005 seconds
+[0m12:33:29.044631 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.metricflow_time_spine"
+[0m12:33:29.044631 [debug] [Thread-1 (]: On model.mbtsa.custom_metrics_calendar: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.custom_metrics_calendar"} */
+drop table if exists "mbtsa_work"."main"."custom_metrics_calendar__dbt_backup" cascade
+[0m12:33:29.044631 [debug] [Thread-3 (]: On model.mbtsa.stg_budget_line_items: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.stg_budget_line_items"} */
+drop view if exists "mbtsa_work"."main_staging"."stg_budget_line_items__dbt_backup" cascade
+[0m12:33:29.044631 [debug] [Thread-4 (]: On model.mbtsa.stg_fte_line_items: Close
+[0m12:33:29.044631 [debug] [Thread-2 (]: On model.mbtsa.metricflow_time_spine: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.metricflow_time_spine"} */
+drop table if exists "mbtsa_work"."main"."metricflow_time_spine__dbt_backup" cascade
+[0m12:33:29.050547 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A3D7F560>]}
+[0m12:33:29.050547 [debug] [Thread-1 (]: SQL status: OK in 0.002 seconds
+[0m12:33:29.053221 [debug] [Thread-1 (]: On model.mbtsa.custom_metrics_calendar: Close
+[0m12:33:29.053221 [debug] [Thread-3 (]: SQL status: OK in 0.004 seconds
+[0m12:33:29.050547 [info ] [Thread-4 (]: 4 of 15 OK created sql view model main_staging.stg_fte_line_items .............. [[32mOK[0m in 0.31s]
+[0m12:33:29.053221 [debug] [Thread-2 (]: SQL status: OK in 0.004 seconds
+[0m12:33:29.053221 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A3D7F5F0>]}
+[0m12:33:29.054435 [debug] [Thread-3 (]: On model.mbtsa.stg_budget_line_items: Close
+[0m12:33:29.054435 [debug] [Thread-4 (]: Finished running node model.mbtsa.stg_fte_line_items
+[0m12:33:29.054435 [debug] [Thread-2 (]: On model.mbtsa.metricflow_time_spine: Close
+[0m12:33:29.057072 [info ] [Thread-1 (]: 1 of 15 OK created sql table model main.custom_metrics_calendar ................ [[32mOK[0m in 0.33s]
+[0m12:33:29.057580 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A3D7F620>]}
+[0m12:33:29.058398 [debug] [Thread-4 (]: Began running node model.mbtsa.fct_fte_counts
+[0m12:33:29.058963 [debug] [Thread-1 (]: Finished running node model.mbtsa.custom_metrics_calendar
+[0m12:33:29.060970 [info ] [Thread-3 (]: 3 of 15 OK created sql view model main_staging.stg_budget_line_items ........... [[32mOK[0m in 0.33s]
+[0m12:33:29.060970 [info ] [Thread-4 (]: 5 of 15 START sql table model main_marts.fct_fte_counts ........................ [RUN]
+[0m12:33:29.062794 [debug] [Thread-3 (]: Finished running node model.mbtsa.stg_budget_line_items
+[0m12:33:29.062794 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.mbtsa.stg_fte_line_items, now model.mbtsa.fct_fte_counts)
+[0m12:33:29.063816 [debug] [Thread-4 (]: Began compiling node model.mbtsa.fct_fte_counts
+[0m12:33:29.065012 [debug] [Thread-4 (]: Writing injected SQL for node "model.mbtsa.fct_fte_counts"
+[0m12:33:29.066762 [debug] [Thread-1 (]: Began running node model.mbtsa.dim_agency
+[0m12:33:29.066762 [debug] [Thread-3 (]: Began running node model.mbtsa.dim_program
+[0m12:33:29.067887 [info ] [Thread-1 (]: 6 of 15 START sql table model main_marts.dim_agency ............................ [RUN]
+[0m12:33:29.067887 [debug] [Thread-4 (]: Began executing node model.mbtsa.fct_fte_counts
+[0m12:33:29.070019 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.mbtsa.custom_metrics_calendar, now model.mbtsa.dim_agency)
+[0m12:33:29.072815 [debug] [Thread-4 (]: Writing runtime sql for node "model.mbtsa.fct_fte_counts"
+[0m12:33:29.067887 [info ] [Thread-3 (]: 7 of 15 START sql table model main_marts.dim_program ........................... [RUN]
+[0m12:33:29.074827 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly model.mbtsa.stg_budget_line_items, now model.mbtsa.dim_program)
+[0m12:33:29.072815 [debug] [Thread-1 (]: Began compiling node model.mbtsa.dim_agency
+[0m12:33:29.074827 [debug] [Thread-3 (]: Began compiling node model.mbtsa.dim_program
+[0m12:33:29.079727 [debug] [Thread-1 (]: Writing injected SQL for node "model.mbtsa.dim_agency"
+[0m12:33:29.082062 [debug] [Thread-3 (]: Writing injected SQL for node "model.mbtsa.dim_program"
+[0m12:33:29.082062 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_fte_counts"
+[0m12:33:29.083559 [debug] [Thread-4 (]: On model.mbtsa.fct_fte_counts: BEGIN
+[0m12:33:29.083559 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m12:33:29.083559 [debug] [Thread-3 (]: Began executing node model.mbtsa.dim_program
+[0m12:33:29.085233 [debug] [Thread-1 (]: Began executing node model.mbtsa.dim_agency
+[0m12:33:29.087899 [debug] [Thread-3 (]: Writing runtime sql for node "model.mbtsa.dim_program"
+[0m12:33:29.090469 [debug] [Thread-1 (]: Writing runtime sql for node "model.mbtsa.dim_agency"
+[0m12:33:29.091702 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.dim_program"
+[0m12:33:29.092386 [debug] [Thread-3 (]: On model.mbtsa.dim_program: BEGIN
+[0m12:33:29.092386 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m12:33:29.092386 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.dim_agency"
+[0m12:33:29.094451 [debug] [Thread-1 (]: On model.mbtsa.dim_agency: BEGIN
+[0m12:33:29.094451 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m12:33:29.100050 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A3D86C60>]}
+[0m12:33:29.101285 [info ] [Thread-2 (]: 2 of 15 OK created sql table model main.metricflow_time_spine .................. [[32mOK[0m in 0.37s]
+[0m12:33:29.101285 [debug] [Thread-2 (]: Finished running node model.mbtsa.metricflow_time_spine
+[0m12:33:29.101285 [debug] [Thread-2 (]: Began running node model.mbtsa.dim_subprograms
+[0m12:33:29.101285 [info ] [Thread-2 (]: 8 of 15 START sql table model main_marts.dim_subprograms ....................... [RUN]
+[0m12:33:29.101285 [debug] [Thread-2 (]: Re-using an available connection from the pool (formerly model.mbtsa.metricflow_time_spine, now model.mbtsa.dim_subprograms)
+[0m12:33:29.101285 [debug] [Thread-2 (]: Began compiling node model.mbtsa.dim_subprograms
+[0m12:33:29.104417 [debug] [Thread-2 (]: Writing injected SQL for node "model.mbtsa.dim_subprograms"
+[0m12:33:29.106193 [debug] [Thread-2 (]: Began executing node model.mbtsa.dim_subprograms
+[0m12:33:29.109193 [debug] [Thread-2 (]: Writing runtime sql for node "model.mbtsa.dim_subprograms"
+[0m12:33:29.109193 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.dim_subprograms"
+[0m12:33:29.111070 [debug] [Thread-2 (]: On model.mbtsa.dim_subprograms: BEGIN
+[0m12:33:29.111070 [debug] [Thread-2 (]: Opening a new connection, currently in state closed
+[0m12:33:29.118625 [debug] [Thread-1 (]: SQL status: OK in 0.027 seconds
+[0m12:33:29.118625 [debug] [Thread-4 (]: SQL status: OK in 0.038 seconds
+[0m12:33:29.118625 [debug] [Thread-3 (]: SQL status: OK in 0.029 seconds
+[0m12:33:29.118625 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.dim_agency"
+[0m12:33:29.118625 [debug] [Thread-2 (]: SQL status: OK in 0.011 seconds
+[0m12:33:29.118625 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_fte_counts"
+[0m12:33:29.118625 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.dim_program"
+[0m12:33:29.118625 [debug] [Thread-1 (]: On model.mbtsa.dim_agency: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_agency"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."dim_agency__dbt_tmp"
+  
+    as (
+      /*
+    dim_agency
+    ==========
+    Agency dimension — one row per agency.
+*/
+
+with agencies as (
+    select distinct
+        agency_code,
+        agency_name,
+        category_code,
+        category_name
+    from "mbtsa_work"."main_staging"."stg_budget_line_items"
+)
+
+select
+    agency_code,
+    agency_name,
+    category_code,
+    category_name
+from agencies
+    );
+  
+  
+[0m12:33:29.118625 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.dim_subprograms"
+[0m12:33:29.118625 [debug] [Thread-4 (]: On model.mbtsa.fct_fte_counts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_fte_counts"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_fte_counts__dbt_tmp"
+  
+    as (
+      /*
+    fct_fte_counts
+    ==============
+    FTE headcount aggregation for dashboard reporting.
+
+    Grain: one row per fiscal_year x agency_code x agency_name x unit_code x unit_name x program_code x program_name x organization_code.
+    Measure: total FTE count at that grain.
+*/
+
+with base as (
+	select
+		fiscal_year,
+		agency_code,
+		agency_name,
+		unit_code,
+		unit_name,
+		program_code,
+		program_name,
+		organization_code,
+		fte_count
+	from "mbtsa_work"."main_staging"."stg_fte_line_items"
+	where fte_count is not null
+),
+
+final as (
+	select
+		fiscal_year,
+		agency_code,
+		agency_name,
+		unit_code,
+		unit_name,
+		program_code,
+		program_name,
+		organization_code,
+		sum(fte_count) as total_fte_count
+	from base
+	group by 1, 2, 3, 4, 5, 6, 7, 8
+)
+
+select *
+from final
+order by fiscal_year desc, agency_code, unit_code, program_code
+    );
+  
+  
+[0m12:33:29.118625 [debug] [Thread-3 (]: On model.mbtsa.dim_program: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_program"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."dim_program__dbt_tmp"
+  
+    as (
+      /*
+    dim_program
+    ===========
+    Program/ dimension.
+*/
+
+with programs as (
+    select distinct
+        organization_code,
+        agency_code,
+        agency_name,
+        unit_code,
+        unit_name,
+        program_code,
+        program_name,
+    from "mbtsa_work"."main_staging"."stg_budget_line_items"
+)
+
+select * from programs
+    );
+  
+  
+[0m12:33:29.118625 [debug] [Thread-2 (]: On model.mbtsa.dim_subprograms: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_subprograms"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."dim_subprograms__dbt_tmp"
+  
+    as (
+      /*
+    dim_program
+    ===========
+    Program/subprogram dimension with IT designation.
+*/
+
+with programs as (
+    select distinct
+        organization_code,
+        agency_code,
+        agency_name,
+        unit_code,
+        unit_name,
+        program_code,
+        program_name,
+        subprogram_code,
+        subprogram_name,
+        is_it,
+        it_designation,
+        it_tower,
+        it_sub_tower
+    from "mbtsa_work"."main_staging"."stg_budget_line_items"
+)
+
+select * from programs
+    );
+  
+  
+[0m12:33:29.160976 [debug] [Thread-4 (]: SQL status: OK in 0.036 seconds
+[0m12:33:29.165133 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_fte_counts"
+[0m12:33:29.165133 [debug] [Thread-4 (]: On model.mbtsa.fct_fte_counts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_fte_counts"} */
+alter table "mbtsa_work"."main_marts"."fct_fte_counts" rename to "fct_fte_counts__dbt_backup"
+[0m12:33:29.169142 [debug] [Thread-4 (]: SQL status: OK in 0.003 seconds
+[0m12:33:29.188425 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_fte_counts"
+[0m12:33:29.188425 [debug] [Thread-4 (]: On model.mbtsa.fct_fte_counts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_fte_counts"} */
+alter table "mbtsa_work"."main_marts"."fct_fte_counts__dbt_tmp" rename to "fct_fte_counts"
+[0m12:33:29.190430 [debug] [Thread-4 (]: SQL status: OK in 0.001 seconds
+[0m12:33:29.200802 [debug] [Thread-4 (]: On model.mbtsa.fct_fte_counts: COMMIT
+[0m12:33:29.202808 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_fte_counts"
+[0m12:33:29.202808 [debug] [Thread-4 (]: On model.mbtsa.fct_fte_counts: COMMIT
+[0m12:33:29.222231 [debug] [Thread-4 (]: SQL status: OK in 0.020 seconds
+[0m12:33:29.226255 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_fte_counts"
+[0m12:33:29.228262 [debug] [Thread-4 (]: On model.mbtsa.fct_fte_counts: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_fte_counts"} */
+drop table if exists "mbtsa_work"."main_marts"."fct_fte_counts__dbt_backup" cascade
+[0m12:33:29.234274 [debug] [Thread-4 (]: SQL status: OK in 0.006 seconds
+[0m12:33:29.238197 [debug] [Thread-4 (]: On model.mbtsa.fct_fte_counts: Close
+[0m12:33:29.238197 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A3DD8050>]}
+[0m12:33:29.240200 [info ] [Thread-4 (]: 5 of 15 OK created sql table model main_marts.fct_fte_counts ................... [[32mOK[0m in 0.18s]
+[0m12:33:29.252112 [debug] [Thread-4 (]: Finished running node model.mbtsa.fct_fte_counts
+[0m12:33:29.254118 [debug] [Thread-4 (]: Began running node model.mbtsa.fct_it_spend
+[0m12:33:29.254118 [info ] [Thread-4 (]: 9 of 15 START sql table model main_marts.fct_it_spend .......................... [RUN]
+[0m12:33:29.256121 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.mbtsa.fct_fte_counts, now model.mbtsa.fct_it_spend)
+[0m12:33:29.256121 [debug] [Thread-4 (]: Began compiling node model.mbtsa.fct_it_spend
+[0m12:33:29.321091 [debug] [Thread-4 (]: Writing injected SQL for node "model.mbtsa.fct_it_spend"
+[0m12:33:29.323095 [debug] [Thread-4 (]: Began executing node model.mbtsa.fct_it_spend
+[0m12:33:29.332624 [debug] [Thread-4 (]: Writing runtime sql for node "model.mbtsa.fct_it_spend"
+[0m12:33:29.334629 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_it_spend"
+[0m12:33:29.336634 [debug] [Thread-4 (]: On model.mbtsa.fct_it_spend: BEGIN
+[0m12:33:29.336634 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m12:33:29.338639 [debug] [Thread-4 (]: SQL status: OK in 0.001 seconds
+[0m12:33:29.338639 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_it_spend"
+[0m12:33:29.340386 [debug] [Thread-4 (]: On model.mbtsa.fct_it_spend: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_it_spend"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_it_spend__dbt_tmp"
+  
+    as (
+      /*
+    fct_it_spend
+    =============
+    Fact table for all IT-classified budget line items.
+    This is the primary table for TBM analysis.
+    
+    Contains both IT and non-IT rows so stakeholders can compute
+    IT-as-percentage-of-total. Use is_it = true to filter to IT only.
+    
+    Grain: same as staging — one row per budget line item.
+*/
+
+with budget as (
+    select * from "mbtsa_work"."main_staging"."stg_budget_line_items"
+),
+
+normalized as (
+    select
+        *,
+        case
+            when upper(trim(cast(it_tower as varchar))) = 'NOT_IT' then false
+            else coalesce(is_it, false)
+        end as is_it_normalized,
+        case
+            when upper(trim(cast(it_tower as varchar))) = 'NOT_IT' then null
+            else it_tower
+        end as it_tower_normalized,
+        case
+            when upper(trim(cast(it_tower as varchar))) = 'NOT_IT' then null
+            else it_sub_tower
+        end as it_sub_tower_normalized,
+        case
+            when upper(trim(cast(it_tower as varchar))) = 'NOT_IT' then null
+            else tower_confidence
+        end as tower_confidence_normalized
+    from budget
+),
+
+final as (
+    select
+        -- === SURROGATE KEY ===
+        md5(cast(coalesce(cast(fiscal_year as 
+    string
+), '') || '-' || coalesce(cast(organization_sub_code as 
+    string
+), '') || '-' || coalesce(cast(subobject_code as 
+    string
+), '') || '-' || coalesce(cast(agency_subobject_code as 
+    string
+), '') || '-' || coalesce(cast(fund_type as 
+    string
+), '') || '-' || coalesce(cast(budget_type as 
+    string
+), '') as 
+    string
+))                                       as spend_id,
+
+        -- === TIME ===
+        fiscal_year,
+        
+        -- === ORGANIZATIONAL DIMENSIONS ===
+        agency_code,
+        agency_name,
+        unit_code,
+        unit_name,
+        program_code,
+        program_name,
+        subprogram_code,
+        subprogram_name,
+        organization_code,
+        organization_sub_code,
+
+        -- === ACCOUNTING DIMENSIONS ===
+        object_code,
+        object_name,
+        subobject_code,
+        subobject_name,
+        fund_type,
+        budget_type,
+        category_code,
+        category_name,
+
+        -- === TBM CLASSIFICATION ===
+        is_it_normalized                            as is_it,
+        it_designation,
+        
+        -- Tower (null for non-IT rows)
+        it_tower_normalized                         as it_tower,
+        it_sub_tower_normalized                     as it_sub_tower,
+        tower_confidence_normalized                 as tower_confidence,
+        
+        -- Cost Pool (populated for ALL rows)
+        cost_pool,
+        cost_sub_pool,
+
+        -- === MEASURE ===
+        amount,
+        
+        -- === DERIVED MEASURES ===
+        case when is_it_normalized then amount else 0 end      as it_amount,
+        case when not is_it_normalized then amount else 0 end  as non_it_amount
+
+    from normalized
+)
+
+select * from final
+    );
+  
+  
+[0m12:33:29.439424 [debug] [Thread-1 (]: SQL status: OK in 0.316 seconds
+[0m12:33:29.443499 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.dim_agency"
+[0m12:33:29.445506 [debug] [Thread-1 (]: On model.mbtsa.dim_agency: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_agency"} */
+alter table "mbtsa_work"."main_marts"."dim_agency" rename to "dim_agency__dbt_backup"
+[0m12:33:29.445506 [debug] [Thread-1 (]: SQL status: OK in 0.000 seconds
+[0m12:33:29.449534 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.dim_agency"
+[0m12:33:29.449534 [debug] [Thread-1 (]: On model.mbtsa.dim_agency: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_agency"} */
+alter table "mbtsa_work"."main_marts"."dim_agency__dbt_tmp" rename to "dim_agency"
+[0m12:33:29.451541 [debug] [Thread-1 (]: SQL status: OK in 0.000 seconds
+[0m12:33:29.453546 [debug] [Thread-1 (]: On model.mbtsa.dim_agency: COMMIT
+[0m12:33:29.453546 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.dim_agency"
+[0m12:33:29.453546 [debug] [Thread-1 (]: On model.mbtsa.dim_agency: COMMIT
+[0m12:33:29.455551 [debug] [Thread-1 (]: SQL status: OK in 0.001 seconds
+[0m12:33:29.459103 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.dim_agency"
+[0m12:33:29.459103 [debug] [Thread-1 (]: On model.mbtsa.dim_agency: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_agency"} */
+drop table if exists "mbtsa_work"."main_marts"."dim_agency__dbt_backup" cascade
+[0m12:33:29.460185 [debug] [Thread-1 (]: SQL status: OK in 0.001 seconds
+[0m12:33:29.462192 [debug] [Thread-1 (]: On model.mbtsa.dim_agency: Close
+[0m12:33:29.464197 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A3DD1C70>]}
+[0m12:33:29.464197 [info ] [Thread-1 (]: 6 of 15 OK created sql table model main_marts.dim_agency ....................... [[32mOK[0m in 0.39s]
+[0m12:33:29.470212 [debug] [Thread-1 (]: Finished running node model.mbtsa.dim_agency
+[0m12:33:29.690761 [debug] [Thread-3 (]: SQL status: OK in 0.565 seconds
+[0m12:33:29.693866 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.dim_program"
+[0m12:33:29.693866 [debug] [Thread-3 (]: On model.mbtsa.dim_program: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_program"} */
+alter table "mbtsa_work"."main_marts"."dim_program" rename to "dim_program__dbt_backup"
+[0m12:33:29.695870 [debug] [Thread-3 (]: SQL status: OK in 0.001 seconds
+[0m12:33:29.699879 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.dim_program"
+[0m12:33:29.699879 [debug] [Thread-3 (]: On model.mbtsa.dim_program: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_program"} */
+alter table "mbtsa_work"."main_marts"."dim_program__dbt_tmp" rename to "dim_program"
+[0m12:33:29.699879 [debug] [Thread-3 (]: SQL status: OK in 0.000 seconds
+[0m12:33:29.701884 [debug] [Thread-3 (]: On model.mbtsa.dim_program: COMMIT
+[0m12:33:29.701884 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.dim_program"
+[0m12:33:29.701884 [debug] [Thread-3 (]: On model.mbtsa.dim_program: COMMIT
+[0m12:33:29.743680 [debug] [Thread-3 (]: SQL status: OK in 0.041 seconds
+[0m12:33:29.746853 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.dim_program"
+[0m12:33:29.746853 [debug] [Thread-3 (]: On model.mbtsa.dim_program: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_program"} */
+drop table if exists "mbtsa_work"."main_marts"."dim_program__dbt_backup" cascade
+[0m12:33:29.748858 [debug] [Thread-3 (]: SQL status: OK in 0.002 seconds
+[0m12:33:29.750863 [debug] [Thread-3 (]: On model.mbtsa.dim_program: Close
+[0m12:33:29.750863 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A3D48500>]}
+[0m12:33:29.750863 [info ] [Thread-3 (]: 7 of 15 OK created sql table model main_marts.dim_program ...................... [[32mOK[0m in 0.68s]
+[0m12:33:29.750863 [debug] [Thread-3 (]: Finished running node model.mbtsa.dim_program
+[0m12:33:29.794815 [debug] [Thread-2 (]: SQL status: OK in 0.668 seconds
+[0m12:33:29.795852 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.dim_subprograms"
+[0m12:33:29.799438 [debug] [Thread-2 (]: On model.mbtsa.dim_subprograms: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_subprograms"} */
+alter table "mbtsa_work"."main_marts"."dim_subprograms" rename to "dim_subprograms__dbt_backup"
+[0m12:33:29.799438 [debug] [Thread-2 (]: SQL status: OK in 0.001 seconds
+[0m12:33:29.802959 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.dim_subprograms"
+[0m12:33:29.802959 [debug] [Thread-2 (]: On model.mbtsa.dim_subprograms: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_subprograms"} */
+alter table "mbtsa_work"."main_marts"."dim_subprograms__dbt_tmp" rename to "dim_subprograms"
+[0m12:33:29.802959 [debug] [Thread-2 (]: SQL status: OK in 0.000 seconds
+[0m12:33:29.805747 [debug] [Thread-2 (]: On model.mbtsa.dim_subprograms: COMMIT
+[0m12:33:29.805747 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.dim_subprograms"
+[0m12:33:29.805747 [debug] [Thread-2 (]: On model.mbtsa.dim_subprograms: COMMIT
+[0m12:33:29.851036 [debug] [Thread-2 (]: SQL status: OK in 0.045 seconds
+[0m12:33:29.855063 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.dim_subprograms"
+[0m12:33:29.855063 [debug] [Thread-2 (]: On model.mbtsa.dim_subprograms: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.dim_subprograms"} */
+drop table if exists "mbtsa_work"."main_marts"."dim_subprograms__dbt_backup" cascade
+[0m12:33:29.857068 [debug] [Thread-2 (]: SQL status: OK in 0.002 seconds
+[0m12:33:29.860326 [debug] [Thread-2 (]: On model.mbtsa.dim_subprograms: Close
+[0m12:33:29.860326 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A3D3FE60>]}
+[0m12:33:29.860326 [info ] [Thread-2 (]: 8 of 15 OK created sql table model main_marts.dim_subprograms .................. [[32mOK[0m in 0.76s]
+[0m12:33:29.862421 [debug] [Thread-2 (]: Finished running node model.mbtsa.dim_subprograms
+[0m12:33:33.111448 [debug] [Thread-4 (]: SQL status: OK in 3.772 seconds
+[0m12:33:33.116411 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_it_spend"
+[0m12:33:33.117434 [debug] [Thread-4 (]: On model.mbtsa.fct_it_spend: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_it_spend"} */
+alter table "mbtsa_work"."main_marts"."fct_it_spend" rename to "fct_it_spend__dbt_backup"
+[0m12:33:33.118570 [debug] [Thread-4 (]: SQL status: OK in 0.000 seconds
+[0m12:33:33.120072 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_it_spend"
+[0m12:33:33.120072 [debug] [Thread-4 (]: On model.mbtsa.fct_it_spend: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_it_spend"} */
+alter table "mbtsa_work"."main_marts"."fct_it_spend__dbt_tmp" rename to "fct_it_spend"
+[0m12:33:33.122041 [debug] [Thread-4 (]: SQL status: OK in 0.000 seconds
+[0m12:33:33.122041 [debug] [Thread-4 (]: On model.mbtsa.fct_it_spend: COMMIT
+[0m12:33:33.122041 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_it_spend"
+[0m12:33:33.122041 [debug] [Thread-4 (]: On model.mbtsa.fct_it_spend: COMMIT
+[0m12:33:33.195847 [debug] [Thread-4 (]: SQL status: OK in 0.072 seconds
+[0m12:33:33.199304 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_it_spend"
+[0m12:33:33.200789 [debug] [Thread-4 (]: On model.mbtsa.fct_it_spend: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_it_spend"} */
+drop table if exists "mbtsa_work"."main_marts"."fct_it_spend__dbt_backup" cascade
+[0m12:33:33.203827 [debug] [Thread-4 (]: SQL status: OK in 0.003 seconds
+[0m12:33:33.205052 [debug] [Thread-4 (]: On model.mbtsa.fct_it_spend: Close
+[0m12:33:33.337684 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A8DA3BF0>]}
+[0m12:33:33.340508 [info ] [Thread-4 (]: 9 of 15 OK created sql table model main_marts.fct_it_spend ..................... [[32mOK[0m in 4.08s]
+[0m12:33:33.340508 [debug] [Thread-4 (]: Finished running node model.mbtsa.fct_it_spend
+[0m12:33:33.340508 [debug] [Thread-1 (]: Began running node model.mbtsa.fct_agency_level
+[0m12:33:33.340508 [debug] [Thread-3 (]: Began running node model.mbtsa.fct_budget_anomalies
+[0m12:33:33.343158 [debug] [Thread-2 (]: Began running node model.mbtsa.fct_budget_anomalies_deep
+[0m12:33:33.343158 [info ] [Thread-1 (]: 10 of 15 START sql table model main_marts.fct_agency_level ..................... [RUN]
+[0m12:33:33.343158 [debug] [Thread-4 (]: Began running node model.mbtsa.fct_cost_pool_level
+[0m12:33:33.343158 [info ] [Thread-3 (]: 11 of 15 START sql table model main_marts.fct_budget_anomalies ................. [RUN]
+[0m12:33:33.346305 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.mbtsa.dim_agency, now model.mbtsa.fct_agency_level)
+[0m12:33:33.345169 [info ] [Thread-2 (]: 12 of 15 START sql table model main_marts.fct_budget_anomalies_deep ............ [RUN]
+[0m12:33:33.348054 [debug] [Thread-3 (]: Re-using an available connection from the pool (formerly model.mbtsa.dim_program, now model.mbtsa.fct_budget_anomalies)
+[0m12:33:33.346305 [info ] [Thread-4 (]: 13 of 15 START sql table model main_marts.fct_cost_pool_level .................. [RUN]
+[0m12:33:33.348054 [debug] [Thread-1 (]: Began compiling node model.mbtsa.fct_agency_level
+[0m12:33:33.348054 [debug] [Thread-2 (]: Re-using an available connection from the pool (formerly model.mbtsa.dim_subprograms, now model.mbtsa.fct_budget_anomalies_deep)
+[0m12:33:33.349543 [debug] [Thread-3 (]: Began compiling node model.mbtsa.fct_budget_anomalies
+[0m12:33:33.349543 [debug] [Thread-4 (]: Re-using an available connection from the pool (formerly model.mbtsa.fct_it_spend, now model.mbtsa.fct_cost_pool_level)
+[0m12:33:33.356215 [debug] [Thread-1 (]: Writing injected SQL for node "model.mbtsa.fct_agency_level"
+[0m12:33:33.357472 [debug] [Thread-2 (]: Began compiling node model.mbtsa.fct_budget_anomalies_deep
+[0m12:33:33.362326 [debug] [Thread-3 (]: Writing injected SQL for node "model.mbtsa.fct_budget_anomalies"
+[0m12:33:33.362326 [debug] [Thread-4 (]: Began compiling node model.mbtsa.fct_cost_pool_level
+[0m12:33:33.370520 [debug] [Thread-2 (]: Writing injected SQL for node "model.mbtsa.fct_budget_anomalies_deep"
+[0m12:33:33.374296 [debug] [Thread-4 (]: Writing injected SQL for node "model.mbtsa.fct_cost_pool_level"
+[0m12:33:33.374296 [debug] [Thread-1 (]: Began executing node model.mbtsa.fct_agency_level
+[0m12:33:33.374296 [debug] [Thread-1 (]: Writing runtime sql for node "model.mbtsa.fct_agency_level"
+[0m12:33:33.374296 [debug] [Thread-3 (]: Began executing node model.mbtsa.fct_budget_anomalies
+[0m12:33:33.380451 [debug] [Thread-3 (]: Writing runtime sql for node "model.mbtsa.fct_budget_anomalies"
+[0m12:33:33.380451 [debug] [Thread-4 (]: Began executing node model.mbtsa.fct_cost_pool_level
+[0m12:33:33.384910 [debug] [Thread-4 (]: Writing runtime sql for node "model.mbtsa.fct_cost_pool_level"
+[0m12:33:33.384910 [debug] [Thread-2 (]: Began executing node model.mbtsa.fct_budget_anomalies_deep
+[0m12:33:33.390924 [debug] [Thread-2 (]: Writing runtime sql for node "model.mbtsa.fct_budget_anomalies_deep"
+[0m12:33:33.390924 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_agency_level"
+[0m12:33:33.392117 [debug] [Thread-1 (]: On model.mbtsa.fct_agency_level: BEGIN
+[0m12:33:33.393442 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies"
+[0m12:33:33.393442 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m12:33:33.393442 [debug] [Thread-3 (]: On model.mbtsa.fct_budget_anomalies: BEGIN
+[0m12:33:33.393442 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies_deep"
+[0m12:33:33.393442 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m12:33:33.395356 [debug] [Thread-3 (]: Opening a new connection, currently in state closed
+[0m12:33:33.395356 [debug] [Thread-2 (]: On model.mbtsa.fct_budget_anomalies_deep: BEGIN
+[0m12:33:33.395356 [debug] [Thread-4 (]: On model.mbtsa.fct_cost_pool_level: BEGIN
+[0m12:33:33.395356 [debug] [Thread-2 (]: Opening a new connection, currently in state closed
+[0m12:33:33.395356 [debug] [Thread-4 (]: Opening a new connection, currently in state closed
+[0m12:33:33.418273 [debug] [Thread-3 (]: SQL status: OK in 0.023 seconds
+[0m12:33:33.418273 [debug] [Thread-1 (]: SQL status: OK in 0.025 seconds
+[0m12:33:33.418273 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies"
+[0m12:33:33.418273 [debug] [Thread-4 (]: SQL status: OK in 0.022 seconds
+[0m12:33:33.418273 [debug] [Thread-2 (]: SQL status: OK in 0.023 seconds
+[0m12:33:33.420377 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_agency_level"
+[0m12:33:33.420377 [debug] [Thread-3 (]: On model.mbtsa.fct_budget_anomalies: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_budget_anomalies"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_budget_anomalies__dbt_tmp"
+  
+    as (
+      /*
+    fct_budget_anomalies
+    ===================
+    Precomputed anomaly metrics across selectable hierarchy levels.
+
+    One row per (anomaly_level, entity, fiscal_year) with deviation
+    calculated against the full historical average for that entity.
+    Optional dashboard filters (agency/fund/category) should slice these
+    rows, not recalculate anomaly baselines.
+*/
+
+with base as (
+    select
+        fiscal_year,
+        agency_name,
+        unit_name,
+        program_name,
+        subprogram_name,
+        object_name,
+        subobject_name,
+        fund_type,
+        category_name,
+        amount
+    from "mbtsa_work"."main_marts"."fct_it_spend"
+    where amount is not null
+),
+
+by_level as (
+    select
+        'agency_name' as anomaly_level,
+        agency_name as entity,
+        fiscal_year,
+        sum(amount) as spend,
+        list(distinct agency_name) as agency_names,
+        list(distinct fund_type) as fund_types,
+        list(distinct category_name) as category_names
+    from base
+    where agency_name is not null
+    group by 1, 2, 3
+
+    union all
+
+    select
+        'unit_name' as anomaly_level,
+        unit_name as entity,
+        fiscal_year,
+        sum(amount) as spend,
+        list(distinct agency_name) as agency_names,
+        list(distinct fund_type) as fund_types,
+        list(distinct category_name) as category_names
+    from base
+    where unit_name is not null
+    group by 1, 2, 3
+
+    union all
+
+    select
+        'program_name' as anomaly_level,
+        program_name as entity,
+        fiscal_year,
+        sum(amount) as spend,
+        list(distinct agency_name) as agency_names,
+        list(distinct fund_type) as fund_types,
+        list(distinct category_name) as category_names
+    from base
+    where program_name is not null
+    group by 1, 2, 3
+
+    union all
+
+    select
+        'subprogram_name' as anomaly_level,
+        subprogram_name as entity,
+        fiscal_year,
+        sum(amount) as spend,
+        list(distinct agency_name) as agency_names,
+        list(distinct fund_type) as fund_types,
+        list(distinct category_name) as category_names
+    from base
+    where subprogram_name is not null
+    group by 1, 2, 3
+
+    union all
+
+    select
+        'object_name' as anomaly_level,
+        object_name as entity,
+        fiscal_year,
+        sum(amount) as spend,
+        list(distinct agency_name) as agency_names,
+        list(distinct fund_type) as fund_types,
+        list(distinct category_name) as category_names
+    from base
+    where object_name is not null
+    group by 1, 2, 3
+
+    union all
+
+    select
+        'subobject_name' as anomaly_level,
+        subobject_name as entity,
+        fiscal_year,
+        sum(amount) as spend,
+        list(distinct agency_name) as agency_names,
+        list(distinct fund_type) as fund_types,
+        list(distinct category_name) as category_names
+    from base
+    where subobject_name is not null
+    group by 1, 2, 3
+),
+
+scored as (
+    select
+        anomaly_level,
+        entity,
+        fiscal_year,
+        spend,
+        avg(spend) over (partition by anomaly_level, entity) as avg_spend,
+        count(*) over (partition by anomaly_level, entity) as year_count,
+        agency_names,
+        fund_types,
+        category_names
+    from by_level
+),
+
+final as (
+    select
+        md5(cast(coalesce(cast(anomaly_level as 
+    string
+), '') || '-' || coalesce(cast(entity as 
+    string
+), '') || '-' || coalesce(cast(fiscal_year as 
+    string
+), '') as 
+    string
+)) as anomaly_id,
+        anomaly_level,
+        entity,
+        fiscal_year,
+        spend,
+        avg_spend,
+        round((spend - avg_spend) * 100.0 / nullif(avg_spend, 0), 1) as deviation_pct,
+        abs(round((spend - avg_spend) * 100.0 / nullif(avg_spend, 0), 1)) as abs_deviation_pct,
+        case
+            when spend > avg_spend then 'positive'
+            when spend < avg_spend then 'negative'
+            else 'neutral'
+        end as deviation_direction,
+        year_count,
+        agency_names,
+        fund_types,
+        category_names
+    from scored
+)
+
+select * from final
+    );
+  
+  
+[0m12:33:33.420377 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m12:33:33.420377 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies_deep"
+[0m12:33:33.420377 [debug] [Thread-1 (]: On model.mbtsa.fct_agency_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_agency_level"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_agency_level__dbt_tmp"
+  
+    as (
+      /*
+	fct_agency_level
+	================
+	Agency-level budget aggregation for dashboard reporting.
+
+	Grain: one row per fiscal_year x fund_type x agency_code x agency_name.
+	Measure: total budget amount at that grain.
+*/
+
+with base as (
+	select
+		fiscal_year,
+		fund_type,
+		agency_code,
+		agency_name,
+		amount
+	from "mbtsa_work"."main_marts"."fct_it_spend"
+	where amount is not null
+),
+
+final as (
+	select
+		fiscal_year,
+		fund_type,
+		agency_code,
+		agency_name,
+		sum(amount) as total_budget_amount
+	from base
+	group by 1, 2, 3, 4
+)
+
+select *
+from final
+order by fiscal_year desc, agency_code
+    );
+  
+  
+[0m12:33:33.420377 [debug] [Thread-4 (]: On model.mbtsa.fct_cost_pool_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_cost_pool_level"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_cost_pool_level__dbt_tmp"
+  
+    as (
+      /*
+    fct_subprogram_level
+    ====================
+    Subprogram-level budget aggregation for dashboard reporting.
+
+    Grain: one row per fiscal_year x fund_type x agency_code x agency_name x unit_code x unit_name x program_code x program_name x subprogram_code x subprogram_name.
+    Measure: total budget amount at that grain.
+*/
+
+with base as (
+	select
+		*
+	from "mbtsa_work"."main_marts"."fct_it_spend"
+	where amount is not null
+),
+
+final as (
+	select
+		fiscal_year,
+		fund_type,
+		agency_code,
+		agency_name,
+		unit_code,
+		unit_name,
+		program_code,
+		program_name,
+		subprogram_code,
+		subprogram_name,
+		organization_code,
+		organization_sub_code,
+        organization_code,
+        organization_sub_code,
+        is_it,
+        it_designation,
+        it_tower,
+        it_sub_tower,
+        cost_pool,
+		sum(amount) as total_budget_amount
+	from base
+	group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+)
+
+select *
+from final
+order by fiscal_year desc,organization_code, organization_sub_code
+    );
+  
+  
+[0m12:33:33.420377 [debug] [Thread-2 (]: On model.mbtsa.fct_budget_anomalies_deep: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_budget_anomalies_deep"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_budget_anomalies_deep__dbt_tmp"
+  
+    as (
+      /*
+    fct_budget_anomalies_deep
+    ========================
+    Deep hierarchy anomaly metrics for root-cause drill-down.
+
+    One row per full hierarchy + fund_type + fiscal_year.
+*/
+
+with base as (
+    select
+        fiscal_year,
+        agency_name,
+        unit_name,
+        program_name,
+        subprogram_name,
+        object_name,
+        subobject_name,
+        fund_type,
+        category_name,
+        amount
+    from "mbtsa_work"."main_marts"."fct_it_spend"
+    where amount is not null
+),
+
+by_key as (
+    select
+        agency_name,
+        unit_name,
+        program_name,
+        subprogram_name,
+        object_name,
+        subobject_name,
+        fund_type,
+        fiscal_year,
+        sum(amount) as spend,
+        list(distinct category_name) as category_names
+    from base
+    where agency_name is not null
+      and unit_name is not null
+      and program_name is not null
+      and subprogram_name is not null
+      and object_name is not null
+      and subobject_name is not null
+      and fund_type is not null
+    group by 1, 2, 3, 4, 5, 6, 7, 8
+),
+
+scored as (
+    select
+        agency_name,
+        unit_name,
+        program_name,
+        subprogram_name,
+        object_name,
+        subobject_name,
+        fund_type,
+        fiscal_year,
+        spend,
+        avg(spend) over (
+            partition by
+                agency_name,
+                unit_name,
+                program_name,
+                subprogram_name,
+                object_name,
+                subobject_name,
+                fund_type
+        ) as avg_spend,
+        count(*) over (
+            partition by
+                agency_name,
+                unit_name,
+                program_name,
+                subprogram_name,
+                object_name,
+                subobject_name,
+                fund_type
+        ) as year_count,
+        category_names
+    from by_key
+),
+
+final as (
+    select
+        md5(cast(coalesce(cast(agency_name as 
+    string
+), '') || '-' || coalesce(cast(unit_name as 
+    string
+), '') || '-' || coalesce(cast(program_name as 
+    string
+), '') || '-' || coalesce(cast(subprogram_name as 
+    string
+), '') || '-' || coalesce(cast(object_name as 
+    string
+), '') || '-' || coalesce(cast(subobject_name as 
+    string
+), '') || '-' || coalesce(cast(fund_type as 
+    string
+), '') || '-' || coalesce(cast(fiscal_year as 
+    string
+), '') as 
+    string
+)) as deep_anomaly_id,
+        agency_name,
+        unit_name,
+        program_name,
+        subprogram_name,
+        object_name,
+        subobject_name,
+        fund_type,
+        fiscal_year,
+        spend,
+        avg_spend,
+        round((spend - avg_spend) * 100.0 / nullif(avg_spend, 0), 1) as deviation_pct,
+        abs(round((spend - avg_spend) * 100.0 / nullif(avg_spend, 0), 1)) as abs_deviation_pct,
+        case
+            when spend > avg_spend then 'positive'
+            when spend < avg_spend then 'negative'
+            else 'neutral'
+        end as deviation_direction,
+        year_count,
+        category_names
+    from scored
+)
+
+select * from final
+    );
+  
+  
+[0m12:33:33.499407 [debug] [Thread-1 (]: SQL status: OK in 0.076 seconds
+[0m12:33:33.502851 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_agency_level"
+[0m12:33:33.502851 [debug] [Thread-1 (]: On model.mbtsa.fct_agency_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_agency_level"} */
+alter table "mbtsa_work"."main_marts"."fct_agency_level" rename to "fct_agency_level__dbt_backup"
+[0m12:33:33.504859 [debug] [Thread-1 (]: SQL status: OK in 0.000 seconds
+[0m12:33:33.508373 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_agency_level"
+[0m12:33:33.508373 [debug] [Thread-1 (]: On model.mbtsa.fct_agency_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_agency_level"} */
+alter table "mbtsa_work"."main_marts"."fct_agency_level__dbt_tmp" rename to "fct_agency_level"
+[0m12:33:33.508373 [debug] [Thread-1 (]: SQL status: OK in 0.000 seconds
+[0m12:33:33.510401 [debug] [Thread-1 (]: On model.mbtsa.fct_agency_level: COMMIT
+[0m12:33:33.512409 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_agency_level"
+[0m12:33:33.512409 [debug] [Thread-1 (]: On model.mbtsa.fct_agency_level: COMMIT
+[0m12:33:33.516558 [debug] [Thread-1 (]: SQL status: OK in 0.003 seconds
+[0m12:33:33.519594 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_agency_level"
+[0m12:33:33.520010 [debug] [Thread-1 (]: On model.mbtsa.fct_agency_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_agency_level"} */
+drop table if exists "mbtsa_work"."main_marts"."fct_agency_level__dbt_backup" cascade
+[0m12:33:33.521761 [debug] [Thread-1 (]: SQL status: OK in 0.002 seconds
+[0m12:33:33.523774 [debug] [Thread-1 (]: On model.mbtsa.fct_agency_level: Close
+[0m12:33:33.523774 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A8DA8B30>]}
+[0m12:33:33.525785 [info ] [Thread-1 (]: 10 of 15 OK created sql table model main_marts.fct_agency_level ................ [[32mOK[0m in 0.18s]
+[0m12:33:33.538458 [debug] [Thread-1 (]: Finished running node model.mbtsa.fct_agency_level
+[0m12:33:33.538458 [debug] [Thread-1 (]: Began running node model.mbtsa.fct_it_budget
+[0m12:33:33.538458 [info ] [Thread-1 (]: 14 of 15 START sql table model main_marts.fct_it_budget ........................ [RUN]
+[0m12:33:33.556289 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.mbtsa.fct_agency_level, now model.mbtsa.fct_it_budget)
+[0m12:33:33.556289 [debug] [Thread-1 (]: Began compiling node model.mbtsa.fct_it_budget
+[0m12:33:33.560311 [debug] [Thread-1 (]: Writing injected SQL for node "model.mbtsa.fct_it_budget"
+[0m12:33:33.561583 [debug] [Thread-1 (]: Began executing node model.mbtsa.fct_it_budget
+[0m12:33:33.565602 [debug] [Thread-1 (]: Writing runtime sql for node "model.mbtsa.fct_it_budget"
+[0m12:33:33.566706 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_it_budget"
+[0m12:33:33.566706 [debug] [Thread-1 (]: On model.mbtsa.fct_it_budget: BEGIN
+[0m12:33:33.568716 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m12:33:33.569347 [debug] [Thread-1 (]: SQL status: OK in 0.001 seconds
+[0m12:33:33.569347 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_it_budget"
+[0m12:33:33.569347 [debug] [Thread-1 (]: On model.mbtsa.fct_it_budget: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_it_budget"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_it_budget__dbt_tmp"
+  
+    as (
+      /*
+	fct_it_budget
+	==================
+	Fact table containing only IT-classified budget line items.
+
+	This model selects rows where `is_it = true` from the
+	`fct_it_spend` fact so all IT-related columns (towers, cost
+	pools, designation, confidence, and IT measures) are preserved.
+
+	Grain: one row per budget line item (IT-only)
+*/
+
+with source as (
+	select * from "mbtsa_work"."main_marts"."fct_it_spend"
+)
+
+select
+	*
+from source
+where coalesce(is_it, false) = true
+    );
+  
+  
+[0m12:33:33.792789 [debug] [Thread-1 (]: SQL status: OK in 0.223 seconds
+[0m12:33:33.796173 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_it_budget"
+[0m12:33:33.796173 [debug] [Thread-1 (]: On model.mbtsa.fct_it_budget: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_it_budget"} */
+alter table "mbtsa_work"."main_marts"."fct_it_budget" rename to "fct_it_budget__dbt_backup"
+[0m12:33:33.798781 [debug] [Thread-1 (]: SQL status: OK in 0.001 seconds
+[0m12:33:33.803716 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_it_budget"
+[0m12:33:33.804750 [debug] [Thread-1 (]: On model.mbtsa.fct_it_budget: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_it_budget"} */
+alter table "mbtsa_work"."main_marts"."fct_it_budget__dbt_tmp" rename to "fct_it_budget"
+[0m12:33:33.805781 [debug] [Thread-1 (]: SQL status: OK in 0.001 seconds
+[0m12:33:33.807094 [debug] [Thread-1 (]: On model.mbtsa.fct_it_budget: COMMIT
+[0m12:33:33.807094 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_it_budget"
+[0m12:33:33.808623 [debug] [Thread-1 (]: On model.mbtsa.fct_it_budget: COMMIT
+[0m12:33:33.958763 [debug] [Thread-1 (]: SQL status: OK in 0.149 seconds
+[0m12:33:33.962779 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_it_budget"
+[0m12:33:33.962779 [debug] [Thread-1 (]: On model.mbtsa.fct_it_budget: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_it_budget"} */
+drop table if exists "mbtsa_work"."main_marts"."fct_it_budget__dbt_backup" cascade
+[0m12:33:33.967510 [debug] [Thread-1 (]: SQL status: OK in 0.003 seconds
+[0m12:33:33.969519 [debug] [Thread-1 (]: On model.mbtsa.fct_it_budget: Close
+[0m12:33:33.969519 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A8E181D0>]}
+[0m12:33:33.969519 [info ] [Thread-1 (]: 14 of 15 OK created sql table model main_marts.fct_it_budget ................... [[32mOK[0m in 0.41s]
+[0m12:33:33.972471 [debug] [Thread-1 (]: Finished running node model.mbtsa.fct_it_budget
+[0m12:33:33.974288 [debug] [Thread-1 (]: Began running node model.mbtsa.fct_subprogram_level
+[0m12:33:33.974288 [info ] [Thread-1 (]: 15 of 15 START sql table model main_marts.fct_subprogram_level ................. [RUN]
+[0m12:33:33.974288 [debug] [Thread-1 (]: Re-using an available connection from the pool (formerly model.mbtsa.fct_it_budget, now model.mbtsa.fct_subprogram_level)
+[0m12:33:33.974288 [debug] [Thread-1 (]: Began compiling node model.mbtsa.fct_subprogram_level
+[0m12:33:33.977796 [debug] [Thread-1 (]: Writing injected SQL for node "model.mbtsa.fct_subprogram_level"
+[0m12:33:33.980840 [debug] [Thread-1 (]: Began executing node model.mbtsa.fct_subprogram_level
+[0m12:33:33.987364 [debug] [Thread-1 (]: Writing runtime sql for node "model.mbtsa.fct_subprogram_level"
+[0m12:33:33.987364 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_subprogram_level"
+[0m12:33:33.987364 [debug] [Thread-1 (]: On model.mbtsa.fct_subprogram_level: BEGIN
+[0m12:33:33.987364 [debug] [Thread-1 (]: Opening a new connection, currently in state closed
+[0m12:33:33.987364 [debug] [Thread-1 (]: SQL status: OK in 0.001 seconds
+[0m12:33:33.991312 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_subprogram_level"
+[0m12:33:33.991312 [debug] [Thread-1 (]: On model.mbtsa.fct_subprogram_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_subprogram_level"} */
+
+  
+    
+    
+
+    create  table
+      "mbtsa_work"."main_marts"."fct_subprogram_level__dbt_tmp"
+  
+    as (
+      /*
+    fct_subprogram_level
+    ====================
+    Subprogram-level budget aggregation for dashboard reporting.
+
+    Grain: one row per fiscal_year x fund_type x agency_code x agency_name x unit_code x unit_name x program_code x program_name x subprogram_code x subprogram_name.
+    Measure: total budget amount at that grain.
+*/
+
+with base as (
+	select
+		*
+	from "mbtsa_work"."main_marts"."fct_it_spend"
+	where amount is not null
+),
+
+final as (
+	select
+		fiscal_year,
+		fund_type,
+		agency_code,
+		agency_name,
+		unit_code,
+		unit_name,
+		program_code,
+		program_name,
+		subprogram_code,
+		subprogram_name,
+		organization_code,
+		organization_sub_code,
+        organization_code,
+        organization_sub_code,
+        is_it,
+        it_designation,
+        it_tower,
+        it_sub_tower,
+		sum(amount) as total_budget_amount
+	from base
+	group by 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18
+)
+
+select *
+from final
+order by fiscal_year desc,organization_code, organization_sub_code
+    );
+  
+  
+[0m12:33:34.644651 [debug] [Thread-1 (]: SQL status: OK in 0.652 seconds
+[0m12:33:34.648722 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_subprogram_level"
+[0m12:33:34.664595 [debug] [Thread-1 (]: On model.mbtsa.fct_subprogram_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_subprogram_level"} */
+alter table "mbtsa_work"."main_marts"."fct_subprogram_level" rename to "fct_subprogram_level__dbt_backup"
+[0m12:33:34.667412 [debug] [Thread-1 (]: SQL status: OK in 0.001 seconds
+[0m12:33:34.670894 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_subprogram_level"
+[0m12:33:34.672906 [debug] [Thread-1 (]: On model.mbtsa.fct_subprogram_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_subprogram_level"} */
+alter table "mbtsa_work"."main_marts"."fct_subprogram_level__dbt_tmp" rename to "fct_subprogram_level"
+[0m12:33:34.672906 [debug] [Thread-1 (]: SQL status: OK in 0.001 seconds
+[0m12:33:34.676692 [debug] [Thread-1 (]: On model.mbtsa.fct_subprogram_level: COMMIT
+[0m12:33:34.678257 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_subprogram_level"
+[0m12:33:34.678257 [debug] [Thread-1 (]: On model.mbtsa.fct_subprogram_level: COMMIT
+[0m12:33:34.810372 [debug] [Thread-1 (]: SQL status: OK in 0.129 seconds
+[0m12:33:34.812377 [debug] [Thread-1 (]: Using duckdb connection "model.mbtsa.fct_subprogram_level"
+[0m12:33:34.814383 [debug] [Thread-1 (]: On model.mbtsa.fct_subprogram_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_subprogram_level"} */
+drop table if exists "mbtsa_work"."main_marts"."fct_subprogram_level__dbt_backup" cascade
+[0m12:33:34.816393 [debug] [Thread-1 (]: SQL status: OK in 0.002 seconds
+[0m12:33:34.817902 [debug] [Thread-1 (]: On model.mbtsa.fct_subprogram_level: Close
+[0m12:33:34.817902 [debug] [Thread-1 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A3557CB0>]}
+[0m12:33:34.819909 [info ] [Thread-1 (]: 15 of 15 OK created sql table model main_marts.fct_subprogram_level ............ [[32mOK[0m in 0.84s]
+[0m12:33:34.821919 [debug] [Thread-1 (]: Finished running node model.mbtsa.fct_subprogram_level
+[0m12:33:35.532652 [debug] [Thread-4 (]: SQL status: OK in 2.110 seconds
+[0m12:33:35.537030 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m12:33:35.537030 [debug] [Thread-4 (]: On model.mbtsa.fct_cost_pool_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_cost_pool_level"} */
+alter table "mbtsa_work"."main_marts"."fct_cost_pool_level" rename to "fct_cost_pool_level__dbt_backup"
+[0m12:33:35.537030 [debug] [Thread-4 (]: SQL status: OK in 0.000 seconds
+[0m12:33:35.537030 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m12:33:35.537030 [debug] [Thread-4 (]: On model.mbtsa.fct_cost_pool_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_cost_pool_level"} */
+alter table "mbtsa_work"."main_marts"."fct_cost_pool_level__dbt_tmp" rename to "fct_cost_pool_level"
+[0m12:33:35.540844 [debug] [Thread-4 (]: SQL status: OK in 0.000 seconds
+[0m12:33:35.541918 [debug] [Thread-4 (]: On model.mbtsa.fct_cost_pool_level: COMMIT
+[0m12:33:35.541918 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m12:33:35.541918 [debug] [Thread-4 (]: On model.mbtsa.fct_cost_pool_level: COMMIT
+[0m12:33:35.589951 [debug] [Thread-4 (]: SQL status: OK in 0.047 seconds
+[0m12:33:35.592482 [debug] [Thread-4 (]: Using duckdb connection "model.mbtsa.fct_cost_pool_level"
+[0m12:33:35.592482 [debug] [Thread-4 (]: On model.mbtsa.fct_cost_pool_level: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_cost_pool_level"} */
+drop table if exists "mbtsa_work"."main_marts"."fct_cost_pool_level__dbt_backup" cascade
+[0m12:33:35.595734 [debug] [Thread-4 (]: SQL status: OK in 0.002 seconds
+[0m12:33:35.595734 [debug] [Thread-4 (]: On model.mbtsa.fct_cost_pool_level: Close
+[0m12:33:35.598625 [debug] [Thread-4 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A8D9C7A0>]}
+[0m12:33:35.598625 [info ] [Thread-4 (]: 13 of 15 OK created sql table model main_marts.fct_cost_pool_level ............. [[32mOK[0m in 2.25s]
+[0m12:33:35.598625 [debug] [Thread-4 (]: Finished running node model.mbtsa.fct_cost_pool_level
+[0m12:33:42.120861 [debug] [Thread-3 (]: SQL status: OK in 8.700 seconds
+[0m12:33:42.123548 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies"
+[0m12:33:42.123548 [debug] [Thread-3 (]: On model.mbtsa.fct_budget_anomalies: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_budget_anomalies"} */
+alter table "mbtsa_work"."main_marts"."fct_budget_anomalies" rename to "fct_budget_anomalies__dbt_backup"
+[0m12:33:42.127130 [debug] [Thread-3 (]: SQL status: OK in 0.001 seconds
+[0m12:33:42.129136 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies"
+[0m12:33:42.129136 [debug] [Thread-3 (]: On model.mbtsa.fct_budget_anomalies: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_budget_anomalies"} */
+alter table "mbtsa_work"."main_marts"."fct_budget_anomalies__dbt_tmp" rename to "fct_budget_anomalies"
+[0m12:33:42.129136 [debug] [Thread-3 (]: SQL status: OK in 0.000 seconds
+[0m12:33:42.130883 [debug] [Thread-3 (]: On model.mbtsa.fct_budget_anomalies: COMMIT
+[0m12:33:42.130883 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies"
+[0m12:33:42.130883 [debug] [Thread-3 (]: On model.mbtsa.fct_budget_anomalies: COMMIT
+[0m12:33:42.224479 [debug] [Thread-3 (]: SQL status: OK in 0.094 seconds
+[0m12:33:42.228848 [debug] [Thread-3 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies"
+[0m12:33:42.228848 [debug] [Thread-3 (]: On model.mbtsa.fct_budget_anomalies: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_budget_anomalies"} */
+drop table if exists "mbtsa_work"."main_marts"."fct_budget_anomalies__dbt_backup" cascade
+[0m12:33:42.230121 [debug] [Thread-3 (]: SQL status: OK in 0.002 seconds
+[0m12:33:42.232597 [debug] [Thread-3 (]: On model.mbtsa.fct_budget_anomalies: Close
+[0m12:33:42.232597 [debug] [Thread-3 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A8DA9190>]}
+[0m12:33:42.233772 [info ] [Thread-3 (]: 11 of 15 OK created sql table model main_marts.fct_budget_anomalies ............ [[32mOK[0m in 8.89s]
+[0m12:33:42.233772 [debug] [Thread-3 (]: Finished running node model.mbtsa.fct_budget_anomalies
+[0m12:34:06.157831 [debug] [Thread-2 (]: SQL status: OK in 32.734 seconds
+[0m12:34:06.160830 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies_deep"
+[0m12:34:06.161829 [debug] [Thread-2 (]: On model.mbtsa.fct_budget_anomalies_deep: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_budget_anomalies_deep"} */
+alter table "mbtsa_work"."main_marts"."fct_budget_anomalies_deep" rename to "fct_budget_anomalies_deep__dbt_backup"
+[0m12:34:06.161829 [debug] [Thread-2 (]: SQL status: OK in 0.001 seconds
+[0m12:34:06.164331 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies_deep"
+[0m12:34:06.164331 [debug] [Thread-2 (]: On model.mbtsa.fct_budget_anomalies_deep: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_budget_anomalies_deep"} */
+alter table "mbtsa_work"."main_marts"."fct_budget_anomalies_deep__dbt_tmp" rename to "fct_budget_anomalies_deep"
+[0m12:34:06.165336 [debug] [Thread-2 (]: SQL status: OK in 0.000 seconds
+[0m12:34:06.166337 [debug] [Thread-2 (]: On model.mbtsa.fct_budget_anomalies_deep: COMMIT
+[0m12:34:06.166337 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies_deep"
+[0m12:34:06.166337 [debug] [Thread-2 (]: On model.mbtsa.fct_budget_anomalies_deep: COMMIT
+[0m12:34:06.280288 [debug] [Thread-2 (]: SQL status: OK in 0.113 seconds
+[0m12:34:06.284288 [debug] [Thread-2 (]: Using duckdb connection "model.mbtsa.fct_budget_anomalies_deep"
+[0m12:34:06.285289 [debug] [Thread-2 (]: On model.mbtsa.fct_budget_anomalies_deep: /* {"app": "dbt", "dbt_version": "1.8.9", "profile_name": "mbtsa", "target_name": "dev", "node_id": "model.mbtsa.fct_budget_anomalies_deep"} */
+drop table if exists "mbtsa_work"."main_marts"."fct_budget_anomalies_deep__dbt_backup" cascade
+[0m12:34:06.618918 [debug] [Thread-2 (]: SQL status: OK in 0.333 seconds
+[0m12:34:06.621917 [debug] [Thread-2 (]: On model.mbtsa.fct_budget_anomalies_deep: Close
+[0m12:34:06.661709 [debug] [Thread-2 (]: Sending event: {'category': 'dbt', 'action': 'run_model', 'label': 'c566743c-c563-4926-b940-361d367dc2d9', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A8DA8350>]}
+[0m12:34:06.662709 [info ] [Thread-2 (]: 12 of 15 OK created sql table model main_marts.fct_budget_anomalies_deep ....... [[32mOK[0m in 33.31s]
+[0m12:34:06.663706 [debug] [Thread-2 (]: Finished running node model.mbtsa.fct_budget_anomalies_deep
+[0m12:34:06.665282 [debug] [MainThread]: Using duckdb connection "master"
+[0m12:34:06.665793 [debug] [MainThread]: On master: BEGIN
+[0m12:34:06.665793 [debug] [MainThread]: Opening a new connection, currently in state closed
+[0m12:34:06.688586 [debug] [MainThread]: SQL status: OK in 0.023 seconds
+[0m12:34:06.688586 [debug] [MainThread]: On master: COMMIT
+[0m12:34:06.690111 [debug] [MainThread]: Using duckdb connection "master"
+[0m12:34:06.690111 [debug] [MainThread]: On master: COMMIT
+[0m12:34:06.691656 [debug] [MainThread]: SQL status: OK in 0.000 seconds
+[0m12:34:06.691656 [debug] [MainThread]: On master: Close
+[0m12:34:06.697842 [debug] [MainThread]: Connection 'master' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'create_mbtsa_work_main_marts' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'create_mbtsa_work_main' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'create_mbtsa_work_main_staging' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'list_mbtsa_work_main' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'list_mbtsa_work_main_marts' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'list_mbtsa_work_main_staging' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'model.mbtsa.fct_subprogram_level' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'model.mbtsa.fct_budget_anomalies_deep' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'model.mbtsa.fct_budget_anomalies' was properly closed.
+[0m12:34:06.699138 [debug] [MainThread]: Connection 'model.mbtsa.fct_cost_pool_level' was properly closed.
+[0m12:34:06.706410 [info ] [MainThread]: 
+[0m12:34:06.706410 [info ] [MainThread]: Finished running 2 view models, 13 table models in 0 hours 0 minutes and 38.41 seconds (38.41s).
+[0m12:34:06.709410 [debug] [MainThread]: Command end result
+[0m12:34:06.759330 [info ] [MainThread]: 
+[0m12:34:06.761372 [info ] [MainThread]: [32mCompleted successfully[0m
+[0m12:34:06.761372 [info ] [MainThread]: 
+[0m12:34:06.761372 [info ] [MainThread]: Done. PASS=15 WARN=0 ERROR=0 SKIP=0 TOTAL=15
+[0m12:34:06.764271 [debug] [MainThread]: Command `dbt run` succeeded at 12:34:06.762865 after 41.80 seconds
+[0m12:34:06.765274 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A1C758E0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A0BF6000>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x00000274A36DF260>]}
+[0m12:34:06.765274 [debug] [MainThread]: Flushing usage events
