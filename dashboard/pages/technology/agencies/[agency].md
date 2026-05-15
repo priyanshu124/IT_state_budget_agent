@@ -543,6 +543,7 @@ order by f.fiscal_year, fund_rank
 ```sql pivot_towers
 select
     it_tower,
+    it_tower as label,
     cast(fiscal_year as int) as fiscal_year,
     sum(amount) as spend
 from ${filtered}
@@ -555,6 +556,7 @@ order by it_tower, fiscal_year
 select
     it_tower,
     program_name,
+    program_name as label,
     cast(fiscal_year as int) as fiscal_year,
     sum(amount) as spend
 from ${filtered}
@@ -569,6 +571,7 @@ select
     it_tower,
     program_name,
     subprogram_name,
+    subprogram_name as label,
     cast(fiscal_year as int) as fiscal_year,
     sum(amount) as spend
 from ${filtered}
@@ -696,6 +699,18 @@ order by it_tower, program_name, subprogram_name, cost_pool, fiscal_year
         : paretoLevel === 'subprogram'
             ? 'Subprograms sorted by absolute dollar change in IT spend from prior year.'
             : 'IT towers sorted by absolute dollar change from prior year.';
+
+    $: paretoData = paretoLevel === 'program'
+        ? (pareto_programs ?? [])
+        : paretoLevel === 'subprogram'
+            ? (pareto_subprograms ?? [])
+            : (pareto_towers ?? []);
+
+    $: paretoTitle = paretoLevel === 'program'
+        ? 'Top 10 programs by IT spend — Latest Year'
+        : paretoLevel === 'subprogram'
+            ? 'Top 10 subprograms by IT spend — Latest Year'
+            : 'Top 10 IT towers by spend — Latest Year';
 
     $: fundTrendYears = [...new Set((fund_trend ?? []).map(d => String(d.fiscal_year)))].sort((a, b) => Number(a) - Number(b));
     $: fundSeriesNames = [...new Set((fund_trend ?? []).map(d => d.fund_type))].sort((a, b) => {
@@ -1013,13 +1028,16 @@ order by it_tower, program_name, subprogram_name, cost_pool, fiscal_year
     Click a tower to drill into programs, then click a program to drill into subprograms.
 </div>
 
-{#if pareto_towers?.length > 0}
+{#if pivot_towers?.length > 0}
     <ParetoBarChart
         title=""
         drillable={true}
-        drillUnitData={pareto_towers}
-        drillProgramData={pareto_programs}
-        drillSubprogramData={pareto_subprograms}
+        drillUnitData={pivot_towers}
+        drillProgramData={pivot_programs}
+        drillSubprogramData={pivot_subprograms}
+        drillUnitField="it_tower"
+        drillProgramField="program_name"
+        drillSubprogramField="subprogram_name"
         barField="spend"
         labelField="label"
         pctField="pct_of_total"
@@ -1088,10 +1106,12 @@ order by it_tower, program_name, subprogram_name, cost_pool, fiscal_year
         unitData={tower_latest}
         programData={program_latest}
         subprogramData={subprogram_latest}
-        unitKey="it_tower"
-        programKey="program_name"
-        subprogramKey="subprogram_name"
+        unitField="it_tower"
+        programField="program_name"
+        subprogramField="subprogram_name"
         unitLabel="IT Tower"
+        programLabel="Program"
+        subprogramLabel="Subprogram"
         latestYearLabel={overview?.[0]?.max_year_label ?? ''}
     />
 {:else}

@@ -37,6 +37,7 @@ staged as (
         TRIM(REGEXP_REPLACE(program_name, '\s+', ' ')) AS program_name,
         TRIM(REGEXP_REPLACE(subprogram_code, '\s+', ' ')) AS subprogram_code,
         TRIM(REGEXP_REPLACE(subprogram_name, '\s+', ' ')) AS subprogram_name,
+        TRIM(REGEXP_REPLACE(description, '\s+', ' ')) AS description,
         
 
         -- === ACCOUNTING CODES ===

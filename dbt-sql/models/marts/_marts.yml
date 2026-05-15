@@ -44,6 +44,8 @@ models:
       - name: amount
         data_tests:
           - not_null
+      - name: description
+        description: "Narrative description from the source budget line item"
       - name: cost_pool
         data_tests:
           - not_null
@@ -106,3 +108,5 @@ models:
         data_tests:
           - unique
           - not_null
+      - name: description
+        description: "Program description aggregated from source budget rows"

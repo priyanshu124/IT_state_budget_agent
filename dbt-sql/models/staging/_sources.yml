@@ -30,6 +30,8 @@ sources:
             description: "TBM resource tower (from tower classifier agent)"
           - name: cost_pool
             description: "TBM cost pool (from cost pool mapper agent)"
+          - name: description
+            description: "Narrative description from the budget source row"
       - name: fte_line_items
         description: >
           Raw FTE headcount data loaded from the FTE pipeline.

@@ -114,38 +114,37 @@ def reattach_subprogram_classifications(
     original_df = _normalize_key_to_string(original_df, SUBPROGRAM_KEY)
     
     # Remove any existing tower classification columns from original to avoid duplication
-    existing_tower_cols = [c for c in original_df.columns if c in ["tower", "sub_tower", "confidence", "tower_right", "sub_tower_right", "confidence_right"]]
+    existing_tower_cols = [c for c in original_df.columns if c in ["tower", "sub_tower", "confidence", "tower_right", "sub_tower_right", "confidence_right", "it_designation_right", "it_designation"]]
     if existing_tower_cols:
         original_df = original_df.drop(existing_tower_cols)
     
     # Only take tower classification columns, not the metadata columns.
     # Metadata (agency_name, subprogram_name, etc.) must come from the original file
     # to preserve data for non-matched rows (is_it=false).
-    tower_cols = [c for c in classifications.columns if c in ["tower", "sub_tower", "confidence"]]
+        tower_cols = [c for c in classifications.columns if c in ["tower", "sub_tower", "confidence", "it_designation"]]
     classifications_tower_only = classifications.select([SUBPROGRAM_KEY] + tower_cols)
 
     # Left join keeps all original rows and only adds tower columns where codes match.
     result = original_df.join(classifications_tower_only, on=SUBPROGRAM_KEY, how="left")
 
-    # If classifier marked row as NOT_IT or no tower-classification row matched,
-    # clear IT classification fields.
+    # Derive is_it from tower classification: True if tower exists and is not "NOT_IT", False otherwise.
     if "tower" in result.columns:
         no_match_expr = pl.col("tower").is_null()
         not_it_expr = pl.col("tower").cast(pl.Utf8, strict=False).str.to_uppercase() == "NOT_IT"
-        clear_it_expr = no_match_expr | not_it_expr
+        has_it_expr = ~(no_match_expr | not_it_expr)  # True if tower is NOT null and NOT "NOT_IT"
         exprs: list[pl.Expr] = []
 
         if "is_it" in result.columns:
             exprs.append(
-                pl.when(clear_it_expr)
-                .then(pl.lit(False))
-                .otherwise(pl.col("is_it"))
+                pl.when(has_it_expr)
+                .then(pl.lit(True))
+                .otherwise(pl.lit(False))
                 .alias("is_it")
             )
 
         if "shadow_it_reason" in result.columns:
             exprs.append(
-                pl.when(clear_it_expr)
+                pl.when(~has_it_expr)
                 .then(pl.lit(None).cast(pl.Utf8))
                 .otherwise(pl.col("shadow_it_reason"))
                 .alias("shadow_it_reason")
@@ -154,7 +153,7 @@ def reattach_subprogram_classifications(
         for col in ["it_designation", "tower", "sub_tower", "confidence"]:
             if col in result.columns:
                 exprs.append(
-                    pl.when(clear_it_expr)
+                    pl.when(~has_it_expr)
                     .then(pl.lit(None).cast(result.schema[col]))
                     .otherwise(pl.col(col))
                     .alias(col)
