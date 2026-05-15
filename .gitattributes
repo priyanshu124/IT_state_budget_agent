@@ -1,3 +1,4 @@
 data/output/*.parquet filter=lfs diff=lfs merge=lfs -text
 data/output/*.csv filter=lfs diff=lfs merge=lfs -text
 data/output/final_budget_enriched.csv filter=lfs diff=lfs merge=lfs -text
+*.duckdb filter=lfs diff=lfs merge=lfs -text
