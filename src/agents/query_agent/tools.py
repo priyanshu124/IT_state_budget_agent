@@ -95,8 +95,19 @@ class QueryTools:
             logger.error(f"Error getting sample values: {e}")
             return []
 
+    def validate_columns(self, result: dict, required: list[str]) -> list[str]:
+        """Return list of required column names missing from query results."""
+        if not result.get("columns"):
+            return required
+        actual = {str(c).lower() for c in result["columns"]}
+        return [c for c in required if c.lower() not in actual]
+
     def format_results_as_table(self, result: dict) -> str:
-        """Format SQL results as a readable text table."""
+        """Format SQL results as a readable text table for the narrative prompt.
+
+        For large result sets, includes all rows plus a summary block so the
+        narrative covers the full data range rather than just the first N rows.
+        """
         if result.get("error"):
             return f"Error: {result['error']}"
 
@@ -112,13 +123,12 @@ class QueryTools:
             for i, val in enumerate(row):
                 widths[i] = max(widths[i], len(str(val) if val is not None else "null"))
 
-        # Format header
         header = " | ".join(str(c).ljust(widths[i]) for i, c in enumerate(columns))
         separator = "-+-".join("-" * w for w in widths)
 
-        # Format rows
+        # All rows — no cap, narrative needs full picture
         formatted_rows = []
-        for row in rows[:50]:  # Cap at 50 rows for readability
+        for row in rows:
             formatted = " | ".join(
                 str(val if val is not None else "null").ljust(widths[i])
                 for i, val in enumerate(row)
@@ -127,7 +137,25 @@ class QueryTools:
 
         table = f"{header}\n{separator}\n" + "\n".join(formatted_rows)
 
-        if len(rows) > 50:
-            table += f"\n... ({len(rows) - 50} more rows)"
+        # For large result sets append a summary so Claude doesn't miss range extremes
+        if len(rows) > 30:
+            table += f"\n\n[Summary: {len(rows)} total rows"
+            # Fiscal year range if present
+            fy_idx = next((i for i, c in enumerate(columns) if str(c).lower() == "fiscal_year"), None)
+            if fy_idx is not None:
+                years = [r[fy_idx] for r in rows if r[fy_idx] is not None]
+                if years:
+                    table += f" | fiscal_year range: {min(years)}–{max(years)}"
+            # Numeric column min/max
+            for i, col in enumerate(columns):
+                if col == "fiscal_year":
+                    continue
+                try:
+                    vals = [float(r[i]) for r in rows if r[i] is not None]
+                    if vals:
+                        table += f" | {col}: min={min(vals):,.1f} max={max(vals):,.1f} total={sum(vals):,.1f}"
+                except (TypeError, ValueError):
+                    pass
+            table += "]"
 
         return table

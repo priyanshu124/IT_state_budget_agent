@@ -144,13 +144,16 @@
         return () => window.removeEventListener('resize', onResize);
     });
 
-    // Explicitly read chartData and labelField so Svelte tracks both as dependencies.
-    // This fires whenever data changes (filter) or labelField changes (view toggle).
-    $: if (chart && (chartData, labelField)) {
+    // Reactively update chart when data or labelField changes
+    $: if (chartContainer && chartData !== undefined && labelField) {
+        // Destroy and reinit to ensure clean re-render after filter change
+        if (chart) {
+            chart.dispose();
+            chart = null;
+        }
         if (chartData.length > 0) {
+            chart = echarts.init(chartContainer);
             chart.setOption(getConfig(chartData), true);
-        } else {
-            chart.clear();
         }
     }
 </script>

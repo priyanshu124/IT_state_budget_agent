@@ -60,6 +60,7 @@ final as (
         program_name,
         subprogram_code,
         subprogram_name,
+        description,
         organization_code,
         organization_sub_code,
 

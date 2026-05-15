@@ -3,6 +3,13 @@
     export let programData = [];
     export let subprogramData = [];
     export let latestYearLabel = '';
+    // Field name props — default to budget-office names, override for IT page
+    export let unitField = 'unit_name';
+    export let programField = 'program_name';
+    export let subprogramField = 'subprogram_name';
+    export let unitLabel = 'Unit';
+    export let programLabel = 'Program';
+    export let subprogramLabel = 'Subprogram';
 
     let searchTerm = '';
     let expandedUnits = {};
@@ -12,7 +19,7 @@
         ...(unitData ?? []),
         ...(programData ?? []),
         ...(subprogramData ?? [])
-    ].flatMap((row) => Object.keys(row).filter((key) => /^FY\d+$/.test(key)).map((key) => key.replace('FY', ''))))]
+    ].flatMap((row) => Object.keys(row).filter((key) => key.startsWith('FY') && !isNaN(Number(key.slice(2)))).map((key) => key.replace('FY', ''))))]
         .sort((a, b) => Number(a) - Number(b));
 
     const fmtMoney = (v) => {
@@ -46,8 +53,7 @@
         const values = years.map((year) => Number(row['FY' + year]) || 0);
         const max = Math.max(...values);
         if (!years.length || max === 0) return '';
-        const width = 48;
-        const height = 16;
+        const width = 48, height = 16;
         const points = values.map((value, index) => {
             const x = years.length === 1 ? width : (index / (years.length - 1)) * width;
             const y = height - (value / max) * height;
@@ -59,14 +65,16 @@
         return '<svg width="' + width + '" height="' + height + '" style="display:inline-block;vertical-align:middle;margin-left:8px;flex:0 0 auto;"><polyline points="' + points + '" fill="none" stroke="' + color + '" stroke-width="1.5" stroke-linejoin="round"/><circle cx="' + width + '" cy="' + (height - (last / max) * height) + '" r="2" fill="' + color + '"/></svg>';
     };
 
+    // Use configurable field names throughout
     $: programByUnit = (programData ?? []).reduce((acc, r) => {
-        if (!acc[r.unit_name]) acc[r.unit_name] = [];
-        acc[r.unit_name].push(r);
+        const key = r[unitField];
+        if (!acc[key]) acc[key] = [];
+        acc[key].push(r);
         return acc;
     }, {});
 
     $: subprogramByUnitProg = (subprogramData ?? []).reduce((acc, r) => {
-        const key = r.unit_name + '||' + r.program_name;
+        const key = r[unitField] + '||' + r[programField];
         if (!acc[key]) acc[key] = [];
         acc[key].push(r);
         return acc;
@@ -86,16 +94,18 @@
     $: if (searchTerm) {
         const eu = {}, ep = {};
         (unitData ?? []).forEach(u => {
-            const progs = programByUnit[u.unit_name] ?? [];
-            const unitMatch = u.unit_name.toLowerCase().includes(searchLower);
+            const uName = u[unitField];
+            const progs = programByUnit[uName] ?? [];
+            const unitMatch = (uName ?? '').toLowerCase().includes(searchLower);
             const progMatch = progs.some(p => {
-                const pm = p.program_name.toLowerCase().includes(searchLower);
-                const subs = subprogramByUnitProg[u.unit_name + '||' + p.program_name] ?? [];
-                const subMatch = subs.some(s => s.subprogram_name.toLowerCase().includes(searchLower));
-                if (pm || subMatch) ep[u.unit_name + '||' + p.program_name] = true;
+                const pName = p[programField];
+                const pm = (pName ?? '').toLowerCase().includes(searchLower);
+                const subs = subprogramByUnitProg[uName + '||' + pName] ?? [];
+                const subMatch = subs.some(s => (s[subprogramField] ?? '').toLowerCase().includes(searchLower));
+                if (pm || subMatch) ep[uName + '||' + pName] = true;
                 return pm || subMatch;
             });
-            if (unitMatch || progMatch) eu[u.unit_name] = true;
+            if (unitMatch || progMatch) eu[uName] = true;
         });
         expandedUnits = eu;
         expandedPrograms = ep;
@@ -104,40 +114,48 @@
         expandedPrograms = {};
     }
 
-    $: filteredUnits = searchTerm
-        ? (unitData ?? []).filter(u => {
-            if (u.unit_name.toLowerCase().includes(searchLower)) return true;
-            return (programByUnit[u.unit_name] ?? []).some(p => {
-                if (p.program_name.toLowerCase().includes(searchLower)) return true;
-                return (subprogramByUnitProg[u.unit_name + '||' + p.program_name] ?? [])
-                    .some(s => s.subprogram_name.toLowerCase().includes(searchLower));
-            });
-        })
-        : (unitData ?? []);
+    const hasData = (row) =>
+        (Number(row.latest_budget) !== 0 || Number(row.dollar_change) !== 0);
 
-    const getFilteredPrograms = (unitName) => {
-        const progs = programByUnit[unitName] ?? [];
+    $: filteredUnits = (unitData ?? [])
+        .filter(u => hasData(u))
+        .filter(u => {
+            if (!searchTerm) return true;
+            const uName = u[unitField];
+            if ((uName ?? '').toLowerCase().includes(searchLower)) return true;
+            return (programByUnit[uName] ?? []).some(p => {
+                const pName = p[programField];
+                if ((pName ?? '').toLowerCase().includes(searchLower)) return true;
+                return (subprogramByUnitProg[uName + '||' + pName] ?? [])
+                    .some(s => (s[subprogramField] ?? '').toLowerCase().includes(searchLower));
+            });
+        });
+
+    const getFilteredPrograms = (uName) => {
+        const progs = (programByUnit[uName] ?? []).filter(p => hasData(p));
         if (!searchTerm) return progs;
         return progs.filter(p => {
-            if (p.program_name.toLowerCase().includes(searchLower)) return true;
-            return (subprogramByUnitProg[unitName + '||' + p.program_name] ?? [])
-                .some(s => s.subprogram_name.toLowerCase().includes(searchLower));
+            const pName = p[programField];
+            if ((pName ?? '').toLowerCase().includes(searchLower)) return true;
+            return (subprogramByUnitProg[uName + '||' + pName] ?? [])
+                .some(s => (s[subprogramField] ?? '').toLowerCase().includes(searchLower));
         });
     };
 
-    const getFilteredSubprograms = (unitName, progName) =>  {
-        const subs = subprogramByUnitProg[unitName + '||' + progName] ?? [];
+    const getFilteredSubprograms = (uName, pName) => {
+        const subs = (subprogramByUnitProg[uName + '||' + pName] ?? []).filter(s => hasData(s));
         if (!searchTerm) return subs;
-        return subs.filter(s => s.subprogram_name.toLowerCase().includes(searchLower));
+        return subs.filter(s => (s[subprogramField] ?? '').toLowerCase().includes(searchLower));
     };
 
     $: latestYearTitle = `Latest Year${latestYearLabel ? ' (' + latestYearLabel + ')' : ''}`;
+    $: colHeader = `${unitLabel} · ${programLabel} · ${subprogramLabel}`;
 </script>
 
 <div style="margin-bottom:12px;">
     <input
         bind:value={searchTerm}
-        placeholder="Search units, programs, subprograms..."
+        placeholder="Search {unitLabel.toLowerCase()}s, {programLabel.toLowerCase()}s, {subprogramLabel.toLowerCase()}s..."
         style="border:1px solid var(--nxt-border); border-radius:8px; padding:8px 12px; font-size:0.9rem; width:340px; background:var(--nxt-surface); color:var(--nxt-text);"
     />
 </div>
@@ -146,7 +164,7 @@
     <table style="width:100%; border-collapse:collapse; font-size:0.875rem;">
         <thead>
             <tr style="background:var(--nxt-pink); border-bottom:2px solid #C8122C;">
-                <th style="text-align:left; padding:10px 14px; font-weight:700; color:#231F20; min-width:280px;">Unit / Program / Subprogram</th>
+                <th style="text-align:left; padding:10px 14px; font-weight:700; color:#231F20; min-width:280px;">{colHeader}</th>
                 <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20; white-space:nowrap;">{latestYearTitle}</th>
                 <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20;">% of Total</th>
                 <th style="text-align:right; padding:10px 14px; font-weight:700; color:#231F20;">YoY Change ($)</th>
@@ -155,15 +173,16 @@
         </thead>
         <tbody>
             {#each filteredUnits as unit, i}
+                {@const uName = unit[unitField]}
                 <tr
-                    on:click={() => toggleUnit(unit.unit_name)}
+                    on:click={() => toggleUnit(uName)}
                     style={'border-bottom:1px solid #E5E7EB; cursor:pointer; background:' + (i % 2 === 0 ? 'var(--nxt-surface)' : '#f7f2fc') + ';'}
                     onmouseenter="this.style.background='var(--nxt-pink)'"
                     onmouseleave={'this.style.background=' + (i % 2 === 0 ? "'var(--nxt-surface)'" : "'#f7f2fc'")}
                 >
                     <td style="padding:10px 14px; font-weight:600; color:#231F20;">
-                        <span style="margin-right:8px; font-size:0.75rem; color:#C8122C;">{expandedUnits[unit.unit_name] ? '▼' : '▶'}</span>
-                        {unit.unit_name}
+                        <span style="margin-right:8px; font-size:0.75rem; color:#C8122C;">{expandedUnits[uName] ? '▼' : '▶'}</span>
+                        {uName}
                         {@html sparkline(unit, pivotYears)}
                     </td>
                     <td style="text-align:right; padding:10px 14px; font-weight:600; color:#231F20;">{fmtMoney(unit.latest_budget)}</td>
@@ -172,17 +191,18 @@
                     <td style="text-align:right; padding:10px 14px;"><span style={conditionalStyle(unit.yoy_change_pct)}>{fmtPct(unit.yoy_change_pct)}</span></td>
                 </tr>
 
-                {#if expandedUnits[unit.unit_name]}
-                    {#each getFilteredPrograms(unit.unit_name) as prog}
+                {#if expandedUnits[uName]}
+                    {#each getFilteredPrograms(uName) as prog}
+                        {@const pName = prog[programField]}
                         <tr
-                            on:click={() => toggleProgram(unit.unit_name, prog.program_name)}
+                            on:click={() => toggleProgram(uName, pName)}
                             style="border-bottom:1px solid #F3F4F6; cursor:pointer; background:#F5F5F5;"
                             onmouseenter="this.style.background='#FFF0F0'"
                             onmouseleave="this.style.background='#F5F5F5'"
                         >
                             <td style="padding:8px 14px 8px 36px; color:#374151; font-weight:500;">
-                                <span style="margin-right:8px; font-size:0.75rem; color:#6B7280;">{expandedPrograms[unit.unit_name + '||' + prog.program_name] ? '▼' : '▶'}</span>
-                                {prog.program_name}
+                                <span style="margin-right:8px; font-size:0.75rem; color:#6B7280;">{expandedPrograms[uName + '||' + pName] ? '▼' : '▶'}</span>
+                                {pName}
                                 {@html sparkline(prog, pivotYears)}
                             </td>
                             <td style="text-align:right; padding:8px 14px; color:#374151;">{fmtMoney(prog.latest_budget)}</td>
@@ -191,10 +211,13 @@
                             <td style="text-align:right; padding:8px 14px;"><span style={conditionalStyle(prog.yoy_change_pct)}>{fmtPct(prog.yoy_change_pct)}</span></td>
                         </tr>
 
-                        {#if expandedPrograms[unit.unit_name + '||' + prog.program_name]}
-                            {#each getFilteredSubprograms(unit.unit_name, prog.program_name) as sub}
+                        {#if expandedPrograms[uName + '||' + pName]}
+                            {#each getFilteredSubprograms(uName, pName) as sub}
                                 <tr style="border-bottom:1px solid #F3F4F6; background:#FAFAFA;">
-                                    <td style="padding:7px 14px 7px 60px; color:#6B7280; font-style:italic;">{sub.subprogram_name}{@html sparkline(sub, pivotYears)}</td>
+                                    <td style="padding:7px 14px 7px 60px; color:#6B7280; font-style:italic;">
+                                        {sub[subprogramField]}
+                                        {@html sparkline(sub, pivotYears)}
+                                    </td>
                                     <td style="text-align:right; padding:7px 14px; color:#6B7280;">{fmtMoney(sub.latest_budget)}</td>
                                     <td style="text-align:right; padding:7px 14px; color:#6B7280;">{sub.latest_year_pct != null ? sub.latest_year_pct + '%' : '-'}</td>
                                     <td style="text-align:right; padding:7px 14px;"><span style={conditionalStyle(sub.yoy_change_pct)}>{fmtMoney(sub.dollar_change)}</span></td>

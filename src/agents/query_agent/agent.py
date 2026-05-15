@@ -1,43 +1,72 @@
 """
-LangGraph Budget Query Agent — with Conversation Memory
-=========================================================
-Maintains a condensed conversation history per session so Claude
-can reference prior questions and answers in follow-up queries.
+LangGraph Budget Query Agent — QueryPlan-driven
+=================================================
+All nodes share a structured QueryPlan artifact so SQL generation,
+validation, chart rendering, and narration work from the same contract.
 
-Memory design:
-  - Each turn stores: question, SQL, narrative, row_count, sample_rows
-  - History is condensed (not full result sets) to control token cost
-  - Max history: last 10 turns (~2K tokens overhead per turn)
-  - History is passed as assistant/user message pairs to Claude
-
-Usage:
-    python -m src.agents.query_agent.agent --db mbtsa_work.duckdb --interactive
+Flow:
+    plan()       → QueryPlan via tool_use (structured JSON)
+    write_sql()  ← receives QueryPlan fields explicitly in prompt
+    execute()
+    validate()   ← checks result columns match plan; triggers fix if not
+    fix_sql()    ← fires on SQL error or validation failure
+    narrate()    ← scoped to QueryPlan.analysis_type
 """
 
 import argparse
+import json
 import re
-from typing import TypedDict
+from typing import Literal, TypedDict
 
 from loguru import logger
+from pydantic import BaseModel, Field
 
 from src.agents.query_agent.catalog import (
     METRIC_CATALOG,
+    CHART_TYPE_GUIDANCE,
+    OUTPUT_SHAPE_RULES,
     EXAMPLE_QUERIES,
     build_dynamic_catalog,
 )
 from src.agents.query_agent.tools import QueryTools
 
 
+# ── QueryPlan ──────────────────────────────────────────────────
+
+class QueryPlan(BaseModel):
+    # Intent
+    analysis_type: Literal["total", "trend", "breakdown", "comparison", "ranking", "variance", "describe"]
+    fiscal_years: list[int] = Field(default_factory=list)
+
+    # Data contract — tells write_sql exactly what to produce
+    dimensions: list[str] = Field(default_factory=list)
+    measures: list[str] = Field(default_factory=list)     # e.g. "SUM(it_amount) AS it_spend"
+    filters: dict[str, list[str]] = Field(default_factory=dict)
+    top_n: int | None = None
+    output_shape: Literal["aggregated", "timeseries", "long", "pivot"] = "aggregated"
+
+    # Chart contract — drives render_chart() in app.py, no heuristics needed
+    chart_type: Literal["line", "bar_h", "bar_v", "stacked_bar", "pie", "none"]
+    chart_x: str
+    chart_y: str
+    chart_series: str | None = None
+    chart_title: str
+    chart_sort_desc: bool = True
+
+    is_followup: bool = False
+
+
 # ── Agent State ────────────────────────────────────────────────
 
 class AgentState(TypedDict):
     question: str
-    plan: str
+    query_plan: dict
     sql: str
     raw_results: dict
     formatted_table: str
     narrative: str
     error: str | None
+    validation_error: str | None
 
 
 class ConversationTurn(TypedDict):
@@ -45,15 +74,83 @@ class ConversationTurn(TypedDict):
     sql: str
     narrative: str
     row_count: int
-    sample_rows: str  # first 5 rows as text
+    sample_rows: str
+    query_plan: dict
 
 
-# ── Graph Nodes ────────────────────────────────────────────────
+# ── Tool schema for structured plan ───────────────────────────
+
+PLAN_TOOL = {
+    "name": "create_query_plan",
+    "description": "Create a structured query plan for the Maryland budget question.",
+    "input_schema": {
+        "type": "object",
+        "properties": {
+            "analysis_type": {
+                "type": "string",
+                "enum": ["total", "trend", "breakdown", "comparison", "ranking", "variance", "describe"],
+            },
+            "fiscal_years": {
+                "type": "array",
+                "items": {"type": "integer"},
+                "description": (
+                    "Fiscal years to filter on. Rules: "
+                    "(1) If user asks about trend, changes, increases, decreases, growth, YoY, or 'over the years' → empty list (all years). "
+                    "(2) If user mentions a specific year → use exactly that year. "
+                    "(3) If no year mentioned and NOT a trend question → use [LATEST_YEAR] as the default single-year filter."
+                ),
+            },
+            "dimensions": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Exact column names to GROUP BY.",
+            },
+            "measures": {
+                "type": "array",
+                "items": {"type": "string"},
+                "description": "Measure expressions as 'SUM(col) AS alias'. Use it_amount for IT, amount for total.",
+            },
+            "filters": {
+                "type": "object",
+                "additionalProperties": {"type": "array", "items": {"type": "string"}},
+                "description": "Column → list of exact catalog values to filter on.",
+            },
+            "top_n": {"type": ["integer", "null"]},
+            "output_shape": {
+                "type": "string",
+                "enum": ["aggregated", "timeseries", "long", "pivot"],
+                "description": "Required SQL output shape for chart rendering.",
+            },
+            "chart_type": {
+                "type": "string",
+                "enum": ["line", "bar_h", "bar_v", "stacked_bar", "pie", "none"],
+            },
+            "chart_x": {"type": "string", "description": "Column/alias for x-axis."},
+            "chart_y": {"type": "string", "description": "Column/alias for y-axis (the measure alias)."},
+            "chart_series": {
+                "type": ["string", "null"],
+                "description": "Column for multi-series grouping. Null for single series.",
+            },
+            "chart_title": {"type": "string"},
+            "chart_sort_desc": {"type": "boolean"},
+            "is_followup": {"type": "boolean"},
+        },
+        "required": [
+            "analysis_type", "fiscal_years", "dimensions", "measures",
+            "filters", "top_n", "output_shape",
+            "chart_type", "chart_x", "chart_y", "chart_series",
+            "chart_title", "chart_sort_desc", "is_followup",
+        ],
+    },
+}
+
+
+# ── Agent ──────────────────────────────────────────────────────
 
 class BudgetQueryAgent:
 
-    MAX_HISTORY = 10  # Keep last N turns
-    SAMPLE_ROWS = 5   # Rows to include per turn in history
+    MAX_HISTORY = 10
+    SAMPLE_ROWS = 5
 
     def __init__(
         self,
@@ -70,9 +167,17 @@ class BudgetQueryAgent:
         self.model = model
         self.tools = QueryTools(db_path)
 
-        # Build full context: static catalog + dynamic values from DB
         dynamic = build_dynamic_catalog(db_path)
         self.full_catalog = METRIC_CATALOG + dynamic
+        self.latest_fiscal_year = self._fetch_latest_fiscal_year(db_path)
+        self._has_description_col = self._check_column_exists(db_path, "description")
+
+        if not self._has_description_col:
+            self.full_catalog += (
+                "\n\nNOTE: The 'description' column does NOT exist in this database. "
+                "For describe queries, select program_name, subprogram_name, unit_name, "
+                "and agency_name instead. Do NOT reference a description column."
+            )
 
         self.examples_str = "\n".join(
             f"Q: {ex['question']}\nSQL: {ex['sql'].strip()}\n"
@@ -81,280 +186,285 @@ class BudgetQueryAgent:
 
         self.sql_context = f"""{self.full_catalog}
 
+{CHART_TYPE_GUIDANCE}
+
+{OUTPUT_SHAPE_RULES}
+
 EXAMPLE QUERIES:
 {self.examples_str}"""
 
-        # Conversation memory
         self.history: list[ConversationTurn] = []
+        logger.info("Agent initialized")
 
-        logger.info("Agent initialized with dynamic catalog and conversation memory")
+    @staticmethod
+    def _check_column_exists(db_path: str, column: str) -> bool:
+        try:
+            import duckdb
+            con = duckdb.connect(db_path, read_only=True)
+            cols = [r[0].lower() for r in con.execute(
+                "DESCRIBE main_marts.fct_it_spend"
+            ).fetchall()]
+            con.close()
+            exists = column.lower() in cols
+            logger.info(f"Column '{column}' exists: {exists}")
+            return exists
+        except Exception as e:
+            logger.warning(f"Could not check column '{column}': {e}")
+            return False
 
-    # ── Memory Management ──────────────────────────────────────
+    @staticmethod
+    def _fetch_latest_fiscal_year(db_path: str) -> int:
+        try:
+            import duckdb
+            con = duckdb.connect(db_path, read_only=True)
+            row = con.execute(
+                "SELECT MAX(fiscal_year) FROM main_marts.fct_it_spend"
+            ).fetchone()
+            con.close()
+            year = int(row[0]) if row and row[0] else 2027
+            logger.info(f"Latest fiscal year in DB: {year}")
+            return year
+        except Exception as e:
+            logger.warning(f"Could not fetch latest fiscal year: {e}; defaulting to 2027")
+            return 2027
+
+    # ── Memory ─────────────────────────────────────────────────
 
     def _build_history_messages(self) -> list[dict]:
-        """Convert conversation history into Claude message pairs.
-
-        Returns alternating user/assistant messages that give Claude
-        context about what was discussed earlier in the session.
-        """
         messages = []
         for turn in self.history[-self.MAX_HISTORY:]:
-            # User turn
-            messages.append({
-                "role": "user",
-                "content": turn["question"],
-            })
-            # Assistant turn — condensed summary
+            messages.append({"role": "user", "content": turn["question"]})
             summary = f"{turn['narrative']}\n\n[Query returned {turn['row_count']} rows]"
             if turn["sample_rows"]:
                 summary += f"\n[Sample data:\n{turn['sample_rows']}]"
-            messages.append({
-                "role": "assistant",
-                "content": summary,
-            })
+            messages.append({"role": "assistant", "content": summary})
         return messages
 
     def _condense_results(self, state: AgentState) -> ConversationTurn:
-        """Create a condensed memory entry from the current turn."""
         raw = state.get("raw_results", {})
-        row_count = raw.get("row_count", 0)
-
-        # Build sample rows text
         sample = ""
         if raw.get("columns") and raw.get("rows"):
             cols = raw["columns"]
             rows = raw["rows"][:self.SAMPLE_ROWS]
             header = " | ".join(str(c) for c in cols)
-            data_rows = "\n".join(
-                " | ".join(str(v) for v in row) for row in rows
-            )
+            data_rows = "\n".join(" | ".join(str(v) for v in row) for row in rows)
             sample = f"{header}\n{data_rows}"
-
         return ConversationTurn(
             question=state["question"],
             sql=state["sql"],
             narrative=state.get("narrative", ""),
-            row_count=row_count,
+            row_count=raw.get("row_count", 0),
             sample_rows=sample,
+            query_plan=state.get("query_plan", {}),
         )
 
     def _add_to_history(self, turn: ConversationTurn):
-        """Add a turn to history, trimming to MAX_HISTORY."""
         self.history.append(turn)
         if len(self.history) > self.MAX_HISTORY:
             self.history = self.history[-self.MAX_HISTORY:]
 
     def clear_history(self):
-        """Clear conversation memory."""
         self.history = []
         logger.info("Conversation history cleared")
 
-    @staticmethod
-    def _is_followup_question(question: str) -> bool:
-        """Return True only when the user explicitly indicates follow-up context."""
-        q = (question or "").strip().lower()
-        if not q:
-            return False
-
-        followup_markers = [
-            "break that down", "drill down", "drill into", "as above", "same as above",
-            "that result", "those results", "previous", "earlier", "prior", "again",
-            "instead", "now do", "also", "what about", "for that", "for those", "same",
-        ]
-        return any(marker in q for marker in followup_markers)
-
-    @staticmethod
-    def _question_requests_explicit_order(question: str) -> bool:
-        """Return True when the user explicitly asks for a specific ordering."""
-        q = (question or "").lower()
-        order_terms = [
-            "ascending", "descending", "asc", "desc", "sort",
-            "order by", "alphabet", "a-z", "z-a", "chronological",
-            "latest", "newest", "oldest", "by year",
-        ]
-        return any(term in q for term in order_terms)
-
-    @staticmethod
-    def _insert_before_limit(sql: str, clause: str) -> str:
-        """Insert clause before the last LIMIT if present, else append at end."""
-        limit_matches = list(re.finditer(r"\blimit\b", sql, flags=re.IGNORECASE))
-        if not limit_matches:
-            return sql.rstrip().rstrip(";") + "\n" + clause
-
-        last = limit_matches[-1]
-        return sql[:last.start()].rstrip() + "\n" + clause + "\n" + sql[last.start():].lstrip()
-
-    def _ensure_default_budget_order(self, sql: str, question: str) -> str:
-        """Apply default DESC ordering by budget/spend when user did not specify order."""
-        sql_clean = (sql or "").strip()
-        if not sql_clean:
-            return sql_clean
-
-        if self._question_requests_explicit_order(question):
-            return sql_clean
-
-        if not re.search(r"\bselect\b", sql_clean, flags=re.IGNORECASE):
-            return sql_clean
-
-        # Prefer common spend aliases from projected output columns only.
-        projected_aliases = re.findall(
-            r"\bas\s+\"?([A-Za-z_][A-Za-z0-9_]*|fy[_-]?\d{4}|\d{4})\"?",
-            sql_clean,
-            flags=re.IGNORECASE,
-        )
-        alias_lookup = {a.lower(): a for a in projected_aliases}
-        alias_priority = [
-            "total_amount", "it_spend", "total_spend", "spend", "budget", "it_amount", "non_it_amount",
-        ]
-        chosen_alias = next((alias_lookup[a] for a in alias_priority if a in alias_lookup), None)
-
-        # For pivot outputs (fy_2020, 2020), sort by latest year column as fallback.
-        if not chosen_alias:
-            year_aliases = re.findall(r"\bas\s+\"?(fy[_-]?\d{4}|\d{4})\"?", sql_clean, flags=re.IGNORECASE)
-            if year_aliases:
-                chosen_alias = sorted(year_aliases, key=lambda x: int(re.sub(r"\D", "", x)))[-1]
-
-        if not chosen_alias:
-            return sql_clean
-
-        # Quote aliases like "2027" when needed.
-        if re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", chosen_alias):
-            order_expr = chosen_alias
-        else:
-            order_expr = f'"{chosen_alias}"'
-
-        order_clause = f"ORDER BY {order_expr} DESC"
-
-        # If SQL already has ORDER BY, wrap and enforce final ordering in outer query.
-        if re.search(r"\border\s+by\b", sql_clean, flags=re.IGNORECASE):
-            inner = sql_clean.rstrip().rstrip(";")
-            return f"SELECT * FROM (\n{inner}\n) _ordered\n{order_clause}"
-
-        return self._insert_before_limit(sql_clean, order_clause)
+    # ── SQL guards ─────────────────────────────────────────────
 
     @staticmethod
     def _select_clause_has_wildcard(select_clause: str) -> bool:
-        """Return True for SELECT * or alias.* patterns (excluding function args like count(*))."""
         return bool(re.search(r"(^|,)\s*(?:[A-Za-z_][A-Za-z0-9_]*\.)?\*\s*(,|$)", select_clause))
 
     def _violates_sql_column_policy(self, sql: str) -> str | None:
-        """Block SQL that can expose prohibited columns in output."""
         if not sql or not sql.strip():
             return "Policy violation: SQL is empty."
-
-        # Remove comments to avoid false positives.
-        sql_no_comments = re.sub(r"/\*.*?\*/", " ", sql, flags=re.DOTALL)
-        sql_no_comments = re.sub(r"--.*?$", " ", sql_no_comments, flags=re.MULTILINE)
-
-        for match in re.finditer(r"\bselect\b(.*?)\bfrom\b", sql_no_comments, flags=re.IGNORECASE | re.DOTALL):
-            select_clause = match.group(1)
-            if self._select_clause_has_wildcard(select_clause):
-                return "Policy violation: do not use SELECT *; explicitly list columns and exclude budget_type."
-            if re.search(r"\bbudget_type\b", select_clause, flags=re.IGNORECASE):
-                return "Policy violation: do not select budget_type column."
-
+        sql_clean = re.sub(r"/\*.*?\*/", " ", sql, flags=re.DOTALL)
+        sql_clean = re.sub(r"--.*?$", " ", sql_clean, flags=re.MULTILINE)
+        for match in re.finditer(r"\bselect\b(.*?)\bfrom\b", sql_clean, flags=re.IGNORECASE | re.DOTALL):
+            clause = match.group(1)
+            if self._select_clause_has_wildcard(clause):
+                return "Policy violation: do not use SELECT *."
+            if re.search(r"\bbudget_type\b", clause, flags=re.IGNORECASE):
+                return "Policy violation: do not select budget_type."
         return None
 
     # ── Node 1: Plan ───────────────────────────────────────────
 
     def plan(self, state: AgentState) -> AgentState:
-        logger.info(f"Planning for: {state['question']}")
+        logger.info(f"Planning: {state['question']}")
 
         history_msgs = self._build_history_messages()
+        prior_plan = ""
+        if self.history and self.history[-1].get("query_plan"):
+            prior_plan = f"\nPrior QueryPlan (for follow-up context only):\n{json.dumps(self.history[-1]['query_plan'], indent=2)}"
 
-        # Current question
-        current_msg = {
-            "role": "user",
-            "content": f"New question: {state['question']}\n\nCreate a brief query plan (3-5 lines).",
-        }
-
-        response = self.client.messages.create(
-            model=self.model,
-            max_tokens=512,
-            system=f"""You are a government budget analyst AI. Given a stakeholder question about Maryland's budget, create a brief query plan.
+        system = f"""You are a government budget analyst AI for Maryland state budget data.
 
 {self.full_catalog}
 
-You have conversation history from this session. If the user references
-prior results (e.g. "break that down further", "now show me by year",
-"what about just DoIT?"), use the context from earlier turns to understand
-what they mean.
+{CHART_TYPE_GUIDANCE}
 
-If the question does NOT explicitly indicate follow-up, treat it as a new standalone request.
-Do not inherit prior filters, category scope, or IT/non-IT lens unless the user asks.
-Honor the requested scope strictly. If the user asks for a specific category,
-agency, fund type, or budget lens, keep plan and filters scoped to that request.
-Do not add IT-specific scope unless the user explicitly asks for IT/technology.
+{OUTPUT_SHAPE_RULES}
 
-When mapping user concepts to column values, use ONLY the exact values
-listed in the catalog above.
+FISCAL YEAR RULES (apply every question):
+  Latest fiscal year in the database: {self.latest_fiscal_year}
 
-Identify:
-1. Which column(s) to aggregate
-2. Which column(s) to group by
-3. Which filters to apply using EXACT values
-4. Whether this explicitly references a prior question""",
-            messages=history_msgs + [current_msg],
+  DESCRIBE question (keywords: what is, what does, describe, tell me about, explain,
+    what's the purpose of, overview of, details about, what does X do, what is X program,
+    which unit, which agency, what unit does X belong to, what fund, what tower, what type):
+    → analysis_type = describe
+    → fiscal_years = []
+    → chart_type = none
+    → measures = []
+    → dimensions = [program_name, agency_name] + any other field the user is asking about
+    → SQL pattern (description is at PROGRAM level — always aggregate to program level):
+        SELECT program_name, agency_name,
+               MAX(unit_name) AS unit_name,        ← include if user asks about unit
+               MAX(description) AS description,     ← always include for describe
+               MAX(fund_type) AS fund_type,         ← include if user asks about fund
+               MAX(it_tower) AS it_tower            ← include if user asks about tower
+        FROM main_marts.fct_it_spend
+        WHERE program_name ILIKE '%term%'
+          [AND agency_name ILIKE '%agency%'  ← add if user mentions an agency/unit]
+        GROUP BY program_name, agency_name
+        HAVING MAX(description) IS NOT NULL
+        LIMIT 5
+    → Do NOT use SELECT DISTINCT with subprogram columns — that returns duplicate rows per subprogram
+
+  TREND question (keywords: trend, change, changes, increase, increases, decrease, decreases,
+    growth, decline, over the years, over time, by year, year over year, YoY, history, historical):
+    → fiscal_years = []  (all years)
+    → analysis_type = trend
+    → output_shape = timeseries
+    → chart_type = line
+
+  SPECIFIC YEAR mentioned by user (e.g. "in FY2025", "for 2024"):
+    → fiscal_years = [that year]
+    → output_shape = aggregated (unless also a trend)
+
+  NO YEAR mentioned + NOT a trend question:
+    → fiscal_years = [{self.latest_fiscal_year}]  ← always default to latest year
+    → output_shape = aggregated
+
+PLANNING RULES:
+- Treat each question as standalone unless the user explicitly references prior results.
+- Map all filter values to EXACT strings from the catalog. Never invent values.
+- measures must be expressions like "SUM(it_amount) AS it_spend" — include the alias.
+- chart_x and chart_y must exactly match the alias or dimension column name in the SQL output.
+- For multi-series charts: output_shape=long, chart_series=the grouping dimension column.
+{prior_plan}"""
+
+        response = self.client.messages.create(
+            model=self.model,
+            max_tokens=1024,
+            system=system,
+            tools=[PLAN_TOOL],
+            tool_choice={"type": "any"},
+            messages=history_msgs + [{"role": "user", "content": state["question"]}],
         )
 
-        state["plan"] = response.content[0].text
-        logger.info(f"Plan: {state['plan'][:200]}")
+        plan_input = None
+        for block in response.content:
+            if block.type == "tool_use" and block.name == "create_query_plan":
+                plan_input = block.input
+                break
+
+        if not plan_input:
+            logger.warning("plan() got no tool_use block; using fallback")
+            plan_input = {
+                "analysis_type": "breakdown",
+                "fiscal_years": [],
+                "dimensions": ["agency_name"],
+                "measures": ["SUM(amount) AS total_amount"],
+                "filters": {},
+                "top_n": 20,
+                "output_shape": "aggregated",
+                "chart_type": "bar_h",
+                "chart_x": "total_amount",
+                "chart_y": "agency_name",
+                "chart_series": None,
+                "chart_title": state["question"],
+                "chart_sort_desc": True,
+                "is_followup": False,
+            }
+
+        try:
+            qp = QueryPlan(**plan_input)
+            state["query_plan"] = qp.model_dump()
+        except Exception as e:
+            logger.error(f"QueryPlan validation failed: {e}")
+            state["query_plan"] = plan_input
+
+        logger.info(f"QueryPlan: {state['query_plan']}")
         return state
+
+    @staticmethod
+    def _extract_sql(text: str) -> str:
+        """Extract pure SQL from model response, stripping prose and fences."""
+        text = text.strip()
+
+        # Pull content from ```sql ... ``` or ``` ... ``` fences
+        fenced = re.search(r"```(?:sql)?\s*\n?(.*?)```", text, re.DOTALL | re.IGNORECASE)
+        if fenced:
+            return fenced.group(1).strip()
+
+        # If no fence, find the first SELECT/WITH and take everything from there
+        sql_start = re.search(r"\b(SELECT|WITH)\b", text, re.IGNORECASE)
+        if sql_start:
+            return text[sql_start.start():].strip()
+
+        return text
 
     # ── Node 2: Write SQL ──────────────────────────────────────
 
     def write_sql(self, state: AgentState) -> AgentState:
-        logger.info("Generating SQL...")
+        logger.info("Generating SQL from QueryPlan...")
 
-        # Include last SQL from history for "drill down" context
+        qp = state["query_plan"]
         prior_sql = ""
-        if self.history:
-            last = self.history[-1]
-            prior_sql = f"\nPrevious query SQL (for context if user is drilling down):\n{last['sql']}\n"
+        if self.history and qp.get("is_followup"):
+            prior_sql = f"\nPrevious SQL (user drilling down):\n{self.history[-1]['sql']}\n"
+
+        contract = f"""
+QUERY CONTRACT — follow exactly:
+  analysis_type : {qp.get('analysis_type')}
+  output_shape  : {qp.get('output_shape')}
+  dimensions    : {qp.get('dimensions')}
+  measures      : {qp.get('measures')}
+  filters       : {qp.get('filters')}
+  fiscal_years  : {qp.get('fiscal_years')} (empty = no year filter; single value = filter to that year)
+  latest_year   : {self.latest_fiscal_year}
+  top_n         : {qp.get('top_n')}
+  chart_x alias : {qp.get('chart_x')}   ← SELECT alias MUST match exactly
+  chart_y alias : {qp.get('chart_y')}   ← SELECT alias MUST match exactly
+  chart_series  : {qp.get('chart_series')}
+
+OUTPUT SHAPE REQUIREMENTS:
+  aggregated  → GROUP BY dimensions, one row per combination
+  timeseries  → fiscal_year as first column, GROUP BY fiscal_year + dimensions
+  long        → fiscal_year + series dimension + measure; one row per (year, series)
+  pivot       → one row per entity, one column per fiscal year (CASE expressions)
+"""
 
         response = self.client.messages.create(
             model=self.model,
             max_tokens=2048,
-            system=f"""You are a SQL expert for DuckDB. Generate a SQL query.
+            system=f"""You are a SQL expert for DuckDB. Generate SQL from the QueryPlan contract.
 
-CRITICAL RULES:
-- ALWAYS use main_marts.fct_it_spend as the full table name.
-- ONLY use column names from the catalog. Dollar columns: amount, it_amount, non_it_amount.
-- NEVER use SELECT *.
-- NEVER include budget_type in the SELECT output.
-- For AI-enriched columns, use ONLY exact values from the catalog.
-- Use WHERE is_it = true ONLY when the user explicitly asks for IT/technology scope or asks for IT-specific fields.
-- If the user asks for a specific scope (category/agency/program/fund), keep filters and selected metrics strictly within that scope.
-- Do NOT add unrelated comparisons or side analyses that were not requested.
-- Do NOT include it_amount, non_it_amount, it_tower, or it_sub_tower unless the user explicitly requests IT detail.
-- Conversation history is available for context, but do NOT carry over old filters/scope into a new question unless the user clearly asks a follow-up.
-- For YoY: LAG() OVER (ORDER BY fiscal_year)
-- Round percentages to 1 decimal.
-- Use NULLIF to avoid division by zero.
-- Unless the user explicitly asks a different order, results must be ordered by budget/spend descending.
-- Do not reference fiscal years earlier than 2020 anywhere in SQL.
-- For pivot requests by fiscal_year, do NOT hardcode years that have no data.
-    Build year columns only from years present in the filtered dataset.
-- If building a pivot manually with CASE expressions, exclude empty years
-    (no rows or all null/zero amounts in that year for the requested scope).
-- If the user says "break that down" or "drill into that", modify the previous query.
-- Return ONLY the SQL. No explanation, no markdown fences.
+HARD RULES:
+- Table: main_marts.fct_it_spend
+- NEVER SELECT *
+- NEVER select budget_type
+- Use only column names from the catalog
+- WHERE is_it = true ONLY when analysis requires IT scope
+- NULLIF for division
+- Return ONLY SQL, no explanation, no fences
 
 {self.sql_context}
+{contract}
 {prior_sql}""",
-            messages=[{
-                "role": "user",
-                "content": f"Question: {state['question']}\nPlan: {state['plan']}\n\nSQL:",
-            }],
+            messages=[{"role": "user", "content": f"Question: {state['question']}\n\nSQL:"}],
         )
 
-        sql = response.content[0].text.strip()
-        if sql.startswith("```"):
-            sql = sql.split("\n", 1)[1]
-        if sql.endswith("```"):
-            sql = sql.rsplit("```", 1)[0]
-
-        state["sql"] = self._ensure_default_budget_order(sql.strip(), state["question"])
+        state["sql"] = self._extract_sql(response.content[0].text)
         logger.info(f"SQL: {state['sql'][:300]}")
         return state
 
@@ -366,23 +476,15 @@ CRITICAL RULES:
         policy_error = self._violates_sql_column_policy(state["sql"])
         if policy_error:
             state["error"] = policy_error
-            state["raw_results"] = {
-                "columns": [],
-                "rows": [],
-                "row_count": 0,
-                "error": policy_error,
-            }
+            state["raw_results"] = {"columns": [], "rows": [], "row_count": 0, "error": policy_error}
             state["formatted_table"] = f"Error: {policy_error}"
-            logger.error(policy_error)
             return state
 
         result = self.tools.run_sql(state["sql"])
-
         if result["error"]:
             state["error"] = result["error"]
             state["raw_results"] = result
             state["formatted_table"] = f"Error: {result['error']}"
-            logger.error(f"Query failed: {result['error']}")
         else:
             state["raw_results"] = result
             state["formatted_table"] = self.tools.format_results_as_table(result)
@@ -391,81 +493,230 @@ CRITICAL RULES:
 
         return state
 
-    # ── Node 3b: Fix SQL ───────────────────────────────────────
+    # ── Node 4: Validate ───────────────────────────────────────
+
+    def validate(self, state: AgentState) -> AgentState:
+        """Verify result columns satisfy the QueryPlan contract."""
+        state["validation_error"] = None
+
+        if state.get("error"):
+            return state
+
+        raw = state.get("raw_results", {})
+        result_cols = [str(c).lower() for c in raw.get("columns", [])]
+        qp = state.get("query_plan", {})
+        problems = []
+
+        # Skip chart column checks for non-chart queries
+        is_no_chart = qp.get("chart_type") == "none" or qp.get("analysis_type") == "describe"
+
+        if not is_no_chart:
+            for field in ("chart_x", "chart_y"):
+                val = (qp.get(field) or "").lower()
+                if val and val not in result_cols:
+                    problems.append(f"{field}='{val}' missing from results {result_cols}")
+
+            series = (qp.get("chart_series") or "").lower()
+            if series and series not in result_cols:
+                problems.append(f"chart_series='{series}' missing from results {result_cols}")
+
+        if qp.get("output_shape") == "timeseries" and "fiscal_year" not in result_cols:
+            problems.append("output_shape=timeseries but fiscal_year not in results")
+
+        if raw.get("row_count", 0) == 0:
+            problems.append("Query returned 0 rows — filters may be too restrictive or term not found")
+
+        if problems:
+            state["validation_error"] = "; ".join(problems)
+            logger.warning(f"Validation: {state['validation_error']}")
+
+        return state
+
+    # ── Node 5: Fix SQL ────────────────────────────────────────
 
     def fix_sql(self, state: AgentState) -> AgentState:
-        logger.info(f"Fixing SQL error: {state['error']}")
+        error = state.get("error") or state.get("validation_error", "")
+        logger.info(f"Fixing SQL: {error}")
+
+        qp = state["query_plan"]
+        contract = f"""
+FIX AGAINST THIS CONTRACT:
+  dimensions   : {qp.get('dimensions')}
+  measures     : {qp.get('measures')}
+  filters      : {qp.get('filters')}
+  output_shape : {qp.get('output_shape')}
+  chart_x alias: {qp.get('chart_x')}   ← SELECT alias MUST match
+  chart_y alias: {qp.get('chart_y')}   ← SELECT alias MUST match
+  chart_series : {qp.get('chart_series')}
+"""
 
         response = self.client.messages.create(
             model=self.model,
             max_tokens=2048,
-            system=f"""You are a SQL debugger for DuckDB. The previous SQL query failed. Fix it.
-
-Use ONLY exact column and table names, and ONLY exact category values listed:
-- NEVER use SELECT *.
-- NEVER include budget_type in the SELECT output.
+            system=f"""You are a SQL debugger for DuckDB. Fix the SQL to satisfy the QueryPlan contract.
+- NEVER SELECT *
+- NEVER select budget_type
+- SELECT aliases MUST exactly match chart_x and chart_y
+- Return ONLY corrected SQL
 
 {self.sql_context}
-
-Return ONLY the corrected SQL. No explanation.""",
+{contract}""",
             messages=[{
                 "role": "user",
-                "content": f"Original SQL:\n{state['sql']}\n\nError:\n{state['error']}\n\nFixed SQL:",
+                "content": f"Original SQL:\n{state['sql']}\n\nProblem:\n{error}\n\nFixed SQL:",
             }],
         )
 
-        sql = response.content[0].text.strip()
-        if sql.startswith("```"):
-            sql = sql.split("\n", 1)[1]
-        if sql.endswith("```"):
-            sql = sql.rsplit("```", 1)[0]
-
-        state["sql"] = sql.strip()
+        state["sql"] = self._extract_sql(response.content[0].text)
+        state["error"] = None
+        state["validation_error"] = None
         logger.info(f"Fixed SQL: {state['sql'][:300]}")
         return state
 
-    # ── Node 4: Narrate ────────────────────────────────────────
+    # ── Data context label ──────────────────────────────────────
+
+    def _build_data_context(self, qp: dict, raw: dict) -> str:
+        """Build a short deterministic data-scope line from the QueryPlan.
+
+        Examples:
+          Showing: FY2027 · All agencies · Total budget · 42 rows
+          Showing: all available years (up to FY2027) · Agency: Dept of Health · IT spend · 8 rows
+        """
+        parts = []
+
+        # Fiscal year scope
+        fiscal_years = qp.get("fiscal_years", [])
+        if not fiscal_years:
+            parts.append(f"all available years (up to FY{self.latest_fiscal_year})")
+        elif len(fiscal_years) == 1:
+            parts.append(f"FY{fiscal_years[0]}")
+        else:
+            parts.append(f"FY{min(fiscal_years)}–FY{max(fiscal_years)}")
+
+        # Active filters — skip is_it since it's an internal flag
+        filters = qp.get("filters", {})
+        for col, values in filters.items():
+            if col == "is_it":
+                continue
+            label = col.replace("_", " ").replace(" code", "").replace(" name", "").title()
+            val_str = ", ".join(str(v) for v in values[:3])
+            if len(values) > 3:
+                val_str += f" +{len(values)-3} more"
+            parts.append(f"{label}: {val_str}")
+
+        # Measure description
+        measures = qp.get("measures", [])
+        if measures:
+            # Pull the AS alias from the first measure expression
+            first = measures[0]
+            alias_match = re.search(r"\bAS\s+(\w+)", first, re.IGNORECASE)
+            if alias_match:
+                alias = alias_match.group(1).replace("_", " ").title()
+                parts.append(alias)
+
+        # Row count
+        row_count = raw.get("row_count", 0)
+        parts.append(f"{row_count} rows")
+
+        return "Showing: " + " · ".join(parts)
+
+    def _format_describe_results(self, raw: dict) -> str:
+        """Format describe query results — show program name + raw field values, no narrative."""
+        rows = raw.get("rows", [])
+        cols = [str(c).lower() for c in raw.get("columns", [])]
+
+        if not rows:
+            return "No matching programs found. Try a broader search term."
+
+        col_idx = {c: i for i, c in enumerate(cols)}
+        entries = []
+
+        for row in rows:
+            parts = []
+
+            # Program / agency header
+            name = row[col_idx["program_name"]] if "program_name" in col_idx else ""
+            agency = row[col_idx["agency_name"]] if "agency_name" in col_idx else ""
+            header = f"{name}"
+            if agency:
+                header += f" ({agency})"
+            parts.append(header)
+
+            # All other fields except program_name and agency_name
+            skip = {"program_name", "agency_name"}
+            for col in cols:
+                if col in skip:
+                    continue
+                val = row[col_idx[col]]
+                if val is None or str(val).strip() == "":
+                    continue
+                label = col.replace("_", " ").title()
+                parts.append(f"{label}: {val}")
+
+            entries.append("\n".join(parts))
+
+        return "\n\n---\n\n".join(entries)
+
+    # ── Node 6: Narrate ────────────────────────────────────────
 
     def narrate(self, state: AgentState) -> AgentState:
         logger.info("Generating narrative...")
 
         if state.get("error"):
-            state["narrative"] = f"I wasn't able to answer that question. The query failed with: {state['error']}"
+            state["narrative"] = f"I wasn't able to answer that question. Query failed: {state['error']}"
             return state
 
-        # Include brief prior context for continuity
+        qp = state.get("query_plan", {})
+        analysis_type = qp.get("analysis_type", "breakdown")
+
+        # For describe queries: skip Claude narration entirely.
+        # Just surface the raw description text from the results.
+        if analysis_type == "describe":
+            state["narrative"] = self._format_describe_results(state.get("raw_results", {}))
+            return state
+        chart_title = qp.get("chart_title", "")
+        filters = qp.get("filters", {})
+        fiscal_years = qp.get("fiscal_years", [])
+
+        scope_lines = []
+        if filters:
+            scope_lines.append(f"Filters applied: {filters}")
+        if fiscal_years:
+            scope_lines.append(f"Fiscal years: {fiscal_years}")
+        scope_note = "\n".join(scope_lines)
+
         prior_context = ""
-        if self.history:
+        if self.history and qp.get("is_followup"):
             last = self.history[-1]
-            prior_context = f"\n\nPrior question was: \"{last['question']}\"\nPrior answer summary: {last['narrative'][:200]}..."
+            prior_context = f"\n\nPrior question: \"{last['question']}\"\nPrior answer: {last['narrative'][:200]}..."
 
         response = self.client.messages.create(
             model=self.model,
             max_tokens=2048,
-            system=f"""You are a government budget analyst presenting findings to senior stakeholders.
+            system=f"""You are a government budget analyst presenting findings to Maryland senior stakeholders.
 
-Given a question and query results, write a clear narrative answer.
+Analysis type: {analysis_type}
+Chart shown to user: {chart_title}
+{scope_note}
 
-RULES:
-- Start with the direct answer in the first sentence.
-- Format dollar amounts using these rules:
-    - >= 1,000,000,000: use $X.XB
-    - >= 1,000,000: use $X.XM
-    - >= 1,000: use $X.XK
-    - < 1,000: use exact dollars ($123)
-    - Use 1 decimal place for K/M/B values.
-    - If the user asks for exact values, include exact dollars with commas instead.
-- For trends, describe direction and magnitude.
-- For comparisons, highlight largest and smallest.
-- If this is a follow-up question, connect your answer to the prior context.
-- Use ONLY facts present in the Results table.
-- Do NOT introduce IT or technology statistics unless explicitly requested or present in the returned columns.
-- If the question scope is specific (for example, a single category like Health), keep the narrative strictly in that scope.
-- Do not carry over prior-turn assumptions unless the current question explicitly asks to continue or refine the previous analysis.
-- Keep to 2-4 paragraphs max.
-- End with one actionable insight if data supports it.
-- Do NOT show SQL or mention technical details.
-- Write in plain clear prose, no markdown formatting.
+NARRATIVE RULES:
+- Open with the direct answer in the first sentence.
+- Dollar formatting: >=1B → $X.XB, >=1M → $X.XM, >=1K → $X.XK, <1K → exact.
+- trend     → describe direction, magnitude, and any inflection points.
+- breakdown → highlight top and bottom entries by name and value.
+- comparison → explicitly state the delta between entities.
+- ranking   → name the top entries and the gap between first and last.
+- variance  → call out anomalies and likely causes.
+- describe  → present the results in plain language based on whatever columns were returned.
+               State the program/entity name clearly, then answer the user's specific question
+               using the returned field values (description, unit, fund type, tower, etc).
+               If multiple rows matched, present each as a numbered entry.
+               Do not invent information not present in the results.
+- Stay strictly within the scope of returned data. Do not introduce outside metrics.
+- Do not carry over prior-turn scope unless this is a follow-up.
+- 2-4 paragraphs. End with one actionable insight if data supports it.
+- Plain prose. No markdown, no SQL, no technical jargon.
+- Do NOT restate the data scope (fiscal year, filters, row count) — that is shown separately.
 {prior_context}""",
             messages=[{
                 "role": "user",
@@ -473,20 +724,26 @@ RULES:
             }],
         )
 
-        state["narrative"] = response.content[0].text
+        data_context = self._build_data_context(qp, state.get("raw_results", {}))
+        # describe queries don't need a scope line — no fiscal year or measure involved
+        if qp.get("analysis_type") == "describe":
+            state["narrative"] = response.content[0].text
+        else:
+            state["narrative"] = data_context + "\n\n" + response.content[0].text
         return state
 
-    # ── Run the full graph ─────────────────────────────────────
+    # ── Run ────────────────────────────────────────────────────
 
     def query(self, question: str) -> AgentState:
         state: AgentState = {
             "question": question,
-            "plan": "",
+            "query_plan": {},
             "sql": "",
             "raw_results": {},
             "formatted_table": "",
             "narrative": "",
             "error": None,
+            "validation_error": None,
         }
 
         state = self.plan(state)
@@ -497,13 +754,16 @@ RULES:
             state = self.fix_sql(state)
             state = self.execute(state)
 
+        state = self.validate(state)
+
+        if state["validation_error"]:
+            state = self.fix_sql(state)
+            state = self.execute(state)
+
         state = self.narrate(state)
 
-        # Save to memory
-        turn = self._condense_results(state)
-        self._add_to_history(turn)
+        self._add_to_history(self._condense_results(state))
         logger.info(f"History: {len(self.history)} turns")
-
         return state
 
     def print_answer(self, state: AgentState):
@@ -511,13 +771,14 @@ RULES:
         print(f"  Question: {state['question']}")
         print(f"{'='*70}")
         print(f"\n{state['narrative']}")
-
         if state["formatted_table"] and not state.get("error"):
             print(f"\n{'─'*70}")
             print(state["formatted_table"])
-
         print(f"\n{'─'*70}")
         print(f"  SQL: {state['sql'][:200]}{'...' if len(state['sql']) > 200 else ''}")
+        if state.get("query_plan"):
+            qp = state["query_plan"]
+            print(f"  Chart: {qp.get('chart_type')} x={qp.get('chart_x')} y={qp.get('chart_y')} series={qp.get('chart_series')}")
         print(f"{'='*70}\n")
 
 
@@ -533,42 +794,32 @@ def main():
 
     import os
     from dotenv import load_dotenv
-
     load_dotenv()
+
     api_key = os.getenv("ANTHROPIC_API_KEY", "")
-    if not api_key or api_key.startswith("sk-ant-your"):
-        print("ERROR: Set ANTHROPIC_API_KEY in your .env file")
+    if not api_key:
+        print("ERROR: Set ANTHROPIC_API_KEY")
         return
 
     agent = BudgetQueryAgent(api_key=api_key, db_path=args.db, model=args.model)
 
     if args.question:
-        state = agent.query(args.question)
-        agent.print_answer(state)
-
+        agent.print_answer(agent.query(args.question))
     elif args.interactive:
-        print("\n  MBTSA Budget Query Agent (with memory)")
-        print("  Type a question. Follow up with 'break that down' or 'now by year'.")
-        print("  Type 'clear' to reset memory, 'quit' to exit.\n")
-
+        print("\n  MBTSA Budget Query Agent")
+        print("  'clear' to reset memory, 'quit' to exit.\n")
         while True:
-            question = input("  You: ").strip()
-            if question.lower() in ("quit", "exit", "q"):
+            q = input("  You: ").strip()
+            if q.lower() in ("quit", "exit", "q"):
                 break
-            if question.lower() == "clear":
+            if q.lower() == "clear":
                 agent.clear_history()
                 print("  Memory cleared.\n")
                 continue
-            if not question:
-                continue
-            state = agent.query(question)
-            agent.print_answer(state)
-
+            if q:
+                agent.print_answer(agent.query(q))
     else:
-        print("Run with --question or --interactive.\n")
-        print("Examples:")
-        print('  --question "What is the total IT spend by tower?"')
-        print('  --interactive  (supports follow-up questions)')
+        print("Run with --question or --interactive.")
 
 
 if __name__ == "__main__":
