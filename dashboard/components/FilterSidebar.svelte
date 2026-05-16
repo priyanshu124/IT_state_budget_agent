@@ -1,14 +1,17 @@
 <script>
-    export let targetId = 'page-filters';
+    export let targetId = 'page-filters-anchor';
     export let title = '⚙ Filters';
 
     function scrollToFilters() {
         const el = document.getElementById(targetId);
-        if (el) {
-            el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            const details = el.querySelector('details');
-            if (details) details.open = true;
-        }
+        if (!el) return;
+
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+
+        window.addEventListener('scrollend', () => {
+            const trigger = document.querySelector('#page-filters button.text-sm.cursor-pointer');
+            if (trigger) trigger.click();
+        }, { once: true });
     }
 </script>
 

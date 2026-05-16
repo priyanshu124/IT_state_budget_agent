@@ -88,6 +88,7 @@ header {
     background-color: #ede5f8 !important;
     border-bottom: 2px solid #c9a8f0 !important;
     color: #211030 !important;
+    position: relative !important;
 }
 
 header a {
@@ -166,4 +167,9 @@ footer {
 .echarts-for-react canvas,
 .echarts-for-react svg {
     background: transparent !important;
+}
+
+/* Hide Evidence auto-nav */
+nav[class*="sidebar"], aside[class*="sidebar"] {
+    display: none !important;
 }

@@ -13,7 +13,7 @@
 
     let chatOpen = false;
     $: pageSlug = $page.url.pathname.replace(/\//g, '-').replace(/^-/, '') || 'home';
-    $: chatSrc = `http://localhost:8501?page=${pageSlug}&embed=true`;
+    $: chatSrc = `https://mdbudget-ask-questions.streamlit.app?page=${pageSlug}&embed=true`;
 </script>
 
 <svelte:head>
@@ -23,11 +23,12 @@
 
 <EvidenceDefaultLayout
     {data}
-    title="MBTSA"
+    title="MBIT"
     logo="/maryland-logo.png"
-    homePageName="Budget Office"
+    homePageName="Home"
     neverShowQueries={true}
     maxWidth="1200px"
+    hideBreadcrumbs={true}
 >
     <div slot="header">
         <div style="background:#ede5f8; height:3px; width:100%; border-bottom:2px solid #c9a8f0;"></div>
@@ -35,7 +36,7 @@
     <slot slot="content" />
     <div slot="footer">
         <p style="font-size: 0.7rem; color: #6B7280; text-align: center; padding: 16px 0; border-top: 1px solid #e2d9f3; margin-top: 32px; font-family:'IBM Plex Sans',sans-serif;">
-            State of Maryland · Department of Budget & Management · Data: FY2020–FY2027 · TBM v5.0.1
+            State of Maryland · Operating budget · Data: FY2017–FY2027 · TBM v5.0.1
         </p>
     </div>
 </EvidenceDefaultLayout>

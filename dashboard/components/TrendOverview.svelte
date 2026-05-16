@@ -25,13 +25,13 @@
     function buildTrendConfig() {
         return {
             title: [{
-                text: '{sq|■} {spend|Spend}    {line|——} {cagr|CAGR' + (cagrPct ? ` ${cagrPct}%` : '') + '}    {dash|╌ ╌} {inf|Infl. base}',
+                text: '{line|——} {cagr|CAGR' + (cagrPct ? ` ${cagrPct}%` : '') + '}    {dash|╌ ╌} {inf|Infl. base}',
                 left: 'left', top: 4,
                 textStyle: {
                     fontSize: 11, fontWeight: 400, color: '#231F20',
                     rich: {
                         sq:    { color: '#FFC838', fontSize: 14, fontWeight: 900, lineHeight: 16 },
-                        spend: { color: '#BA7517', fontSize: 11, fontWeight: 600 },
+                        budget: { color: '#BA7517', fontSize: 11, fontWeight: 600 },
                         line:  { color: '#C8122C', fontSize: 12, fontWeight: 900 },
                         cagr:  { color: '#C8122C', fontSize: 11, fontWeight: 600 },
                         dash:  { color: '#6B7280', fontSize: 11 },
@@ -84,11 +84,24 @@
                     label: {
                         show: true, position: 'top', distance: 4,
                         fontSize: 9.5, fontWeight: 600,
-                        color: (p) => p.dataIndex === fiscalOverviewCagr.length - 1 ? '#BA7517' : '#B08A00',
+                        color: (p) => {
+                            const fy = Number(fiscalOverviewCagr[p.dataIndex]?.fiscal_year);
+                            if (fy === 2027) return '#7A5200';
+                            if (fy === 2026) return '#9A6800';
+                            return '#B08A00';
+                        },
                         formatter: (p) => usdCompact(p.value)
                     },
+                    
+                    itemStyle: { 
+                    color: (p) => {
+                        const fy = Number(fiscalOverviewCagr[p.dataIndex]?.fiscal_year);
+                        if (fy === 2027) return '#9A6800';
+                        if (fy === 2026) return '#C88A00';
+                        return '#FFC838';
+                    }
+                },
                     labelLayout: { hideOverlap: true },
-                    itemStyle: { color: (p) => p.dataIndex === fiscalOverviewCagr.length - 1 ? '#BA7517' : '#FFC838' },
                     z: 1
                 },
                 {
@@ -120,7 +133,7 @@
     function buildYoyConfig() {
         return {
             title: [{
-                text: '{base|─} {bl|Base}    {sq0|■} {l0|< 0% Decline}    {sq1|■} {l1|0–4% Steady}    {sq2|■} {l2|5–9% Expansion}    {sq3|■} {l3|10%+ High growth}',
+                text: '{sq0|■} {l0|< 0% Decline}    {sq1|■} {l1|0–4% Steady}    {sq2|■} {l2|5–9% Expansion}    {sq3|■} {l3|10%+ High growth}',
                 left: 'left', top: 4,
                 textStyle: {
                     fontSize: 11, fontWeight: 400, color: '#231F20',
@@ -249,8 +262,21 @@
     }
 </script>
 
-<!-- Divs are ALWAYS in the DOM — no {#if} wrapper — so bind:this assigns immediately -->
 <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px; width: 100%;">
-    <div bind:this={overviewEl} style="width: 100%; height: {chartHeight};"></div>
-    <div bind:this={yoyEl} style="width: 100%; height: {chartHeight};"></div>
+    <div>
+        <p style="font-size: 0.8rem; font-family: 'IBM Plex Sans', sans-serif; margin: 0 0 4px 0; letter-spacing: 0.01em;">
+            <span style="color: #B08A00; font-weight: 800;">■ FY2017–FY2025 Actual</span>
+            <span style="margin: 0 6px; color: #D1D5DB;">|</span>
+            <span style="color: #9A6800; font-weight: 800;">■ FY2026 Working</span>
+            <span style="margin: 0 6px; color: #D1D5DB;">|</span>
+            <span style="color: #7A5200; font-weight: 800;">■ FY2027 Allowance</span>
+        </p>
+        <div bind:this={overviewEl} style="width: 100%; height: {chartHeight};"></div>
+    </div>
+    <div>
+        <p style="font-size: 0.8rem; font-weight: 800;color: #6B7280; font-family: 'IBM Plex Sans', sans-serif; margin: 0 0 4px 0; letter-spacing: 0.01em;">
+    Year-Over-Year % Change
+</p>
+        <div bind:this={yoyEl} style="width: 100%; height: {chartHeight};"></div>
+    </div>
 </div>

@@ -252,9 +252,9 @@
         {#if !collapsed.has(ag.name)}
           {#each ag.projects as project, pi}
             <div class="proj-row" class:row-alt={pi % 2 === 1}
-                 on:click={() => goto(`/it-projects/project-details/${project.mitdp_id}`)}
+                 on:click={() => goto(`/mitdps/project-details/${project.mitdp_id}`)}
                  role="button" tabindex="0"
-                 on:keydown={e => e.key === 'Enter' && goto(`/it-projects/project-details/${project.mitdp_id}`)}>
+                 on:keydown={e => e.key === 'Enter' && goto(`/mitdps/project-details/${project.mitdp_id}`)}>
               <div class="proj-label">
                 <div class="proj-title" title={project.project_title}>
                   {project.project_title.length > 36
