@@ -1,251 +1,109 @@
 ---
-title: Budget Office
-sidebar_link: false
+title: Home
+sidebar_position: 1
 ---
 
-<script>
-    if (typeof window !== 'undefined' && window.location.pathname === '/') {
-        window.location.replace('/budget-office');
-    }
-</script>
-
-Redirecting to [Budget Office](/budget-office)...
-
-```sql fy_range
-select
-    min(fiscal_year) as start_year,
-    max(fiscal_year) as end_year,
-    count(distinct fiscal_year) as total_years
-from mbtsa.agency_level
-```
-
-```sql full_budget_kpis
-with latest_year as (
-    select max(fiscal_year) as max_fy from mbtsa.agency_level
-),
-prior_year as (
-    select max(fiscal_year) - 1 as prior_fy from mbtsa.agency_level
-),
-latest as (
-    select
-        sum(total_budget_amount) as latest_budget,
-        sum(case when lower(fund_type) like '%general%' then total_budget_amount else 0 end) as general_fund,
-        sum(case when lower(fund_type) like '%federal%' then total_budget_amount else 0 end) as federal_fund,
-        count(distinct agency_code) as agency_count
-    from mbtsa.agency_level
-    where fiscal_year = (select max_fy from latest_year)
-),
-prior as (
-    select
-        sum(total_budget_amount) as prior_budget,
-        sum(case when lower(fund_type) like '%general%' then total_budget_amount else 0 end) as prior_general_fund,
-        sum(case when lower(fund_type) like '%federal%' then total_budget_amount else 0 end) as prior_federal_fund
-    from mbtsa.agency_level
-    where fiscal_year = (select prior_fy from prior_year)
-)
-select
-    l.latest_budget,
-    l.general_fund,
-    l.federal_fund,
-    l.agency_count,
-    round(l.federal_fund * 100.0 / nullif(l.latest_budget, 0), 1) as federal_pct,
-    round(l.general_fund * 100.0 / nullif(l.latest_budget, 0), 1) as general_pct,
-    round((l.latest_budget - p.prior_budget) * 100.0 / nullif(p.prior_budget, 0), 1) as yoy_pct,
-    round((l.general_fund - p.prior_general_fund) * 100.0 / nullif(p.prior_general_fund, 0), 1) as general_yoy_pct,
-    round((l.federal_fund - p.prior_federal_fund) * 100.0 / nullif(p.prior_federal_fund, 0), 1) as federal_yoy_pct,
-    (select max_fy from latest_year) as latest_fy,
-    (select prior_fy from prior_year) as prior_fy
-from latest l cross join prior p
-```
-
-```sql it_budget_kpis
-with latest_year as (
-    select max(fiscal_year) as max_fy from mbtsa.subprogram_level
-),
-prior_year as (
-    select max(fiscal_year) - 1 as prior_fy from mbtsa.subprogram_level
-),
-latest_it as (
-    select
-        sum(total_budget_amount) as latest_it_spend,
-        count(distinct agency_code) as it_agency_count
-    from mbtsa.subprogram_level
-    where fiscal_year = (select max_fy from latest_year)
-    and is_it = true
-),
-prior_it as (
-    select sum(total_budget_amount) as prior_it_spend
-    from mbtsa.subprogram_level
-    where fiscal_year = (select prior_fy from prior_year)
-    and is_it = true
-),
-total_budget as (
-    select sum(total_budget_amount) as total
-    from mbtsa.agency_level
-    where fiscal_year = (select max_fy from latest_year)
-),
-cagr as (
-    select
-        sum(case when fiscal_year = (select max_fy from latest_year) then total_budget_amount end) as end_val,
-        sum(case when fiscal_year = (select max_fy from latest_year) - 5 then total_budget_amount end) as start_val
-    from mbtsa.subprogram_level
-    where is_it = true
-),
-top_agency as (
-    select agency_name
-    from mbtsa.subprogram_level
-    where fiscal_year = (select max_fy from latest_year)
-    and is_it = true
-    group by agency_name
-    order by sum(total_budget_amount) desc
-    limit 1
-)
-select
-    l.latest_it_spend,
-    l.it_agency_count,
-    round((l.latest_it_spend - p.prior_it_spend) * 100.0 / nullif(p.prior_it_spend, 0), 1) as yoy_pct,
-    round(l.latest_it_spend * 100.0 / nullif(t.total, 0), 2) as it_pct_of_budget,
-    round(
-        case when c.start_val > 0 and c.end_val > 0
-            then (power(c.end_val / c.start_val, 1.0/5.0) - 1.0) * 100.0
-        else null end, 1
-    ) as cagr_5y,
-    ly.max_fy as latest_fy,
-    py.prior_fy as prior_fy,
-    (select agency_name from top_agency) as top_it_agency
-from latest_it l
-cross join prior_it p
-cross join total_budget t
-cross join cagr c
-cross join latest_year ly
-cross join prior_year py
-```
-
-<div style="margin-bottom: 20px;">
-    <div style="font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #802cd7; letter-spacing: 0.18em; font-weight: 700; text-transform: uppercase; margin-bottom: 8px;">
-        Maryland Budget Technology Spend Analysis · MBTSA
-    </div>
-    <h1 style="font-size: 1.9rem; font-weight: 800; color: #211030; letter-spacing: -0.6px; line-height: 1.1; margin-bottom: 8px;">
-        Maryland Budget Intelligence Dashboard
-    </h1>
-    <p style="font-size: 12px; color: #6B7280; line-height: 1.6; max-width: 580px; margin-bottom: 0;">
-        FY{fy_range[0].start_year}–FY{fy_range[0].end_year} · {fy_range[0].total_years} fiscal years · {full_budget_kpis[0].agency_count} state agencies · TBM v5.0.1 · AI-powered analysis
-    </p>
-</div>
-
-<div style="background:#211030; border-radius:8px; overflow:hidden; margin-bottom:24px; padding:7px 16px;">
-    <div id="mbtsa-ticker" style="display:inline-flex; gap:36px; white-space:nowrap; font-size:10px; color:#e0e0e0; font-family:monospace;">
-        {#each Array(2) as _}
-            <span><span style="color:#b376f6;">◆</span> FY{it_budget_kpis[0].latest_fy ?? ''} IT Spend: {(it_budget_kpis[0].latest_it_spend/1e9).toFixed(2)}B</span>
-            <span><span style="color:#b376f6;">◆</span> IT YoY: {it_budget_kpis[0].yoy_pct ?? ''}%</span>
-            <span><span style="color:#b376f6;">◆</span> IT as % of Budget: {it_budget_kpis[0].it_pct_of_budget ?? ''}%</span>
-            <span><span style="color:#b376f6;">◆</span> Top IT Agency: {it_budget_kpis[0].top_it_agency ?? ''}</span>
-            <span><span style="color:#b376f6;">◆</span> State Agencies: {full_budget_kpis[0].agency_count ?? ''}</span>
-            <span><span style="color:#b376f6;">◆</span> Federal Funds: {full_budget_kpis[0].federal_pct ?? ''}% of Budget</span>
-            <span><span style="color:#b376f6;">◆</span> 5-Year IT CAGR: {it_budget_kpis[0].cagr_5y ?? ''}%</span>
-        {/each}
+<div style="background: linear-gradient(135deg, #ede5f8 0%, #d4bef0 100%); padding: 32px 36px; border-radius: 12px; border-bottom: 4px solid #802cd7; margin-bottom: 28px; display:flex; align-items:flex-end; justify-content:space-between; gap:24px; flex-wrap:wrap;">
+    <div>
+        <h1 style="color: #211030; font-size: 1.8rem; font-weight: 700; margin: 0;">🏛️ Maryland Budget Intelligence</h1>
+        <p style="color: #6321a5; font-size: 0.95rem; margin: 6px 0 0 0;">Explore, analyze, and interrogate Maryland state budget data — FY2017 through FY2027</p>
     </div>
 </div>
 
-<div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#211030; text-transform:uppercase; letter-spacing:0.14em; font-weight:700; border-bottom:2px solid #211030; padding-bottom:5px; margin-bottom:12px;">
-    Full Budget · FY{full_budget_kpis[0].latest_fy}
-    <span style="font-weight:400; color:#6B7280; margin-left:12px;">
-        YoY: {full_budget_kpis[0].yoy_pct > 0 ? '+' : ''}{full_budget_kpis[0].yoy_pct}% vs FY{full_budget_kpis[0].prior_fy}
-    </span>
+## Explore the Dashboard Pages
+
+<div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 0 0 32px 0;">
+
+<div style="background: #f8f5fe; border: 1px solid #d4bef0; border-left: 4px solid #802cd7; border-radius: 10px; padding: 20px 22px; box-sizing:border-box;">
+    <a href="/state-budget" style="text-decoration:none;">
+        <div style="font-size: 1.05rem; font-weight: 700; color: #802cd7; margin-bottom: 2px;">🏛️ State Budget →</div>
+        <div style="font-size: 0.75rem; color: #6321a5; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;">Agency Funding · Fund Types · Trends</div>
+    </a>
+    <ul style="margin: 0; padding-left: 16px; color: #4a3570; font-size: 0.83rem; line-height: 1.9; user-select:text;">
+        <li>Budget growth since FY2017?</li>
+        <li>Top agencies by FY2027 spend?</li>
+        <li>Federal vs General Fund split?</li>
+    </ul>
+    <div style="margin-top: 10px; font-size: 0.78rem; color: #802cd7; font-weight: 600;">↓ Drill into any agency row for full breakdown</div>
 </div>
 
-<div style="display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin-bottom:8px; align-items:stretch;">
-    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #211030; border-radius:10px; background:#fff; padding:14px 16px;">
-        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">Operating Budget</div>
-        <div style="font-size:22px; font-weight:800; color:#211030;">{full_budget_kpis[0].latest_budget >= 1e9 ? '$' + (full_budget_kpis[0].latest_budget/1e9).toFixed(2) + 'B' : '$' + (full_budget_kpis[0].latest_budget/1e6).toFixed(1) + 'M'}</div>
-        <div style="font-size:10px; margin-top:4px; color:{full_budget_kpis[0].yoy_pct > 0 ? '#2EAD6B' : '#E24B4A'};">
-            {full_budget_kpis[0].yoy_pct > 0 ? '↑' : '↓'} {Math.abs(full_budget_kpis[0].yoy_pct)}% vs FY{full_budget_kpis[0].prior_fy}
-        </div>
-    </div>
-    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #3a1f5a; border-radius:10px; background:#fff; padding:14px 16px;">
-        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">General Fund</div>
-        <div style="font-size:22px; font-weight:800; color:#211030;">{full_budget_kpis[0].general_pct}%</div>
-        <div style="font-size:10px; margin-top:4px; color:{full_budget_kpis[0].general_yoy_pct > 0 ? '#2EAD6B' : '#E24B4A'};">
-            {full_budget_kpis[0].general_yoy_pct > 0 ? '↑' : '↓'} {Math.abs(full_budget_kpis[0].general_yoy_pct)}% vs FY{full_budget_kpis[0].prior_fy}
-        </div>
-    </div>
-    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #551c8e; border-radius:10px; background:#fff; padding:14px 16px;">
-        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">Federal Funds</div>
-        <div style="font-size:22px; font-weight:800; color:#211030;">{full_budget_kpis[0].federal_pct}%</div>
-        <div style="font-size:10px; margin-top:4px; color:{full_budget_kpis[0].federal_yoy_pct > 0 ? '#2EAD6B' : '#E24B4A'};">
-            {full_budget_kpis[0].federal_yoy_pct > 0 ? '↑' : '↓'} {Math.abs(full_budget_kpis[0].federal_yoy_pct)}% vs FY{full_budget_kpis[0].prior_fy}
-        </div>
-    </div>
-    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #6321a5; border-radius:10px; background:#fff; padding:14px 16px;">
-        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">State Agencies</div>
-        <div style="font-size:22px; font-weight:800; color:#211030;">{full_budget_kpis[0].agency_count}</div>
-        <div style="font-size:10px; margin-top:4px; color:#6B7280;">Active FY{full_budget_kpis[0].latest_fy}</div>
-    </div>
+<div style="background: #f8f5fe; border: 1px solid #d4bef0; border-left: 4px solid #6321a5; border-radius: 10px; padding: 20px 22px; box-sizing:border-box;">
+    <a href="/technology" style="text-decoration:none;">
+        <div style="font-size: 1.05rem; font-weight: 700; color: #6321a5; margin-bottom: 2px;">💻 Technology Budget →</div>
+        <div style="font-size: 0.75rem; color: #6321a5; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;">IT Spend · TBM Towers · Shadow IT</div>
+    </a>
+    <ul style="margin: 0; padding-left: 16px; color: #4a3570; font-size: 0.83rem; line-height: 1.9; user-select:text;">
+        <li>Highest IT-spending agencies?</li>
+        <li>IT budget by TBM tower?</li>
+        <li>Which agencies carry shadow IT?</li>
+    </ul>
+    <div style="margin-top: 10px; font-size: 0.78rem; color: #802cd7; font-weight: 600;">↓ Drill into any agency row for IT program detail</div>
 </div>
 
-<div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#802cd7; text-transform:uppercase; letter-spacing:0.14em; font-weight:700; border-bottom:2px solid #802cd7; padding-bottom:5px; margin-bottom:12px; margin-top:20px;">
-    IT Budget · FY{it_budget_kpis[0].latest_fy}
-    <span style="font-weight:400; color:#6B7280; margin-left:12px;">
-        YoY: {it_budget_kpis[0].yoy_pct > 0 ? '+' : ''}{it_budget_kpis[0].yoy_pct}% · 5-Year CAGR: {it_budget_kpis[0].cagr_5y}%
-    </span>
+<div style="background: #f8f5fe; border: 1px solid #d4bef0; border-left: 4px solid #b376f6; border-radius: 10px; padding: 20px 22px; box-sizing:border-box;">
+    <a href="/mitdps" style="text-decoration:none;">
+        <div style="font-size: 1.05rem; font-weight: 700; color: #b376f6; margin-bottom: 2px;">🚀 MITDPs →</div>
+        <div style="font-size: 0.75rem; color: #6321a5; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;">Major IT Projects · Timelines · Cost Estimates</div>
+    </a>
+    <ul style="margin: 0; padding-left: 16px; color: #4a3570; font-size: 0.83rem; line-height: 1.9; user-select:text;">
+        <li>Projects closing within 2 years?</li>
+        <li>Total remaining portfolio spend?</li>
+        <li>Agency with most active projects?</li>
+    </ul>
+    <div style="margin-top: 10px; font-size: 0.78rem; color: #802cd7; font-weight: 600;">↓ Click any project row to open full project details</div>
 </div>
 
-<div style="display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:8px; align-items:stretch;">
-    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #802cd7; border-radius:10px; background:#fff; padding:14px 16px;">
-        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">IT Spend</div>
-        <div style="font-size:22px; font-weight:800; color:#211030;">{it_budget_kpis[0].latest_it_spend >= 1e9 ? '$' + (it_budget_kpis[0].latest_it_spend/1e9).toFixed(2) + 'B' : '$' + (it_budget_kpis[0].latest_it_spend/1e6).toFixed(1) + 'M'}</div>
-        <div style="font-size:10px; margin-top:4px; color:{it_budget_kpis[0].yoy_pct > 0 ? '#2EAD6B' : '#E24B4A'};">
-            {it_budget_kpis[0].yoy_pct > 0 ? '↑' : '↓'} {Math.abs(it_budget_kpis[0].yoy_pct)}% vs prior year
-        </div>
-    </div>
-    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #6321a5; border-radius:10px; background:#fff; padding:14px 16px;">
-        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">IT as % of Budget</div>
-        <div style="font-size:22px; font-weight:800; color:#211030;">{it_budget_kpis[0].it_pct_of_budget}%</div>
-        <div style="font-size:10px; margin-top:4px; color:{it_budget_kpis[0].cagr_5y > 0 ? '#2EAD6B' : '#E24B4A'};">
-            {it_budget_kpis[0].cagr_5y > 0 ? '↑' : '↓'} {Math.abs(it_budget_kpis[0].cagr_5y)}% 5yr CAGR
-        </div>
-    </div>
-    <div style="border:0.5px solid #e2d9f3; border-top:3px solid #551c8e; border-radius:10px; background:#fff; padding:14px 16px; overflow:hidden;">
-        <div style="font-size:8px; color:#6B7280; text-transform:uppercase; letter-spacing:0.08em; font-weight:600; margin-bottom:4px; font-family:monospace;">Top IT Agency</div>
-        <div style="font-size:13px; font-weight:800; color:#211030; line-height:1.2;">{it_budget_kpis[0].top_it_agency}</div>
-        <div style="font-size:10px; margin-top:4px; color:#6B7280;">Highest IT spend FY{it_budget_kpis[0].latest_fy}</div>
-    </div>
+<div style="background: #f8f5fe; border: 1px solid #d4bef0; border-left: 4px solid #551c8e; border-radius: 10px; padding: 20px 22px; box-sizing:border-box;">
+    <a href="/variance-analysis" style="text-decoration:none;">
+        <div style="font-size: 1.05rem; font-weight: 700; color: #551c8e; margin-bottom: 2px;">📊 Variance Analysis →</div>
+        <div style="font-size: 0.75rem; color: #6321a5; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;">YoY Changes · Budget Movers · Outliers</div>
+    </a>
+    <ul style="margin: 0; padding-left: 16px; color: #4a3570; font-size: 0.83rem; line-height: 1.9; user-select:text;">
+        <li>Largest cuts FY2025→FY2027?</li>
+        <li>Programs with consistent 10%+ growth?</li>
+        <li>Programs introduced/eliminated</li>
+    </ul>
+</div>
+
+<div style="background: #f8f5fe; border: 1px solid #d4bef0; border-left: 4px solid #551c8e; border-radius: 10px; padding: 20px 22px; box-sizing:border-box;">
+    <a href="/anomaly-detection" style="text-decoration:none;">
+        <div style="font-size: 1.05rem; font-weight: 700; color: #551c8e; margin-bottom: 2px;">🔍 Anomaly Detection →</div>
+        <div style="font-size: 0.75rem; color: #BA7517; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;">Unusual Spend · Flagged Items · Risk Signals</div>
+    </a>
+    <ul style="margin: 0; padding-left: 16px; color: #7a5200; font-size: 0.83rem; line-height: 1.9; user-select:text;">
+        <li>Programs with spending spikes?</li>
+        <li>Agencies/Programs with sudden fund shifts?</li>
+    </ul>
+</div>
+
+<div style="background: linear-gradient(135deg, #f3ecfd, #ede5f8); border: 1px solid #c9a8f0; border-left: 4px solid #802cd7; border-radius: 10px; padding: 20px 22px; box-sizing:border-box;">
+    <a href="/ask-questions" style="text-decoration:none;">
+        <div style="font-size: 1.05rem; font-weight: 700; color: #802cd7; margin-bottom: 2px;">💬 Ask Questions →</div>
+        <div style="font-size: 0.75rem; color: #6321a5; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;">AI Agent · Plain English · Instant Answers</div>
+    </a>
+    <ul style="margin: 0; padding-left: 16px; color: #4a3570; font-size: 0.83rem; line-height: 1.9; user-select:text;">
+        <li>Ask about program descriptions</li>
+        <li>Ask about data or schema</li>
+        <li>Get insightful and trusted narratives</li>
+    </ul>
+</div>
+
 </div>
 
 ---
 
-<div style="font-family:'JetBrains Mono',monospace; font-size:8px; color:#802cd7; text-transform:uppercase; letter-spacing:0.14em; font-weight:700; border-bottom:1px solid #e2d9f3; padding-bottom:5px; margin-bottom:12px;">
-    Explore the Dashboard
-</div>
+## Ask the AI Budget Agent
 
-<div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:24px;">
-    <a href="/budget-office" style="display:block; background:var(--nxt-surface); border:0.5px solid var(--nxt-border); border-left:4px solid #211030; border-radius:10px; padding:16px 18px; text-decoration:none; box-shadow:0 1px 0 rgba(99,33,165,0.03);">
-        <div style="font-size:13px; font-weight:700; color:#211030; margin-bottom:4px;">🏛 Budget Office</div>
-        <div style="font-size:10px; color:#6B7280; line-height:1.5;">Agency budgets, fund breakdown, YoY trends and agency drill-down</div>
-        <div style="font-size:10px; color:#802cd7; font-weight:700; margin-top:8px;">Open →</div>
-    </a>
-    <a href="/technology" style="display:block; background:var(--nxt-surface); border:0.5px solid var(--nxt-border); border-left:4px solid #6321a5; border-radius:10px; padding:16px 18px; text-decoration:none; box-shadow:0 1px 0 rgba(99,33,165,0.03);">
-        <div style="font-size:13px; font-weight:700; color:#211030; margin-bottom:4px;">💻 Technology</div>
-        <div style="font-size:10px; color:#6B7280; line-height:1.5;">IT spend by TBM tower and cost pool. Agency IT benchmarks and trends</div>
-        <div style="font-size:10px; color:#802cd7; font-weight:700; margin-top:8px;">Open →</div>
-    </a>
-    <a href="/variance-analysis" style="display:block; background:var(--nxt-surface); border:0.5px solid var(--nxt-border); border-left:4px solid #b376f6; border-radius:10px; padding:16px 18px; text-decoration:none; box-shadow:0 1px 0 rgba(99,33,165,0.03);">
-        <div style="font-size:13px; font-weight:700; color:#211030; margin-bottom:4px;">📊 Variance Analysis</div>
-        <div style="font-size:10px; color:#6B7280; line-height:1.5;">Budget vs actual comparison, anomaly detection and threshold flags</div>
-        <div style="font-size:10px; color:#802cd7; font-weight:700; margin-top:8px;">Open →</div>
-    </a>
-    <a href="/anomaly-detection" style="display:block; background:var(--nxt-surface); border:0.5px solid var(--nxt-border); border-left:4px solid #551c8e; border-radius:10px; padding:16px 18px; text-decoration:none; box-shadow:0 1px 0 rgba(99,33,165,0.03);">
-        <div style="font-size:13px; font-weight:700; color:#211030; margin-bottom:4px;">🔍 Anomaly Detection</div>
-        <div style="font-size:10px; color:#6B7280; line-height:1.5;">Unusual spend patterns, statistical outliers and flagged programs</div>
-        <div style="font-size:10px; color:#802cd7; font-weight:700; margin-top:8px;">Open →</div>
-    </a>
-    <a href="/ask-questions" style="display:block; background:var(--nxt-surface); border:0.5px solid var(--nxt-border); border-left:4px solid #802cd7; border-radius:10px; padding:16px 18px; text-decoration:none; box-shadow:0 1px 0 rgba(99,33,165,0.03);">
-        <div style="font-size:13px; font-weight:700; color:#211030; margin-bottom:4px;">💬 Ask Questions</div>
-        <div style="font-size:10px; color:#6B7280; line-height:1.5;">AI-powered natural language Q&A over the full budget dataset</div>
-        <div style="font-size:10px; color:#802cd7; font-weight:700; margin-top:8px;">Open →</div>
-    </a>
-</div>
+> Ask anything about Maryland's budget in plain English. The AI agent writes SQL, runs it, and returns narrative answers with charts. No technical knowledge required.
 
-<div style="font-size:9px; color:#9CA3AF; text-align:center; font-family:'JetBrains Mono',monospace; margin-top:32px; padding-top:16px; border-top:1px solid #e2d9f3;">
-    State of Maryland · Department of Budget & Management · FY{fy_range[0].start_year}–FY{fy_range[0].end_year} · TBM v5.0.1
-</div>
+<iframe 
+    src="https://mdbudget-ask-questions.streamlit.app?embed=true"
+    width="100%"
+    height="700"
+    frameborder="0"
+    style="border-radius: 8px; border: 1px solid #e7def5;"
+></iframe>
+
+---
+
+<p style="font-size: 0.75rem; color: #888; text-align: center; font-style: italic;">State of Maryland · Operating budget · Data: FY2017–FY2027 · TBM v5.0.1 · Powered by Claude AI</p>

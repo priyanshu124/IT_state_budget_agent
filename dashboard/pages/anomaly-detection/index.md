@@ -1,6 +1,6 @@
 ---
-title: Anomaly Detection
-sidebar_position: 5
+title:
+sidebar_position: 6
 ---
 
 <div style="background: linear-gradient(135deg, #ede5f8 0%, #d4bef0 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #802cd7; margin-bottom: 0;">
@@ -90,8 +90,8 @@ select * from ${anomalies} where anomaly_type = 'Spike' order by deviation_pct d
 <DataTable data={positive_anomalies} search=true rows=15>
     <Column id=agency_name title="Agency"/>
     <Column id=fiscal_year title="FY"/>
-    <Column id=spend title="Spend" fmt=usd2compactviz/>
-    <Column id=avg_spend title="Avg Spend" fmt=usd2compactviz/>
+    <Column id=spend title="Spend" fmt=usd1k/>
+    <Column id=avg_spend title="Avg Spend" fmt=usd1k/>
     <Column id=deviation_pct title="Deviation (%)" fmt='0.0"%"' contentType=colorscale colorScale=positive/>
 </DataTable>
 {:else}
@@ -110,8 +110,8 @@ select * from ${anomalies} where anomaly_type = 'Drop' order by deviation_pct as
 <DataTable data={negative_anomalies} search=true rows=15>
     <Column id=agency_name title="Agency"/>
     <Column id=fiscal_year title="FY"/>
-    <Column id=spend title="Spend" fmt=usd2compactviz/>
-    <Column id=avg_spend title="Avg Spend" fmt=usd2compactviz/>
+    <Column id=spend title="Spend" fmt=usd1k/>
+    <Column id=avg_spend title="Avg Spend" fmt=usd1k/>
     <Column id=deviation_pct title="Deviation (%)" fmt='0.0"%"' contentType=colorscale colorScale=negative/>
 </DataTable>
 {:else}
@@ -146,6 +146,6 @@ limit 50
     <Column id=agency_name title="Agency"/>
     <Column id=program_name title="Program"/>
     <Column id=fiscal_year title="FY"/>
-    <Column id=spend title="Spend" fmt=usd2compactviz/>
+    <Column id=spend title="Spend" fmt=usd1k/>
     <Column id=deviation_pct title="Deviation (%)" fmt='0.0"%"' contentType=colorscale colorScale=diverging/>
 </DataTable>

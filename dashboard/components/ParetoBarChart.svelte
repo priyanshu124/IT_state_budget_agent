@@ -6,7 +6,7 @@
     export let data = [];
     export let title = '';
     export let height = '420px';
-    export let barField = 'spend';
+    export let barField = 'budget';
     export let labelField = 'agency_name';
     export let pctField = 'pct_of_total';
     export let cumulativeField = 'cumulative';
@@ -40,7 +40,7 @@
     }
 
     function getSpend(row) {
-        return Number(row?.[barField] ?? row?.spend) || 0;
+        return Number(row?.[barField] ?? row?.budget) || 0;
     }
 
     function getPct(row) {
@@ -92,12 +92,12 @@
 
         return ordered.slice(0, 10).map(function(entry) {
             const label = entry[0];
-            const spend = entry[1];
-            cumulative += spend;
+            const budget = entry[1];
+            cumulative += budget;
             return {
                 label,
-                spend,
-                pct_of_total: grandTotal > 0 ? Number((spend * 100.0 / grandTotal).toFixed(1)) : 0,
+                budget,
+                pct_of_total: grandTotal > 0 ? Number((budget * 100.0 / grandTotal).toFixed(1)) : 0,
                 cumulative,
                 grand_total: grandTotal,
                 fiscal_year: latestYear

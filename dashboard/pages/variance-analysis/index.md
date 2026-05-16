@@ -1,6 +1,10 @@
+32.02 KB•603 lines
+•
+Formatting may be inconsistent from source
+
 ---
 title: 
-sidebar_position: 4
+sidebar_position: 5
 ---
 
 <div style="background: linear-gradient(135deg, #ede5f8 0%, #d4bef0 100%); padding: 28px 36px; border-radius: 12px; border-bottom: 4px solid #802cd7; margin-bottom: 0; margin-top: -8px;">
@@ -134,21 +138,21 @@ select distinct fund_type from mbtsa.subprogram_level where fund_type is not nul
     $: kpi = (() => {
         const rows = activeVariance;
         if (!rows.length) return { net_change: 0, total_increased: 0, total_decreased: 0, items_up: 0, items_down: 0, total_count: 0, top_mover_name: '—', top_mover_amt: 0 };
-        const top = rows.slice().sort((a,b) => Math.abs(Number(b.change_amt)) - Math.abs(Number(a.change_amt)))[0];
+        const top = rows.slice().sort((a,b) => Math.abs(Number(b.change_amt_usd)) - Math.abs(Number(a.change_amt_usd)))[0];
         return {
-            total_increased: rows.filter(r => Number(r.change_amt) > 0).reduce((s,r) => s + Number(r.change_amt), 0),
-            total_decreased: rows.filter(r => Number(r.change_amt) < 0).reduce((s,r) => s + Number(r.change_amt), 0),
-            net_change:      rows.reduce((s,r) => s + Number(r.change_amt), 0),
+            total_increased: rows.filter(r => Number(r.change_amt_usd) > 0).reduce((s,r) => s + Number(r.change_amt_usd), 0),
+            total_decreased: rows.filter(r => Number(r.change_amt_usd) < 0).reduce((s,r) => s + Number(r.change_amt_usd), 0),
+            net_change:      rows.reduce((s,r) => s + Number(r.change_amt_usd), 0),
             items_up:        rows.filter(r => Number(r.change_pct) > threshold).length,
             items_down:      rows.filter(r => Number(r.change_pct) < -threshold).length,
             total_count:     rows.length,
             top_mover_name:  top ? (top[activeLabelField] ?? '—') : '—',
-            top_mover_amt:   top ? Number(top.change_amt) : 0
+            top_mover_amt:   top ? Number(top.change_amt_usd) : 0
         };
     })();
 
-    $: npCount = (activeVariance ?? []).filter(r => Number(r.prior_year) === 0 && Number(r.latest_year) > 0).length;
-    $: epCount = (activeVariance ?? []).filter(r => Number(r.latest_year) === 0 && Number(r.prior_year) > 0).length;
+    $: npCount = (activeVariance ?? []).filter(r => Number(r.prior_year_usd) === 0 && Number(r.latest_year_usd) > 0).length;
+    $: epCount = (activeVariance ?? []).filter(r => Number(r.latest_year_usd) === 0 && Number(r.prior_year_usd) > 0).length;
 
     $: netColor  = Number(kpi.net_change) >= 0 ? '#1A7340' : '#C8122C';
     $: netBg     = Number(kpi.net_change) >= 0 ? 'rgba(46,173,107,0.06)' : 'rgba(200,18,44,0.06)';
@@ -302,12 +306,12 @@ b as (
 select
     coalesce(a.agency_code, b.agency_code) as agency_code,
     coalesce(a.agency_name, b.agency_name) as agency_name,
-    coalesce(a.spend_a, 0)                 as latest_year,
-    coalesce(b.spend_b, 0)                 as prior_year,
-    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt,
+    coalesce(a.spend_a, 0)                 as latest_year_usd,
+    coalesce(b.spend_b, 0)                 as prior_year_usd,
+    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt_usd,
     round((coalesce(a.spend_a,0) - coalesce(b.spend_b,0)) * 100.0 / nullif(b.spend_b, 0), 1) as change_pct
 from a full outer join b using (agency_code, agency_name)
-order by abs(change_amt) desc
+order by abs(change_amt_usd) desc
 ```
 
 ```sql unit_variance
@@ -333,12 +337,12 @@ select
     coalesce(a.agency_code, b.agency_code) as agency_code,
     coalesce(a.agency_name, b.agency_name) as agency_name,
     coalesce(a.unit_name, b.unit_name) as unit_name,
-    coalesce(a.spend_a, 0)             as latest_year,
-    coalesce(b.spend_b, 0)             as prior_year,
-    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt,
+    coalesce(a.spend_a, 0)             as latest_year_usd,
+    coalesce(b.spend_b, 0)             as prior_year_usd,
+    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt_usd,
     round((coalesce(a.spend_a,0) - coalesce(b.spend_b,0)) * 100.0 / nullif(b.spend_b, 0), 1) as change_pct
 from a full outer join b using (agency_code, agency_name, unit_name)
-order by abs(change_amt) desc
+order by abs(change_amt_usd) desc
 ```
 
 ```sql program_variance
@@ -365,12 +369,12 @@ select
     coalesce(a.agency_name,  b.agency_name)  as agency_name,
     coalesce(a.unit_name,    b.unit_name)    as unit_name,
     coalesce(a.program_name, b.program_name) as program_name,
-    coalesce(a.spend_a, 0)                   as latest_year,
-    coalesce(b.spend_b, 0)                   as prior_year,
-    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt,
+    coalesce(a.spend_a, 0)                   as latest_year_usd,
+    coalesce(b.spend_b, 0)                   as prior_year_usd,
+    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt_usd,
     round((coalesce(a.spend_a,0) - coalesce(b.spend_b,0)) * 100.0 / nullif(b.spend_b, 0), 1) as change_pct
 from a full outer join b using (agency_code, agency_name, unit_name, program_name)
-order by abs(change_amt) desc
+order by abs(change_amt_usd) desc
 ```
 
 ```sql subprogram_variance
@@ -400,20 +404,20 @@ select
     coalesce(a.unit_name,       b.unit_name)       as unit_name,
     coalesce(a.program_name,    b.program_name)    as program_name,
     coalesce(a.subprogram_name, b.subprogram_name) as subprogram_name,
-    coalesce(a.spend_a, 0)                         as latest_year,
-    coalesce(b.spend_b, 0)                         as prior_year,
-    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt,
+    coalesce(a.spend_a, 0)                         as latest_year_usd,
+    coalesce(b.spend_b, 0)                         as prior_year_usd,
+    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt_usd,
     round((coalesce(a.spend_a,0) - coalesce(b.spend_b,0)) * 100.0 / nullif(b.spend_b, 0), 1) as change_pct
 from a full outer join b using (agency_code, agency_name, unit_name, program_name, subprogram_name)
-order by abs(change_amt) desc
+order by abs(change_amt_usd) desc
 ```
 ```sql new_programs
 select
     agency_name, unit_name, program_name,
-    latest_year as budget,
+    latest_year_usd as budget_usd,
     count(*) over () as new_count
 from ${program_variance}
-where prior_year = 0 and latest_year > 0
+where prior_year_usd = 0 and latest_year_usd > 0
 order by latest_year desc
 limit 10
 ```
@@ -421,10 +425,10 @@ limit 10
 ```sql eliminated_programs
 select
     agency_name, unit_name, program_name,
-    prior_year as budget,
+    prior_year_usd as budget_usd,
     count(*) over () as elim_count
 from ${program_variance}
-where latest_year = 0 and prior_year > 0
+where latest_year_usd = 0 and prior_year_usd > 0
 order by prior_year desc
 limit 10
 ```
@@ -452,12 +456,12 @@ b as (
 )
 select
     coalesce(a.fund_type, b.fund_type) as fund_type,
-    coalesce(a.spend_a, 0)             as latest_year,
-    coalesce(b.spend_b, 0)             as prior_year,
-    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt,
+    coalesce(a.spend_a, 0)             as latest_year_usd,
+    coalesce(b.spend_b, 0)             as prior_year_usd,
+    coalesce(a.spend_a, 0) - coalesce(b.spend_b, 0) as change_amt_usd,
     round((coalesce(a.spend_a,0) - coalesce(b.spend_b,0)) * 100.0 / nullif(b.spend_b, 0), 1) as change_pct
 from a full outer join b using (fund_type)
-order by abs(change_amt) desc
+order by abs(change_amt_usd) desc
 ```
 
 <div style="display:grid; grid-template-columns:1.4fr 1fr 1fr 1fr; gap:12px; margin:16px 0 16px;">
@@ -523,7 +527,7 @@ order by abs(change_amt) desc
 svelte    <Column id=agency_code title="Code"/>
     <Column id=agency_name title="Agency"/>
     <Column id={activeLabelField} title={levelLabel}/>
-    <Column id=latest_year title="Budget" fmt=usd2compactviz/>
+    <Column id=budget_usd title="Budget"/>
 </DataTable>
 {:else}
 <p style="color:#6B7280; font-size:0.875rem; padding:12px 0;">No new {levelLabel.toLowerCase()}s in FY{yearALabel}</p>
@@ -536,7 +540,7 @@ svelte    <Column id=agency_code title="Code"/>
 svelte    <Column id=agency_code title="Code"/>
     <Column id=agency_name title="Agency"/>
     <Column id={activeLabelField} title={levelLabel}/>
-    <Column id=prior_year title="Last Budget" fmt=usd2compactviz/>
+    <Column id=budget_usd title="Last Budget"/>
 </DataTable>
 {:else}
 <p style="color:#6B7280; font-size:0.875rem; padding:12px 0;">No eliminated {levelLabel.toLowerCase()}s from FY{yearBLabel}</p>
@@ -548,42 +552,71 @@ svelte    <Column id=agency_code title="Code"/>
 ## {levelLabel}-Level Variance
 
 {#if selectedLevel === 'agency'}
-<DataTable data={agency_variance} totalRow=true search=true rows=20>
-    <Column id=agency_name title="Agency"/>
-    <Column id=latest_year title="FY{yearALabel}" fmt=usd2compactviz/>
-    <Column id=prior_year  title="FY{yearBLabel}" fmt=usd2compactviz/>
-    <Column id=change_amt  title="Change ($)" fmt=usd2compactviz/>
-    <Column id=change_pct  title="Change (%)" fmt='0.0"%"' contentType=colorscale colorScale=diverging/>
-</DataTable>
+<ConditionalTable
+    data={agency_variance}
+    search={true}
+    rows=20
+    defaultSort="change_amt_usd"
+    defaultDir={-1}
+    columns={[
+        { id: 'agency_name', title: 'Agency', align: 'left' },
+        { id: 'latest_year_usd', title: `FY${yearALabel}`, fmt: 'money', sortable: true },
+        { id: 'prior_year_usd',  title: `FY${yearBLabel}`, fmt: 'money', sortable: true },
+        { id: 'change_amt_usd',  title: 'Change ($)', fmt: 'money', conditional: true, sortable: true },
+        { id: 'change_pct',      title: 'Change (%)', fmt: 'pct',   conditional: true, sortable: true },
+    ]}
+/>
 {:else if selectedLevel === 'unit'}
-<DataTable data={unit_variance} totalRow=true search=true rows=20>
-    <Column id=unit_name   title="Unit"/>
-    <Column id=latest_year title="FY{yearALabel}" fmt=usd2compactviz/>
-    <Column id=prior_year  title="FY{yearBLabel}" fmt=usd2compactviz/>
-    <Column id=change_amt  title="Change ($)" fmt=usd2compactviz/>
-    <Column id=change_pct  title="Change (%)" fmt='0.0"%"' contentType=colorscale colorScale=diverging/>
-</DataTable>
+<ConditionalTable
+    data={unit_variance}
+    search={true}
+    rows=20
+    defaultSort="change_amt_usd"
+    defaultDir={-1}
+    columns={[
+        { id: 'agency_name', title: 'Agency', align: 'left' },
+        { id: 'unit_name',   title: 'Unit',   align: 'left' },
+        { id: 'latest_year_usd', title: `FY${yearALabel}`, fmt: 'money', sortable: true },
+        { id: 'prior_year_usd',  title: `FY${yearBLabel}`, fmt: 'money', sortable: true },
+        { id: 'change_amt_usd',  title: 'Change ($)', fmt: 'money', conditional: true, sortable: true },
+        { id: 'change_pct',      title: 'Change (%)', fmt: 'pct',   conditional: true, sortable: true },
+    ]}
+/>
 {:else if selectedLevel === 'program'}
-<DataTable data={program_variance} totalRow=true search=true rows=25>
-    <Column id=agency_name  title="Agency"/>
-    <Column id=unit_name    title="Unit"/>
-    <Column id=program_name title="Program"/>
-    <Column id=latest_year  title="FY{yearALabel}" fmt=usd2compactviz/>
-    <Column id=prior_year   title="FY{yearBLabel}" fmt=usd2compactviz/>
-    <Column id=change_amt   title="Change ($)" fmt=usd2compactviz/>
-    <Column id=change_pct   title="Change (%)" fmt='0.0"%"' contentType=colorscale colorScale=diverging/>
-</DataTable>
+<ConditionalTable
+    data={program_variance}
+    search={true}
+    rows=25
+    defaultSort="change_amt_usd"
+    defaultDir={-1}
+    columns={[
+        { id: 'agency_name',  title: 'Agency',  align: 'left' },
+        { id: 'unit_name',    title: 'Unit',    align: 'left' },
+        { id: 'program_name', title: 'Program', align: 'left' },
+        { id: 'latest_year_usd', title: `FY${yearALabel}`, fmt: 'money', sortable: true },
+        { id: 'prior_year_usd',  title: `FY${yearBLabel}`, fmt: 'money', sortable: true },
+        { id: 'change_amt_usd',  title: 'Change ($)', fmt: 'money', conditional: true, sortable: true },
+        { id: 'change_pct',      title: 'Change (%)', fmt: 'pct',   conditional: true, sortable: true },
+    ]}
+/>
 {:else}
-<DataTable data={subprogram_variance} totalRow=true search=true rows=25>
-    <Column id=agency_name     title="Agency"/>
-    <Column id=unit_name       title="Unit"/>
-    <Column id=program_name    title="Program"/>
-    <Column id=subprogram_name title="Subprogram"/>
-    <Column id=latest_year     title="FY{yearALabel}" fmt=usd2compactviz/>
-    <Column id=prior_year      title="FY{yearBLabel}" fmt=usd2compactviz/>
-    <Column id=change_amt      title="Change ($)" fmt=usd2compactviz/>
-    <Column id=change_pct      title="Change (%)" fmt='0.0"%"' contentType=colorscale colorScale=diverging/>
-</DataTable>
+<ConditionalTable
+    data={subprogram_variance}
+    search={true}
+    rows=25
+    defaultSort="change_amt_usd"
+    defaultDir={-1}
+    columns={[
+        { id: 'agency_name',     title: 'Agency',     align: 'left' },
+        { id: 'unit_name',       title: 'Unit',       align: 'left' },
+        { id: 'program_name',    title: 'Program',    align: 'left' },
+        { id: 'subprogram_name', title: 'Subprogram', align: 'left' },
+        { id: 'latest_year_usd',     title: `FY${yearALabel}`, fmt: 'money', sortable: true },
+        { id: 'prior_year_usd',      title: `FY${yearBLabel}`, fmt: 'money', sortable: true },
+        { id: 'change_amt_usd',      title: 'Change ($)', fmt: 'money', conditional: true, sortable: true },
+        { id: 'change_pct',          title: 'Change (%)', fmt: 'pct',   conditional: true, sortable: true },
+    ]}
+/>
 {/if}
 
 ---
@@ -593,10 +626,15 @@ svelte    <Column id=agency_code title="Code"/>
 
 
 
-<DataTable data={fund_variance} totalRow=true>
-    <Column id=fund_type   title="Fund Type"/>
-    <Column id=latest_year title="FY{yearALabel}" fmt=usd2compactviz/>
-    <Column id=prior_year  title="FY{yearBLabel}" fmt=usd2compactviz/>
-    <Column id=change_amt  title="Change ($)" fmt=usd2compactviz/>
-    <Column id=change_pct  title="Change (%)" fmt='0.0"%"' contentType=colorscale colorScale=diverging/>
-</DataTable>
+<ConditionalTable
+    data={fund_variance}
+    defaultSort="change_amt_usd"
+    defaultDir={-1}
+    columns={[
+        { id: 'fund_type',       title: 'Fund Type', align: 'left' },
+        { id: 'latest_year_usd', title: `FY${yearALabel}`, fmt: 'money', sortable: true },
+        { id: 'prior_year_usd',  title: `FY${yearBLabel}`, fmt: 'money', sortable: true },
+        { id: 'change_amt_usd',  title: 'Change ($)', fmt: 'money', conditional: true, sortable: true },
+        { id: 'change_pct',      title: 'Change (%)', fmt: 'pct',   conditional: true, sortable: true },
+    ]}
+/>

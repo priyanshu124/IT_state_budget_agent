@@ -1,5 +1,5 @@
 ---
-title: Technology
+title:
 sidebar_position: 3
 ---
 
@@ -385,7 +385,7 @@ hist_10y as (
 )
 select
     l.agency_name,
-    '/technology/agencies/' || replace(l.agency_name, ' ', '%20') as agency_link,
+    '/technology/agency-breakdown/' || replace(l.agency_name, ' ', '%20') as agency_link,
     l.latest_spend,
     l.latest_spend - coalesce(p.prior_spend, 0) as dollar_change,
     round((l.latest_spend - coalesce(p.prior_spend, 0)) * 100.0 / nullif(p.prior_spend, 0), 1) as yoy_change_pct,
@@ -631,12 +631,12 @@ order by agency_name, fiscal_year
             return (b[lastYr] || 0) - (a[lastYr] || 0);
         }).map(function(r) {
             return Object.assign({}, r, {
-                agency_link: '/technology/agencies/' + encodeURIComponent(r.agency_name)
+                agency_link: '/technology/agency-breakdown/' + encodeURIComponent(r.agency_name)
             });
         })
         : filteredPivot.map(function(r) {
             return Object.assign({}, r, {
-                agency_link: '/technology/agencies/' + encodeURIComponent(r.agency_name)
+                agency_link: '/technology/agency-breakdown/' + encodeURIComponent(r.agency_name)
             });
         });
 
@@ -884,14 +884,14 @@ order by agency_name, fiscal_year
 
 ---
 
-## Top IT Agencies — Trend Over Time
+## Top Agencies with funding for IT — Trend Over Time
 
 {#if agency_trend_lines?.length > 0}
     <AgencyTrendChart
         agencies={top_agencies_trend}
         trendLines={agency_trend_lines}
         years={agencyLineTrendYears}
-        title="Top IT Agencies by Spend — Trend Over Time"
+        title="Hover over lines to compare agency spend · Click legend to isolate agencies"
         entityLabel="agency"
         topN={5}
         height="520px"
