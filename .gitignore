@@ -46,7 +46,6 @@ Thumbs.db
 
 /data/
 # Large binaries and generated artifacts
-*.duckdb
 *.parquet
 data/enriched/*.csv
 dashboard/build/_app/immutable/**/*.js
