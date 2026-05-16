@@ -77,8 +77,8 @@ sidebar_position: 1
 </div>
 
 <div style="background: linear-gradient(135deg, #f3ecfd, #ede5f8); border: 1px solid #c9a8f0; border-left: 4px solid #802cd7; border-radius: 10px; padding: 20px 22px; box-sizing:border-box;">
-    <a href="/ask-questions" style="text-decoration:none;">
-        <div style="font-size: 1.05rem; font-weight: 700; color: #802cd7; margin-bottom: 2px;">💬 Ask Questions →</div>
+    <a style="text-decoration:none;">
+        <div style="font-size: 1.05rem; font-weight: 700; color: #802cd7; margin-bottom: 2px;">💬 Ask Questions </div>
         <div style="font-size: 0.75rem; color: #6321a5; font-weight: 600; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.04em;">AI Agent · Plain English · Instant Answers</div>
     </a>
     <ul style="margin: 0; padding-left: 16px; color: #4a3570; font-size: 0.83rem; line-height: 1.9; user-select:text;">
