@@ -518,12 +518,12 @@ order by abs(change_amt_usd) desc
 <div>
 
 <p style="font-weight:700; color:#2EAD6B; margin-bottom:8px;">🟢 New {levelLabel}s in FY{yearALabel}</p>
-{#if activeVariance.filter(r => Number(r.prior_year) === 0 && Number(r.latest_year) > 0).length > 0}
-<DataTable data={activeVariance.filter(r => Number(r.prior_year) === 0 && Number(r.latest_year) > 0 && !activeVariance.some(x => x[activeLabelField] === r[activeLabelField] && Number(x.latest_year) === 0 && Number(x.prior_year) > 0)).slice(0,10)} rows=10>
-svelte    <Column id=agency_code title="Code"/>
+{#if activeVariance.filter(r => Number(r.prior_year_usd) === 0 && Number(r.latest_year_usd) > 0).length > 0}
+<DataTable data={activeVariance.filter(r => Number(r.prior_year_usd) === 0 && Number(r.latest_year_usd) > 0).slice(0,10)} rows=10>
+    <Column id=agency_code title="Code"/>
     <Column id=agency_name title="Agency"/>
     <Column id={activeLabelField} title={levelLabel}/>
-    <Column id=budget_usd title="Budget"/>
+    <Column id=latest_year_usd title="Budget"/>
 </DataTable>
 {:else}
 <p style="color:#6B7280; font-size:0.875rem; padding:12px 0;">No new {levelLabel.toLowerCase()}s in FY{yearALabel}</p>
@@ -531,12 +531,12 @@ svelte    <Column id=agency_code title="Code"/>
 </div>
 <div style="margin-top:16px;">
 <p style="font-weight:700; color:#C8122C; margin-bottom:8px;">🔴 Eliminated {levelLabel}s from FY{yearBLabel}</p>
-{#if activeVariance.filter(r => Number(r.latest_year) === 0 && Number(r.prior_year) > 0).length > 0}
-<DataTable data={activeVariance.filter(r => Number(r.latest_year) === 0 && Number(r.prior_year) > 0 && !activeVariance.some(x => x[activeLabelField] === r[activeLabelField] && Number(x.prior_year) === 0 && Number(x.latest_year) > 0)).slice(0,10)} rows=10>
-svelte    <Column id=agency_code title="Code"/>
+{#if activeVariance.filter(r => Number(r.latest_year_usd) === 0 && Number(r.prior_year_usd) > 0).length > 0}
+<DataTable data={activeVariance.filter(r => Number(r.latest_year_usd) === 0 && Number(r.prior_year_usd) > 0).slice(0,10)} rows=10>
+    <Column id=agency_code title="Code"/>
     <Column id=agency_name title="Agency"/>
     <Column id={activeLabelField} title={levelLabel}/>
-    <Column id=budget_usd title="Last Budget"/>
+    <Column id=prior_year_usd title="Last Budget"/>
 </DataTable>
 {:else}
 <p style="color:#6B7280; font-size:0.875rem; padding:12px 0;">No eliminated {levelLabel.toLowerCase()}s from FY{yearBLabel}</p>
