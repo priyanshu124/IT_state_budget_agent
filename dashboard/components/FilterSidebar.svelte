@@ -1,5 +1,5 @@
 <script>
-    export let targetId = 'page-filters-anchor';
+    export let targetId = 'page-filters';
     export let title = '⚙ Filters';
 
     function scrollToFilters() {
@@ -8,10 +8,10 @@
 
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
 
-        window.addEventListener('scrollend', () => {
-            const trigger = document.querySelector('#page-filters button.text-sm.cursor-pointer');
-            if (trigger) trigger.click();
-        }, { once: true });
+        setTimeout(() => {
+            const btn = el.querySelector('button');
+            if (btn) btn.click();
+        }, 600);
     }
 </script>
 
