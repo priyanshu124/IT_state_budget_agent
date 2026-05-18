@@ -25,6 +25,7 @@ data/output/*
 !data/output/final_budget_enriched.parquet
 !data/output/tower_classifications.csv
 !data/output/cost_pool_mappings.csv
+!data/output/final_budget_enriched_final.csv
 
 # IDE
 .vscode/
@@ -44,9 +45,9 @@ logs/*.log
 .DS_Store
 Thumbs.db
 
-/data/
 # Large binaries and generated artifacts
 *.parquet
+!data/output/*.parquet
 data/enriched/*.csv
 dashboard/build/_app/immutable/**/*.js
 dashboard/build/_app/immutable/workers/*.js
