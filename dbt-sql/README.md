@@ -1,4 +1,4 @@
-# MBTSA — dbt Project
+# MBIT — dbt Project
 
 Maryland Budget Technology Spend Analysis — dbt models, metrics, and semantic layer.
 
