@@ -1,4 +1,4 @@
-# Maryland Budget Intelligence System (MBIS)
+# Maryland Budget Intelligence Tool (MBIT)
 
 A comprehensive data engineering and AI-powered analytics platform for exploring Maryland state budget data with deep technology business management (TBM) classifications and intelligent querying capabilities.
 
