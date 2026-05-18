@@ -69,7 +69,7 @@ brew install git-lfs
 
 # Then initialize (once per machine)
 git lfs install
-
+```
 ### 1. Clone & Setup Environment
 
 ```bash
