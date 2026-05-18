@@ -2,7 +2,7 @@
 
 A comprehensive data engineering and AI-powered analytics platform for exploring Maryland state budget data with deep technology business management (TBM) classifications and intelligent querying capabilities.
 
-**Live Dashboard:** https://md-budget-site.netlify.app/
+**Live Dashboard:** [https://md-budget-site.netlify.app/](https://md-budget-intel.netlify.app/)
 
 ---
 
