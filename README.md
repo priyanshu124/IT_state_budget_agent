@@ -70,6 +70,11 @@ brew install git-lfs
 # Then initialize (once per machine)
 git lfs install
 ```
+
+> **Note:** `data/output` pipeline CSVs are excluded from LFS fetch by default (configured in `.lfsconfig`). If you need them locally, pull them explicitly:
+> ```bash
+> git lfs pull --include="data/output/**"
+> ```
 ### 1. Clone & Setup Environment
 
 ```bash
@@ -198,6 +203,7 @@ Query interface will be available at `http://localhost:8501`
 | Component | Service |
 |-----------|---------|
 | **Static Site** | Netlify |
+| **Chat Interface** | Streamlit Community Cloud |
 | **Source Control** | Git |
 
 ---
@@ -287,7 +293,8 @@ IT_state_budget_agent/
 │
 ├── logs/                          # Application logs
 │
-├── app.py                         # Streamlit query interface
+├── app.py                         # Streamlit full query interface
+├── chat_embed.py                  # Streamlit chat embed (iframe mode for dashboard)
 ├── load_data.py                   # Data ingestion script
 ├── requirements.txt               # Python dependencies
 ├── pyproject.toml                # Project metadata
@@ -580,6 +587,59 @@ npm install -g netlify-cli
 # Deploy
 cd dashboard
 netlify deploy --prod --dir=build
+```
+
+### Deploy Chat Interface to Streamlit Community Cloud
+
+`chat_embed.py` is an iframe-embeddable budget assistant designed to run as a separate service alongside the Evidence dashboard. Deploy it to [Streamlit Community Cloud](https://streamlit.io/cloud) (free tier).
+
+#### Prerequisites
+
+- GitHub account with access to this repository
+- [Streamlit Community Cloud](https://share.streamlit.io) account (free, sign in with GitHub)
+
+#### Steps
+
+1. **Go to [share.streamlit.io](https://share.streamlit.io)** and click **New app**
+
+2. **Configure the app:**
+   - **Repository:** `priyanshu124/IT_state_budget_agent`
+   - **Branch:** `main`
+   - **Main file path:** `chat_embed.py`
+
+3. **Add secrets** — open **Settings → Secrets** and paste:
+
+   ```toml
+   ANTHROPIC_API_KEY = "sk-ant-..."
+   MBTSA_DB = "dbt-sql/mbtsa_work.duckdb"
+   CLAUDE_MODEL = "claude-sonnet-4-20250514"
+   ```
+
+4. **Click Deploy.** Streamlit installs dependencies from `requirements.txt` and starts the app.
+
+#### Git LFS and `data/output`
+
+The DuckDB file (`dbt-sql/mbtsa_work.duckdb`) is pulled via Git LFS automatically during deployment — no extra steps needed.
+
+The `data/output` CSVs (~1.4 GB) are **excluded from deployment** via `.lfsconfig`:
+
+```ini
+[lfs]
+    fetchexclude = data/output/**
+```
+
+This prevents Streamlit from downloading pipeline output files that the chat interface does not use. To pull them locally when needed:
+
+```bash
+git lfs pull --include="data/output/**"
+```
+
+#### Embedding in the Evidence Dashboard
+
+Once deployed, copy the app URL (e.g. `https://your-app.streamlit.app`) and set it as the iframe `src` in the relevant dashboard page. Pass a `?page=` query parameter so the agent knows which page the user is on:
+
+```
+https://your-app.streamlit.app?page=variance-analysis
 ```
 
 ---
