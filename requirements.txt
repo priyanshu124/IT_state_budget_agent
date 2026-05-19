@@ -1,58 +1,10 @@
-# ============================================
-# TBM Classification Engine - Requirements
-# ============================================
-
-# --- Data Processing ---
-polars==1.30.0            # Fast DataFrame engine (replaces pandas)
-xlsxwriter==3.2.2         # Excel output support
-connectorx==0.4.2         # Fast CSV/DB reading for Polars
-
-# --- AI / LLM Agent Framework ---
-langchain==0.3.25; python_version >= "3.13"         # Core LangChain framework
-langchain-anthropic==0.3.18; python_version >= "3.13"  # Claude API integration
-langgraph==0.4.1; python_version >= "3.13"          # Stateful agent orchestration graphs
-pydantic==2.11.1; python_version >= "3.13"          # Structured output validation
-
-# ── Embeddings (Shadow IT detection) ──────────────────────
-sentence-transformers==4.1.0
-torch>=2.2.0
-numpy>=1.26.0
-
-# --- Anthropic SDK ---
-anthropic==0.60.0; python_version >= "3.13"         # Direct Claude API access (compatible with langchain-anthropic)
-
-# --- Configuration & Environment ---
-python-dotenv==1.1.0      # .env file loading
-pyyaml==6.0.2             # YAML config parsing
-
-# --- Logging & Monitoring ---
-loguru==0.7.3             # Better logging
-
-# --- Testing ---
-pytest==8.3.5
-pytest-cov==6.1.1
-
-# --- Dev / Notebook ---
-ipykernel==6.29.5         # Jupyter kernel
-rich==14.0.0              # Pretty console output
-pypdf==5.1.0              # PDF parsing support
-pdfplumber==0.11.1        # PDF text extraction and table parsing
-
-# --- SQL DW ---
-
-# dbt + DuckDB
-dbt-core>=1.8,<1.9; python_version < "3.13"
-dbt-duckdb>=1.8,<1.9; python_version < "3.13"
-dbt-metricflow==0.7.1; python_version < "3.13"
-
-# --- Local analytics database ---
-duckdb==1.2.1
-
-
+# Streamlit app dependencies
 streamlit==1.43.2
-plotly==6.0.1
 pandas==2.2.3
-blinker==1.9.0 
-
-
-
+plotly==6.0.1
+anthropic==0.60.0
+pydantic==2.11.1
+loguru==0.7.3
+duckdb==1.2.1
+python-dotenv==1.1.0
+blinker==1.9.0
