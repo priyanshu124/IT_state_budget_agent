@@ -224,6 +224,10 @@ def render_chart(df, plan):
     if not x_col or not y_col:
         return
 
+    # Auto-correct swapped x/y: y must be the numeric axis
+    if not is_numeric_dtype(df[y_col]) and is_numeric_dtype(df[x_col]):
+        x_col, y_col = y_col, x_col
+
     fig = None
 
     if chart_type == "line":
