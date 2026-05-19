@@ -243,6 +243,10 @@ def render_chart(df, plan):
         chart_df = df[df[y_col].notna()].copy()
         if chart_df.empty:
             return
+        chart_df[y_col] = pd.to_numeric(chart_df[y_col], errors="coerce")
+        chart_df = chart_df[chart_df[y_col].notna()]
+        if chart_df.empty:
+            return
         has_negatives = chart_df[y_col].min() < 0
         use_horizontal = not has_negatives and (
             chart_df[x_col].astype(str).str.len().max() > 12 or len(chart_df) > 5
